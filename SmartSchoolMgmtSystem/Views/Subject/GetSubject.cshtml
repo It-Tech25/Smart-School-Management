@@ -1,0 +1,298 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.SubjectDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+
+</style>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">User Type</h4>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search Classes..." style="width: 300px;" />
+
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add Subject
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="list" role="tabpanel">
+                                <!-- Table -->
+                                <div class="table-responsive">
+                                    <table id="example2" class="table table-striped" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>SubjectName</th>
+                                                <th>Description</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="classTableBody">
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@sno</td>
+                                                    <td>@item.SubjectName</td>
+                                                    <td>@item.Description</td>
+                                                    <td>
+                                                        <a href="#" onclick="EditSubject('@item.SubjectId', '@item.SubjectName', '@item.Description')"
+                                                           title="Edit" class="text-primary">
+                                                            <button type="button" class="waves-effect waves-circle btn btn-circle btn-primary btn-xs">
+                                                                <i class="fa fa-edit"></i>
+                                                            </button>
+                                                        </a>
+                                                        <a href="#" onclick="DeleteSubject(@item.SubjectId)" title="Delete">
+                                                            <button type="button" class="waves-effect waves-circle btn btn-circle btn-danger btn-xs">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                sno++;
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Pagination Controls -->
+                                <ul id="pagination" class="pagination justify-content-end"></ul>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <!-- Added modal-xl and custom class -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Add Subject</h5>
+            </div>
+            <div class="modal-body">
+                <form id="SubjectForm" action="@Url.Action("AddSubject", "Subject")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Subject Details</h5>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="Subject Name">Subject Name <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="SubjectName" name="SubjectName" required placeholder="Enter Subject Name" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="Description">Description<span class="required">*</span></label>
+                            <input type="text" class="form-control" id="Description" name="Description" placeholder="Enter Description" />
+                        </div>
+                    </div>
+
+                    <!-- In both addModal and editModal footer sections -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirect()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editSubjectModal" tabindex="-1" aria-labelledby="editSubjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSubjectModalLabel">Edit Subject</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editSubjectForm" action="@Url.Action("UpdateSubject", "Subject")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="SubjectId" id="editSubjectId" value="" />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Subject Details</h5>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editSubjectName">Subject Name <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editSubjectName" name="SubjectName" required placeholder="Enter Subject Name" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editDescription">Description</label>
+                            <input type="text" class="form-control" id="editDescription" name="Description" placeholder="Enter Description" />
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" class="btn btn-success">Reset</button>
+                            <button type="button" class="btn btn-danger" onclick="cancelAndRedirects()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+     $(document).ready(function () {
+
+        window.openAddModal = function () {
+            $('#addModal').modal('show');
+        };
+
+    });
+                $('#SubjectForm').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/Subject/AddSubject',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Success!", "Subject added successfully.", "success")
+                        .then(() => {
+                            window.location.reload();
+                        });
+                } else {
+                    Swal.fire("Error!", response.message || "Subject already exists.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "There was an error processing your request.", "error");
+            }
+        });
+    });
+
+
+        // Edit Subject Form Submission
+        $('#editSubjectForm').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                url: '/Subject/UpdateSubject',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Updated!", "User Type updated successfully.", "success").then(() => {
+                            $('#editUserTypeModal').modal('hide');
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire("Error!", response.message || "Failed to update User Type.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "An error occurred while updating the User Type.", "error");
+                }
+            });
+        });
+
+
+    // Edit User Type Function
+      window.EditSubject = function (subjectId, subjectName, description) {
+        console.log("Editing Subject:", subjectId, subjectName, description);
+
+        $("#editSubjectId").val(subjectId);
+        $("#editSubjectName").val(subjectName); 
+        $("#editDescription").val(description);
+
+        $('#editSubjectModal').modal('show');
+    };
+
+    // Delete User Type Function
+    function DeleteSubject(SubjectId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Subject/DeleteSubject/' + SubjectId,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Deleted!", "Subject has been deleted.", "success").then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error!", response.message || "There was an issue deleting the User Type.", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "There was an error processing your request.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+        //search field in table
+    $(document).ready(function () {
+        $('#searchInput').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $("#classTableBody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+
+      $(document).ready(function () {
+        setupPagination('classTableBody', 'pagination');
+    });
+
+        //Cancel Button
+        function cancelAndRedirect() {
+        $('#addModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetSubject", "Subject")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+       }
+       function cancelAndRedirects() {
+        $('#editSubjectModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetSubject", "Subject")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+
+</script>

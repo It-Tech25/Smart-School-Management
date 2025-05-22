@@ -1,0 +1,549 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.SubscriptionPaymentsDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+
+
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+</style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Subscription Payments</h4>
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary">
+                            <i class="fa fa-plus"></i> Add Payment
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example2" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>School Name</th>
+                                        <th>Modules</th>
+                                        <th>User</th>
+                                        <th>Payment Date</th>
+                                        <th>EndDate Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="classTableBody">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@sno</td>
+                                            <td>@item.School</td>
+                                            <td>@item.Modules</td>
+                                            <td>@item.User</td>
+                                            <td>@item.PaidDate</td>
+                                            <td>@item.Enddate</td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm"
+                                                        onclick="EditPayment('@item.PaymentId', '@item.schoolid', '@item.SubscriptionId', '@item.Duration', '@item.Amount', '@item.Modules', '@item.Enddate')">
+                                                    Edit
+                                                </button>
+                                                <button class="btn btn-danger btn-sm"
+                                                        onclick="DeletePayment('@item.PaymentId')">
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        sno++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form id="paymentForm" action="@Url.Action("AddPayment", "SubscriptionPayments")" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <!-- School Dropdown -->
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="SchoolId">School <span class="required">*</span></label>
+                                <select class="form-control" id="School" name="School" required>
+                                    <option value="" selected>--Select School--</option>
+                                    @foreach (var school in ViewBag.Schools)
+                                    {
+                                        <option value="@school">@school</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Subscription Type -->
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="SubscriptionId">Subscription Type <span class="required">*</span></label>
+                                <select class="form-control" id="SubscriptionId" name="SubscriptionId" required>
+                                    <option value="" selected>--Select Subscription Type--</option>
+                                    @foreach (var item in ViewBag.SType)
+                                    {
+                                        <option value="@item.SubscriptionTypeId">@item.ModulesEnabled</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Duration -->
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="Duration">Duration <span class="required">*</span></label>
+                                <select class="form-control" id="Duration" name="Duration" required onchange="calculateEndDate()">
+                                    <option value="" selected>--Select Duration--</option>
+                                    @foreach (var duration in ViewBag.Duration)
+                                    {
+                                        <option value="@duration">@duration</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Amount -->
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="Amount">Amount <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="Amount" name="Amount" required placeholder="Enter Amount" />
+                            </div>
+                        </div>
+
+                        <!-- Modules Dropdown -->
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Modules <span class="required">*</span></label>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button"
+                                            id="modulesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Select Modules
+                                    </button>
+                                    <ul class="dropdown-menu p-2 w-100" id="modulesDropdownMenu"
+                                        style="max-height: 300px; overflow-y: auto;">
+                                        @foreach (var module in ViewBag.Modules)
+                                        {
+                                            <li>
+                                                <div class="form-check">
+                                                    <input class="form-check-input module-checkbox" type="checkbox"
+                                                           name="SelectedModules" value="@module" id="module_@module" />
+                                                    <label class="form-check-label" for="module_@module">
+                                                        @module
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Date (Read-only) -->
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="EndDate">End Date</label>
+                                <input type="text" class="form-control" id="EndDate" name="Enddate" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="$('#addModal').modal('hide');">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editPaymentModal" tabindex="-1" role="dialog" aria-labelledby="editPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <div class="col-lg-12">
+                <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Edit Payment</h5>
+            </div>
+            <div class="modal-body">
+                <form id="editPaymentForm" action="@Url.Action("UpdatePayment", "SubscriptionPayments")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="PaymentId" id="editPaymentId" />
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label for="editSchoolId">School <span class="required">*</span></label>
+                            <select class="form-control" id="editSchoolId" name="School" required>
+                                <option value="" selected>--Select School--</option>
+                                @foreach (var school in ViewBag.Schools)
+                                {
+                                    <option value="@school">@school</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label for="editSubscriptionId">Subscription Type<span class="required">*</span></label>
+                            <select class="form-control" id="editSubscriptionId" name="SubscriptionId" required>
+                                <option value="" selected>--Select Subscription Type--</option>
+                                @foreach (var item in ViewBag.SType)
+                                {
+                                    <option value="@item.SubscriptionTypeId">@item.ModulesEnabled</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6 mt-2">
+                            <label for="editDuration">Duration <span class="required">*</span></label>
+                            <select class="form-control" id="editDuration" name="Duration" required onchange="calculateEndDate()">
+                                <option value="" selected>--Select Duration--</option>
+                                @foreach (var duration in ViewBag.Duration)
+                                {
+                                    <option value="@duration">@duration</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6 mt-2">
+                            <label for="editAmount">Amount <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editAmount" name="Amount" required placeholder="Enter Amount" />
+                        </div>
+
+                        <div class="col-lg-6 mt-2">
+                            <label>Modules <span class="required">*</span></label>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button"
+                                        id="editModulesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Select Modules
+                                </button>
+                                <ul class="dropdown-menu p-2 w-100" id="editModulesDropdownMenu" style="max-height: 300px; overflow-y: auto;">
+                                    @foreach (var module in ViewBag.Modules)
+                                    {
+                                        <li>
+                                            <div class="form-check">
+                                                <input class="form-check-input module-checkbox" type="checkbox"
+                                                       name="SelectedModules" value="@module" id="edit_module_@module" />
+                                                <label class="form-check-label" for="edit_module_@module">
+                                                    @module
+                                                </label>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 mt-2">
+                            <label for="editEndDate">End Date</label>
+                            <input type="text" class="form-control" id="editEndDate" name="Enddate" readonly />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelEditModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+<script>
+     $(document).ready(function () {
+        
+
+       
+        // Handle form submission
+        $('#paymentForm').submit(function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            $.ajax({
+                url: '@Url.Action("AddPayment", "SubscriptionPayments")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire('Success!', 'Payment added successfully.', 'success')
+                            .then(() => window.location.reload());
+                    } else {
+                        Swal.fire('Error!', response.message || 'Operation failed', 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error!', 'An error occurred during submission.', 'error');
+                }
+            });
+        });
+    });
+
+    // Modal control functions
+    function openAddModal() {
+        $('#addModal').modal('show');
+    }
+
+    function closeAddModal() {
+        $('#addModal').modal('hide');
+    }
+            $('#editPaymentForm').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                url: '/SubscriptionPayments/UpdatePayment',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Updated!", "Payment updated successfully.", "success").then(() => {
+                            $('#editPaymentModal').modal('hide');
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire("Error!", response.message || "Failed to update payment.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "An error occurred while updating the payment.", "error");
+                }
+            });
+        });
+
+                function calculateEndDate() {
+            const durationValue = $('#Duration').val();
+
+            if (!durationValue) {
+                $('#EndDate').val('');
+                return;
+            }
+
+            const currentDate = new Date();
+
+            // Extract the number and type (Day, Month, Year) using regex
+            const regex = /(\d+)\s*(Days?|Months?|Years?)/i;
+            const matches = durationValue.match(regex);
+
+            if (!matches || matches.length < 3) {
+                alert("Invalid duration format. Please select a valid option.");
+                $('#EndDate').val('');
+                return;
+            }
+
+            const amount = parseInt(matches[1]);
+            const type = matches[2].toLowerCase();
+
+            if (type.includes('day')) {
+                currentDate.setDate(currentDate.getDate() + amount);
+            } else if (type.includes('month')) {
+                currentDate.setMonth(currentDate.getMonth() + amount);
+            } else if (type.includes('year')) {
+                currentDate.setFullYear(currentDate.getFullYear() + amount);
+            } else {
+                alert("Unknown duration type. Please check your selection.");
+                $('#EndDate').val('');
+                return;
+            }
+
+            // Format the date as YYYY-MM-DD
+            const formattedDate = currentDate.toISOString().split('T')[0];
+            $('#EndDate').val(formattedDate);
+        }
+
+
+
+        function EditPayment(paymentId, schoolId, subscriptionId, duration, amount, modules, endDate) {
+            // Set the form values
+            $('#editPaymentId').val(paymentId);
+            $('#editAmount').val(amount);
+            $('#editEndDate').val(endDate);
+
+            // === Dropdown Setting ===
+            $('#editSchoolId').val(schoolId).trigger('change');
+            $('#editSubscriptionId').val(subscriptionId).trigger('change');
+            $('#editDuration').val(duration).trigger('change');
+
+            // === Modules Checkboxes ===
+            // First, uncheck all checkboxes to reset
+            $('#editModulesDropdownMenu input[type=checkbox]').prop('checked', false);
+
+            if (modules && modules.length > 0) {
+                const moduleArray = typeof modules === 'string' ? modules.split(',') : modules;
+
+                moduleArray.forEach(function (module) {
+                    const checkbox = $(`#editModulesDropdownMenu input[value="${module.trim()}"]`);
+                    if (checkbox.length > 0) {
+                        checkbox.prop('checked', true);
+                    } else {
+                        console.warn(`Module ${module} not found in list!`);
+                    }
+                });
+            }
+
+            // Show the modal
+            $('#editPaymentModal').modal('show');
+        }
+
+
+          function cancelEditModal() {
+            $('#editPaymentModal').modal('hide');
+        }
+
+
+    // Delete User Type Function
+        function DeletePayment(paymentId) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/SubscriptionPayments/DeletePayment/' + paymentId,
+                        type: 'POST',
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire("Deleted!", "Payment has been deleted.", "success").then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire("Error!", response.message || "There was an issue deleting the Payment.", "error");
+                            }
+                        },
+                        error: function () {
+                            Swal.fire("Error!", "There was an error processing your request.", "error");
+                        }
+                    });
+                }
+            });
+        }
+
+        
+
+ 
+
+        //search field in table
+    $(document).ready(function () {
+        $('#searchInput').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $("#classTableBody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+
+      $(document).ready(function () {
+        setupPagination('classTableBody', 'pagination');
+    });
+        //Cancel Button
+        function cancelAndRedirect() {
+        $('#addModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetPayment", "SubscriptionPayments")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+       }
+       function cancelAndRedirects() {
+        $('#editPaymentModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetPayment", "SubscriptionPayments")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+
+</script>
+<script>
+         // Initialize Bootstrap dropdown
+        const modulesDropdown = new bootstrap.Dropdown(document.getElementById('modulesDropdown'));
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Prevent dropdown from closing when clicking checkboxes
+            document.querySelectorAll('#modulesDropdownMenu').forEach(menu => {
+                menu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+
+            // Update button text
+            document.querySelectorAll('.module-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const selected = document.querySelectorAll('.module-checkbox:checked').length;
+                    const button = document.getElementById('modulesDropdown');
+                    button.textContent = selected ? `${selected} Modules Selected` : 'Select Modules';
+                });
+            });
+        });
+    $('#paymentForm').submit(function(e) {
+        e.preventDefault();
+
+        // Validate modules selection
+            const selectedModules = $('.module-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+
+        // Manually add modules to form data
+        const formData = new FormData(this);
+        formData.delete('SelectedModules'); // Remove existing entries
+        selectedModules.forEach(moduleId => {
+            formData.append('SelectedModules', moduleId);
+        });
+
+        $.ajax({
+            url: '@Url.Action("AddPayment", "SubscriptionPayments")',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+
+                if (response.success) {
+                    Swal.fire('Success!', 'Payment added successfully.', 'success')
+                        .then(() => window.location.reload());
+                } else {
+                    Swal.fire('Error!', response.message || 'Operation failed', 'error');
+                }
+            },
+            error: function() {
+                Swal.fire('Error!', 'An error occurred during submission.', 'error');
+            }
+        });
+    });
+</script>
+}
+

@@ -1,0 +1,685 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.AdmissionsDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+</style>
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Admission Management</h4>
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add Admission
+                        </button>
+                        <button class="btn btn-success mt-3" onclick="submitSelectedAdmissions()">AddAdmissionsToUsers</button>
+
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example2" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAll" /></th>
+                                        <th>#</th>
+                                        <th>Student Name</th>
+                                        <th>School</th>
+                                        <th>Class</th>
+                                        <th>Academic Year</th>
+                                        <th>Admission Fee</th>
+                                        <th>AdharcardNo</th>
+                                        <th>Photo</th>
+                                        <th>Address</th>
+                                        <th>DOB</th>
+                                        <th>Gender</th>
+                                        <th>Action</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody id="classTableBody">
+                                    @foreach (var admission in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" class="admission-checkbox" value="@admission.AdmissionId" />
+                                            </td>
+                                            <td>@sno</td>
+                                            <td>@admission.StudentName</td>
+                                            <td>@admission.School</td>
+                                            <td>@admission.Class</td>
+                                            <td>@admission.AcademicYear</td>
+                                            <td>@admission.AdmissionFee</td>
+                                            <td>@admission.AdharcardNo</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(admission.Photo))
+                                                {
+                                                    <img src="@Url.Content(admission.Photo)" alt="Profile" style="height: 40px; width: 40px; object-fit: cover; border-radius: 50%;" />
+                                                }
+                                                else
+                                                {
+                                                    <span>No Image</span>
+                                                }
+                                            </td>
+                                            <td>@admission.Address</td>
+                                            <td>@admission.DOB</td>
+                                            <td>@admission.Gender</td>
+                                            <td>
+                                                <a href="#" onclick="EditAdmission('@admission.AdmissionId', '@admission.StudentName', '@admission.School', '@admission.ClassId', '@admission.TotalFee', '@admission.AdmissionFee', '@admission.AcademicYear','@admission.AdharcardNo','@admission.Photo','@admission.Address','@admission.DOB', '@admission.Gender')" class="text-primary">
+                                                    <button type="button" class="btn btn-circle btn-primary btn-xs">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                </a>
+                                                <a href="#" onclick="DeleteAdmission('@admission.AdmissionId')">
+                                                    <button type="button" class="btn btn-circle btn-danger btn-xs">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        sno++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination Controls -->
+                        <ul id="pagination" class="pagination justify-content-end"></ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Admission</h5>
+            </div>
+            <div class="modal-body">
+                <form id="admissionForm" method="post" enctype="multipart/form-data" action="/Addmissions/AddAdmissions">
+                    @Html.AntiForgeryToken()
+                    <div class="row gx-3 gy-2">
+                        <!-- Student Name -->
+                        <div class="col-lg-3">
+                            <label>Student Name <span class="required">*</span></label>
+                            <input type="text" name="StudentName" class="form-control" required />
+                        </div>
+
+                        <!-- School Name -->
+                        <div class="col-lg-3">
+                            <label>School<span class="required">*</span></label>
+                            <input type="text" class="form-control" id="School" name="School" value="@ViewBag.SchoolName" readonly />
+                        </div>
+
+                        <!-- Class Id -->
+                        <div class="col-lg-3">
+                            <label>Class Id <span class="required">*</span></label>
+                            <select class="form-control" id="ClassId" name="ClassId" required>
+                                <option value="">-- Select Class --</option>
+                                @foreach (var cls in ViewBag.Classes)
+                                {
+                                    <option value="@cls.ClassId">@cls.Grade - @cls.Section</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Total Fee -->
+                        <div class="col-lg-3">
+                            <label>Total Fee <span class="required">*</span></label>
+                            <input type="number" name="TotalFee" class="form-control" required />
+                        </div>
+
+                        <!-- Admission Fee -->
+                        <div class="col-lg-3">
+                            <label>Admission Fee <span class="required">*</span></label>
+                            <input type="number" name="AdmissionFee" class="form-control" required />
+                        </div>
+
+                        <!-- Adharcard No -->
+                        <div class="col-lg-3">
+                            <label>Adharcard No <span class="required">*</span></label>
+                            <input type="text" name="AdharcardNo" class="form-control" required />
+                        </div>
+
+                        <!-- Address -->
+                        <div class="col-lg-3">
+                            <label>Address<span class="required">*</span></label>
+                            <input type="text" class="form-control" id="Address" name="Address" />
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div class="col-lg-3">
+                            <label>Date Of Birth<span class="required">*</span></label>
+                            <input type="date" class="form-control" id="DOB" name="DOB" />
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="col-lg-3">
+                            <label>Gender <span class="required">*</span></label>
+                            <div class="d-flex">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="Male" required>
+                                    <label class="form-check-label" for="genderMale">Male</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="Female" required>
+                                    <label class="form-check-label" for="genderFemale">Female</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Photo -->
+                        <div class="col-lg-3">
+                            <label>Photo</label>
+                            <input type="file" class="form-control" id="Photo" name="Photo" accept="image/*" onchange="previewProfileImage()" />
+                        </div>
+
+                        <!-- Preview Image -->
+                        <div class="col-lg-3">
+                            <label>Preview</label><br />
+                            <img id="profilePreview" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirect()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editAdmissionModal" tabindex="-1" aria-labelledby="editAdmissionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAdmissionModalLabel">Edit Admission</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editAdmissionForm" action="@Url.Action("UpdateAdmissions", "Admissions")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="AdmissionId" id="editAdmissionId" />
+
+                    <div class="row gx-3 gy-2">
+                        <!-- Student Name -->
+                        <div class="col-lg-3">
+                            <label>Student Name <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editStudentName" name="StudentName" required />
+                        </div>
+
+                        <!-- School -->
+                        <div class="col-lg-3">
+                            <label>School <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editSchool" name="School" readonly />
+                        </div>
+
+                        <!-- Class Id -->
+                        <div class="col-lg-3">
+                            <label>Class Id <span class="required">*</span></label>
+                            <select class="form-control" id="editClassId" name="ClassId" required>
+                                <option value="">-- Select Class --</option>
+                                @foreach (var cls in ViewBag.Classes)
+                                {
+                                    <option value="@cls.ClassId">@cls.Grade - @cls.Section</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Total Fee -->
+                        <div class="col-lg-3">
+                            <label>Total Fee <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="editTotalFee" name="TotalFee" step="0.01" required />
+                        </div>
+
+                        <!-- Admission Fee -->
+                        <div class="col-lg-3">
+                            <label>Admission Fee <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="editAdmissionFee" name="AdmissionFee" step="0.01" required />
+                        </div>
+
+                        <!-- Adharcard No -->
+                        <div class="col-lg-3">
+                            <label>Adharcard No <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="editAdharcardNo" name="AdharcardNo" required />
+                        </div>
+
+                        <!-- Address -->
+                        <div class="col-lg-3">
+                            <label>Address <span class="required">*</span></label>
+                            <input type="text" name="Address" class="form-control" id="editAddress" required />
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div class="col-lg-3">
+                            <label>DOB <span class="required">*</span></label>
+                            <input type="date" name="DOB" class="form-control" id="editDOB" required />
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="col-lg-3">
+                            <label>Gender <span class="required">*</span></label>
+                            <div class="d-flex">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="Gender" id="editGenderMale" value="Male">
+                                    <label class="form-check-label" for="editGenderMale">Male</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Gender" id="editGenderFemale" value="Female">
+                                    <label class="form-check-label" for="editGenderFemale">Female</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Photo -->
+                        <div class="col-lg-3">
+                            <label>Photo</label>
+                            <input type="file" class="form-control" id="editPhoto" name="Photo" accept="image/*" onchange="previewEditProfileImage()" />
+                        </div>
+
+                        <!-- Preview Image -->
+                        <div class="col-lg-3">
+                            <label>Preview</label><br />
+                            <img id="editProfilePreview" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirectEdit()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        window.openAddModal = function () {
+            $('#addModal').modal('show');
+        };
+    });
+
+
+
+    // $('#admissionForm').submit(function (e) {
+    //     e.preventDefault();
+    //     var formData = new FormData(this); // Use FormData to include all fields, even file inputs
+
+    //     $.ajax({
+    //         url: '/Admissions/AddAdmissions',
+    //         type: 'POST',
+    //         data: formData,
+    //         processData: false, // Important for FormData
+    //         contentType: false, // Important for FormData
+    //         success: function (response) {
+    //             if (response.success) {
+    //                 Swal.fire("Success!", "Admission added successfully.", "success")
+    //                     .then(() => {
+    //                         window.location.reload();
+    //                     });
+    //             } else {
+    //                 Swal.fire("Error!", response.message || "Failed to add admission.", "error");
+    //             }
+    //         },
+    //         error: function () {
+    //             Swal.fire("Error!", "There was an error processing your request.", "error");
+    //         }
+    //     });
+    // });
+
+                        $('#admissionForm').submit(function (e) {
+            e.preventDefault();
+                     var formData = new FormData(document.getElementById("admissionForm"));
+            $.ajax({
+                  url: '/Admissions/AddAdmissions',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                alert('Admission added successfully!');
+                } else {
+                        Swal.fire("Error!", response.message || "Addmission already exists.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "There was an error processing your request.", "error");
+                }
+            });
+        });
+
+     //  $('#admissionForm').submit(function (e) {
+     //    e.preventDefault();
+     //    var formData = $(this).serialize();
+     // $.ajax({
+     //                url: '@Url.Action("AddAdmissionsToUsers", "Admissions")',
+     //                type: 'POST',
+     //                contentType: 'application/json',
+     //                data: JSON.stringify({ Admissions: selectedIds }),
+     //                success: function(response) {
+     //                    if (response.success) {
+     //                        if (response.partialSuccess) {
+     //                            // Some records were processed with errors
+     //                            showAlert('info', 'Some students were added successfully. ' + response.errors.join('<br>'));
+     //                        } else {
+     //                            // All records were successfully processed
+     //                            showAlert('success', 'Students added successfully to both Student and Fee Payment records!');
+     //                            // Remove the added students from the table
+     //                            setTimeout(function() {
+     //                                location.reload();
+     //                            }, 2000);
+     //                        }
+     //                    } else {
+     //                        showAlert('danger', 'Error: ' + response.error);
+     //                    }
+     //                },
+     //                error: function(xhr, status, error) {
+     //                    showAlert('danger', 'An error occurred while processing your request. Please try again.');
+     //                    console.error('Error:', xhr.responseText);
+     //                },
+     //                complete: function() {
+     //                    // Reset button state
+     //                    $("#btnAddSelectedStudents").prop('disabled', false);
+     //                    $("#btnAddSelectedStudents").html('<i class="fa fa-plus"></i> Add StudentEntity');
+     //                }
+
+     //  });   });
+
+
+    function EditAdmission(admissionId, studentName, school, classId,totalFee,admissionFee, academicYear, UserTypeId, AdharcardNo, Photo) {
+        $('#editAdmissionId').val(admissionId);
+        $('#editStudentName').val(studentName);
+        $('#editSchool').val(school);
+        $('#editClassId').val(classId);
+        $('#editTotalFee').val(totalFee);
+        $('#editAdmissionFee').val(admissionFee);
+        $('#editAcademicYear').val(academicYear);
+        $('#editUserTypeId').val(UserTypeId);
+        $('#editAdharcardNo').val(AdharcardNo);
+        $('#editPhoto').val(Photo);
+        $('#editProfilePreview').val(editProfilePreview);
+
+        $('#editAdmissionModal').modal('show');
+    }
+
+    $('#editAdmissionForm').submit(function (e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+
+        $.ajax({
+            url: '/Admissions/UpdateAdmissions',
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Updated!", "Admission updated successfully.", "success").then(() => {
+                        $('#editAdmissionModal').modal('hide');
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire("Error!", response.message || "Failed to update admission.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "An error occurred while updating the admission.", "error");
+            }
+        });
+    });
+
+    //     $('#editadmissionForm').submit(function (e) {
+    //     e.preventDefault();
+
+    //     var formData = new FormData(this);
+
+    //     $.ajax({
+    //         url: '/Admissions/UpdateAdmissions',
+    //         type: 'POST',
+    //         data: formData,
+    //         contentType: false,
+    //         processData: false,
+    //         success: function (response) {
+    //             if (response.success) {
+    //                 Swal.fire("Updated!", "Admission updated successfully.", "success").then(() => {
+    //                     window.location.reload();
+    //                 });
+    //             } else {
+    //                 Swal.fire("Error!", response.message || "Failed to update admission.", "error");
+    //             }
+    //         },
+    //         error: function () {
+    //             Swal.fire("Error!", "There was an error processing your request.", "error");
+    //         }
+    //     });
+    // });
+
+
+    function DeleteAdmission(admissionId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Admissions/DeleteAdmissions/' + admissionId,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Deleted!", "Admission has been deleted.", "success").then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error!", response.message || "There was an issue deleting the admission.", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "There was an error processing your request.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+    $('#SchoolId').change(function () {
+        var schoolId = $(this).val();
+
+        $.ajax({
+            url: '/Admissions/GetClassesBySchool',
+            type: 'GET',
+            data: { schoolId: schoolId },
+            success: function (data) {
+                var classDropdown = $('#ClassId');
+                classDropdown.empty();
+                classDropdown.append($('<option></option>').val('').html('--Select--'));
+
+                $.each(data, function (i, classItem) {
+                    classDropdown.append($('<option></option>').val(classItem.value).html(classItem.text));
+                });
+            }
+        });
+    });
+
+    $('#editSchoolId').change(function () {
+        var schoolId = $(this).val();
+
+        $.ajax({
+            url: '/Admissions/GetClassesBySchool',
+            type: 'GET',
+            data: { schoolId: schoolId },
+            success: function (data) {
+                var classDropdown = $('#editClassId');
+                classDropdown.empty();
+                classDropdown.append($('<option></option>').val('').html('--Select--'));
+
+                $.each(data, function (i, classItem) {
+                    classDropdown.append($('<option></option>').val(classItem.value).html(classItem.text));
+                });
+            }
+        });
+    });
+
+     document.getElementById("selectAll").addEventListener("change", function () {
+        const isChecked = this.checked;
+        document.querySelectorAll(".admission-checkbox").forEach(cb => cb.checked = isChecked);
+    });
+
+    function submitSelectedAdmissions() {
+        const selected = [];
+        document.querySelectorAll(".admission-checkbox:checked").forEach(cb => {
+            selected.push(cb.value);
+        });
+
+        if (selected.length === 0) {
+            alert("Please select at least one admission.");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddAdmissionsToUsers", "Admissions")',
+            data: JSON.stringify({ admissions: selected }),
+            contentType: "application/json",
+            success: function (response) {
+                if (response.success) {
+                    alert("Selected admissions added to users!");
+                } else {
+                    alert("Failed to add admissions.");
+                }
+            },
+            error: function () {
+                alert("Error during request.");
+            }
+        });
+    }
+
+       // function submitSelectedAdmissions() {
+       //  var selected = []; Collect selected IDs from checkboxes or table
+
+       //  Example: collect checked checkboxes with class `.admissionCheckbox`
+       //  $(".admissionCheckbox:checked").each(function () {
+       //      selected.push(parseInt($(this).val()));
+       //  });
+
+       //  if (selected.length === 0) {
+       //      alert("Please select at least one admission.");
+       //      return;
+       //  }
+
+       //  $.ajax({
+       //      type: "POST",
+       //      url: '@Url.Action("AddAdmissionsToUsers", "Admissions")',
+       //      data: JSON.stringify({ admissions: selected }),
+       //      contentType: "application/json",
+       //      dataType: "json",
+       //      success: function (response) {
+       //          if (response.success) {
+       //              alert("Selected admissions added to users!");
+       //          } else {
+       //              alert("Failed to add admissions: " + (response.error || "Unknown error"));
+       //          }
+       //      },
+       //      error: function (xhr) {
+       //          if (xhr.status === 401) {
+       //              alert("Session expired. Please log in again.");
+       //              window.location.href = "/Authenticate/Login";
+       //          } else {
+       //              alert("Error during request: " + xhr.responseText);
+       //          }
+       //      }
+       //  });
+
+
+
+
+
+     function previewProfileImage() {
+        const fileInput = document.getElementById('Photo');
+        const preview = document.getElementById('profilePreview');
+
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+        }
+    }
+
+        function previewEditProfileImage() {
+        const fileInput = document.getElementById('editPhoto');
+        const preview = document.getElementById('editProfilePreview');
+
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+        }
+    }
+
+
+    //Pagenation
+      $(document).ready(function () {
+        setupPagination('classTableBody', 'pagination');
+    });
+
+    //Cancel Button
+    function cancelAndRedirect() {
+        $('#addModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetAdmissions", "Admissions")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+
+    function cancelAndRedirectEdit() {
+        $('#editAdmissionModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetAdmissions", "Admissions")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+</script>
+```

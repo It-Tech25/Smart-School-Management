@@ -1,0 +1,308 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.ClassesDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+
+</style>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Classes</h4>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search Classes..." style="width: 300px;" />
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add Class
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                       
+                        <div class="table-responsive">
+                            <table id="example2" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Class</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="classTableBody">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@sno</td>
+                                            <td>@item.Grade-@item.Section</td>
+                                            <td>
+                                                <a href="#" onclick="EditClass('@item.ClassId', '@item.Grade', '@item.Section')" title="Edit" class="text-primary">
+                                                    <button type="button" class="waves-effect waves-circle btn btn-circle btn-primary btn-xs">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                </a>
+                                                <a href="#" onclick="DeleteClass(@item.ClassId)" title="Delete">
+                                                    <button type="button" class="waves-effect waves-circle btn btn-circle btn-danger btn-xs">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        sno++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination Controls -->
+                        <ul id="pagination" class="pagination justify-content-end"></ul>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <!-- Added modal-xl and custom class -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Add Class</h5>
+            </div>
+            <div class="modal-body">
+                <form id="classForm" action="@Url.Action("AddClass", "Class")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">User Type Details</h5>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="Grade">Grade <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="Grade" name="Grade" required placeholder="Enter Grade" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="Section">Section<span class="required">*</span></label>
+                            <select class="form-control" id="Section" name="Section" required>
+                                <option value="" selected>--Select--</option>
+                                <option value="A" >A</option>
+                                <option value="B" >B</option>
+                                <option value="C" >C</option>
+                                <option value="D" >D</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- In both addModal and editModal footer sections -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirect()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editClassModal" tabindex="-1" aria-labelledby="editClassModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editClassModalLabel">Edit Class</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editClassForm" action="@Url.Action("UpdateClass", "Class")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ClassId" id="editClassId" value="" />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">User Type Details</h5>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editGrade">Grade<span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editGrade" name="Grade" required placeholder="Enter Grade" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editSection">Section</label>
+                            <select class="form-control" id="editSection" name="Section" required>
+                                <option value="" selected>--Select--</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" class="btn btn-success">Reset</button>
+                            <button type="button" class="btn btn-danger" onclick="cancelAndRedirects()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+     $(document).ready(function () {
+
+        window.openAddModal = function () {
+            $('#addModal').modal('show');
+        };
+
+    });
+                $('#classForm').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/Class/AddClass',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Success!", "Class added successfully.", "success")
+                        .then(() => {
+                            window.location.reload();
+                        });
+                } else {
+                    Swal.fire("Error!", response.message || "Class with Section already exists.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "There was an error processing your request.", "error");
+            }
+        });
+    });
+
+
+        // Edit User Type Form Submission
+        $('#editClassForm').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                url: '/Class/UpdateClass',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Updated!", "Class updated successfully.", "success").then(() => {
+                            $('#editClassModal').modal('hide');
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire("Error!", response.message || "Failed to update Class.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "An error occurred while updating the Class.", "error");
+                }
+            });
+        });
+
+
+    // Edit User Type Function
+    function EditClass(classId, grade, section) {
+        console.log("Editing Class:", classId, grade, section);
+
+        // Set the hidden ID field
+        $("#editClassId").val(classId);
+
+        // Set other values
+        $("#editGrade").val(grade);
+        $("#editSection").val(section);
+
+        // Show the edit modal
+        $('#editClassModal').modal('show');
+    }
+
+    // Delete User Type Function
+    function DeleteClass(ClassId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Class/DeleteClass/' + ClassId,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Deleted!", "Class has been deleted.", "success").then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error!", response.message || "There was an issue deleting the Class.", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "There was an error processing your request.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+    //search field in table 
+    $(document).ready(function () {
+        $('#searchInput').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $("#classTableBody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+
+    //Pagenation
+      $(document).ready(function () {
+        setupPagination('classTableBody', 'pagination');
+    });
+
+        //Cancel Button
+        function cancelAndRedirect() {
+        $('#addModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetClasses", "Class")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+       }
+       function cancelAndRedirects() {
+        $('#editClassModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetClasses", "Class")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+
+</script>

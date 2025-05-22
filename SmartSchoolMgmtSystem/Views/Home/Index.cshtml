@@ -1,0 +1,826 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .prod-p-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .prod-p-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .prod-p-card h3 {
+            color: #ffffff;
+        }
+</style>
+<div class="page-header">
+    <div class="page-block">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <div class="page-header-title">
+                    <h5>Home</h5>
+                </div>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
+                    <li class="breadcrumb-item"><a href="#!">Analytics Dashboard</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- [ breadcrumb ] end -->
+<!-- [ Main Content ] start -->
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card prod-p-card bg-primary" onclick="loadSubscriptions()">
+            <div class="card-body">
+                <div class="row align-items-center m-b-25">
+                    <div class="col">
+                        <h6 class="m-b-5 text-white">Total Subscriptions</h6>
+                        <h3 class="m-b-0 text-white">@ViewBag.TotalSubscriptions</h3>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-money-bill-alt text-white f-18"></i>
+                    </div>
+                </div>
+                <p class="m-b-0 text-white">
+                    <span class="label label-danger m-r-10">+11%</span>From Previous Month
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card prod-p-card bg-info" onclick="openRenewalList()">
+            <div class="card-body">
+                <div class="row align-items-center m-b-25">
+                    <div class="col">
+                        <h6 class="m-b-5 text-white">Renewals</h6>
+                        <h3 class="m-b-0 text-white">0</h3>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-database text-white f-18"></i>
+                    </div>
+                </div>
+                <p class="m-b-0 text-white">
+                    <span class="label label-primary m-r-10">+12%</span>From Previous Month
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div id="closedSubscriptionsCard" class="card prod-p-card bg-success" style="cursor: pointer;">
+            <div class="card-body">
+                <div class="row align-items-center m-b-25">
+                    <div class="col">
+                        <h6 class="m-b-5 text-white">Closed Subscriptions</h6>
+                        <h3 class="m-b-0 text-white">0</h3>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign text-white f-18"></i>
+                    </div>
+                </div>
+                <p class="m-b-0 text-white">
+                    <span class="label label-success m-r-10">+52%</span>From Previous Month
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card prod-p-card bg-warning">
+            <div class="card-body">
+                <div class="row align-items-center m-b-25">
+                    <div class="col">
+                        <h6 class="m-b-5 text-white">Product Sold</h6>
+                        <h3 class="m-b-0 text-white">6,784</h3>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-tags text-white f-18"></i>
+                    </div>
+                </div>
+                <p class="m-b-0 text-white">
+                    <span class="label label-warning m-r-10">+52%</span>From Previous Month
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- product profit end -->
+    <!-- sessions-section start -->
+    <div class="col-xl-8 col-md-6">
+        <div class="card table-card">
+            <div class="card-header">
+                <h5>Site visitors session log</h5>
+            </div>
+            <div class="card-body px-0 py-0">
+                <div class="table-responsive">
+                    <div class="session-scroll" style="height:478px;position:relative;">
+                        <table class="table table-hover m-b-0">
+                            <thead>
+                                <tr>
+                                    <th><span>CAMPAIGN DATE</span></th>
+                                    <th>
+                                        <span>
+                                            CLICK <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">
+                                                <i class="feather icon-help-circle f-16"></i>
+                                            </a>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span>
+                                            COST <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">
+                                                <i class="feather icon-help-circle f-16"></i>
+                                            </a>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span>
+                                            CTR <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">
+                                                <i class="feather icon-help-circle f-16"></i>
+                                            </a>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span>
+                                            ARPU <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">
+                                                <i class="feather icon-help-circle f-16"></i>
+                                            </a>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span>
+                                            ECPI <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">
+                                                <i class="feather icon-help-circle f-16"></i>
+                                            </a>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span>
+                                            ROI <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">
+                                                <i class="feather icon-help-circle f-16"></i>
+                                            </a>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span>
+                                            REVENUE <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">
+                                                <i class="feather icon-help-circle f-16"></i>
+                                            </a>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span>
+                                            CONVERSIONS <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">
+                                                <i class="feather icon-help-circle f-16"></i>
+                                            </a>
+                                        </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Total and average</td>
+                                    <td>1300</td>
+                                    <td>1025</td>
+                                    <td>14005</td>
+                                    <td>95,3%</td>
+                                    <td>29,7%</td>
+                                    <td>3,25</td>
+                                    <td>2:30</td>
+                                    <td>45.5%</td>
+                                </tr>
+                                <tr>
+                                    <td>8-11-2016</td>
+                                    <td>
+                                        786
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        485
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-primary rounded" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        769
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        45,3%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        6,7%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-info rounded" role="progressbar" style="width: 30%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        8,56
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        10:55
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        33.8%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>15-10-2016</td>
+                                    <td>
+                                        786
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        523
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-primary rounded" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        736
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        78,3%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        6,6%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-info rounded" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        7,56
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 44%;" aria-valuenow="44" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        4:30
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 68%;" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        76.8%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>8-8-2017</td>
+                                    <td>
+                                        624
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        436
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-primary rounded" role="progressbar" style="width: 55%;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        756
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        78,3%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 38%;" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        6,4%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-info rounded" role="progressbar" style="width: 30%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        9,45
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 41%;" aria-valuenow="41" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        9:05
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 67%;" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        8.63%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 41%;" aria-valuenow="41" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>11-12-2017</td>
+                                    <td>
+                                        423
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 54%;" aria-valuenow="54" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        123
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-primary rounded" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        756
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        78,6%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        45,6%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-info rounded" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        6,85
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 30%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        7:45
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        33.8%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>8-11-2016</td>
+                                    <td>
+                                        786
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        485
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-primary rounded" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        769
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        45,3%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        6,7%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-info rounded" role="progressbar" style="width: 30%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        8,56
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        10:55
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        33.8%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>15-10-2016</td>
+                                    <td>
+                                        786
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        523
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-primary rounded" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        736
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        78,3%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        6,6%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-info rounded" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        7,56
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 44%;" aria-valuenow="44" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        4:30
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 68%;" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        76.8%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>8-8-2017</td>
+                                    <td>
+                                        624
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        436
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-primary rounded" role="progressbar" style="width: 55%;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        756
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        78,3%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 38%;" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        6,4%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-info rounded" role="progressbar" style="width: 30%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        9,45
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 41%;" aria-valuenow="41" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        9:05
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-warning rounded" role="progressbar" style="width: 67%;" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        8.63%
+                                        <div class="progress mt-1" style="height:4px;">
+                                            <div class="progress-bar bg-success rounded" role="progressbar" style="width: 41%;" aria-valuenow="41" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- sessions-section end -->
+    <div class="col-md-6 col-xl-4">
+        <div class="card user-card">
+            <div class="card-header">
+                <h5>Profile</h5>
+            </div>
+            <div class="card-body  text-center">
+                <div class="usre-image">
+                    <img src="~/resources/assets/images/widget/img-round1.jpg" class="img-radius wid-100 m-auto" alt="User-Profile-Image">
+                </div>
+                <h6 class="f-w-600 m-t-25 m-b-10">Alessa Robert</h6>
+                <p>Active | Male | Born 23.05.1992</p>
+                <hr>
+                <p class="m-t-15">Activity Level: 87%</p>
+                <div class="bg-c-blue counter-block m-t-10 p-20">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fas fa-calendar-check text-white f-20"></i>
+                            <h6 class="text-white mt-2 mb-0">1256</h6>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-user text-white f-20"></i>
+                            <h6 class="text-white mt-2 mb-0">8562</h6>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-folder-open text-white f-20"></i>
+                            <h6 class="text-white mt-2 mb-0">189</h6>
+                        </div>
+                    </div>
+                </div>
+                <p class="m-t-15">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                <hr>
+                <div class="row justify-content-center user-social-link">
+                    <div class="col-auto"><a href="#!"><i class="fab fa-facebook-f text-primary f-22"></i></a></div>
+                    <div class="col-auto"><a href="#!"><i class="fab fa-twitter text-c-info f-22"></i></a></div>
+                    <div class="col-auto"><a href="#!"><i class="fab fa-dribbble text-c-red f-22"></i></a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal for Displaying Subscriptions -->
+<div class="modal fade" id="subscriptionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Total Subscriptions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Subscription Name</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subscriptionTableBody">
+                        <!-- Subscriptions will be populated here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="renewalSubscriptionModal" tabindex="-1" aria-labelledby="renewalSubscriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renewalSubscriptionModalLabel">Renewal Subscriptions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Subscription Name</th>
+                                <th>User Name</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Renewal Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="renewalTableBody">
+                            <!-- Dynamic Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Closed Subscriptions Modal -->
+<div class="modal fade" id="closedSubscriptionsModal" tabindex="-1" aria-labelledby="closedSubscriptionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="closedSubscriptionsModalLabel">Closed Subscriptions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Subscription Name</th>
+                                <th>User Name</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="closedSubscriptionsTableBody">
+                            <!-- Dynamic Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function loadSubscriptions() {
+        $.ajax({
+            url: '/Home/GetSubscriptions', // Your controller action
+            type: 'GET',
+            success: function (response) {
+                if (response.success) {
+                    // Clear the table first
+                    $("#subscriptionTableBody").empty();
+
+                    // Populate the table
+                    $.each(response.data, function (index, subscription) {
+                        var row = `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${subscription.Name}</td>
+                                <td>${subscription.StartDate}</td>
+                                <td>${subscription.EndDate}</td>
+                                <td>${subscription.Status}</td>
+                            </tr>
+                        `;
+                        $("#subscriptionTableBody").append(row);
+                    });
+
+                    // Show the modal
+                    $('#subscriptionModal').modal('show');
+                } else {
+                    Swal.fire("Error", response.message || "Could not fetch subscriptions", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error", "Failed to load subscriptions", "error");
+            }
+        });
+    }
+
+        // Open Modal when the card is clicked
+        document.addEventListener('DOMContentLoaded', function () {
+        // Ensure the element exists before attaching the event listener
+        const renewalCard = document.getElementById("renewalCard");
+
+        if (renewalCard) {
+            renewalCard.addEventListener("click", function () {
+                $.ajax({
+                    url: '/Subscription/GetRenewals',
+                    type: 'GET',
+                    success: function (response) {
+                        // Check if response is valid and is an array
+                        if (Array.isArray(response)) {
+                            // Clear the existing rows
+                            $("#renewalTableBody").empty();
+
+                            // Populate the table
+                            response.forEach((item, index) => {
+                                let row = `
+                                    <tr>
+                                        <td>${index + 1}</td>
+                                        <td>${item.SubscriptionName || ''}</td>
+                                        <td>${item.UserName || ''}</td>
+                                        <td>${item.StartDate ? new Date(item.StartDate).toLocaleDateString() : ''}</td>
+                                        <td>${item.EndDate ? new Date(item.EndDate).toLocaleDateString() : ''}</td>
+                                        <td>${item.RenewalDate ? new Date(item.RenewalDate).toLocaleDateString() : ''}</td>
+                                        <td>${item.Amount || ''}</td>
+                                        <td>${item.Status || ''}</td>
+                                    </tr>
+                                `;
+                                $("#renewalTableBody").append(row);
+                            });
+
+                            // Show the modal
+                            $('#renewalSubscriptionModal').modal('show');
+                        } else {
+                            alert("Unexpected response format.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(`Error - Status: ${status} | Error: ${error}`);
+                        alert("Failed to load subscription renewals.");
+                    }
+                });
+            });
+        } else {
+            console.error("Element with ID 'renewalCard' not found.");
+        }
+    });
+
+
+
+        // Open Modal when the card is clicked
+    document.getElementById("closedSubscriptionsCard").addEventListener("click", function () {
+        $.ajax({
+            url: '/Subscription/GetClosedSubscriptions',
+            type: 'GET',
+            success: function (response) {
+                // Clear the existing rows
+                $("#closedSubscriptionsTableBody").empty();
+
+                // Populate the table
+                response.forEach((item, index) => {
+                    let row = `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.SubscriptionName}</td>
+                            <td>${item.UserName}</td>
+                            <td>${new Date(item.StartDate).toLocaleDateString()}</td>
+                            <td>${new Date(item.EndDate).toLocaleDateString()}</td>
+                            <td>${item.Amount}</td>
+                            <td>${item.Status}</td>
+                        </tr>
+                    `;
+                    $("#closedSubscriptionsTableBody").append(row);
+                });
+
+                // Show the modal
+                $('#closedSubscriptionsModal').modal('show');
+            },
+            error: function () {
+                alert("Failed to load closed subscriptions.");
+            }
+        });
+    });
+
+
+</script>
+

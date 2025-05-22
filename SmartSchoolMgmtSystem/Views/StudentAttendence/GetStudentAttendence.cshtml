@@ -1,0 +1,395 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.StudentAttendenceDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+</style>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4>Student Attendance List</h4>
+                        <button class="btn btn-primary" onclick="openAddModal()">Add Attendance</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="classDropdown" class="form-label"><b>Select Class</b></label>
+                            <select id="classDropdown" class="form-select" style="width: 200px;">
+                                <option value="">-- Select Class --</option>
+                                @foreach (var item in ViewBag.Classes as List<SmartSchool.Models.DTO.ClassesDto>)
+                                {
+                                    <option value="@item.ClassId">@item.Grade - @item.Section</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="list" role="tabpanel">
+                                <!-- Table -->
+                                <div class="table-responsive">
+                                    <table id="example2" class="table table-striped" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>AttendanceId</th>
+                                                <th>Student</th>
+                                                <th>Class</th>
+                                                <th>Subject</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                               @*  <th>Action</th> *@
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@sno</td>
+                                                    <td>@item.StudentName</td>
+                                                    <td>@item.ClassName</td>
+                                                    <td>@item.SubjectName</td>
+                                                    <td>@(item.Date?.ToString("dd/MM/yyyy"))</td>
+                                                    <td>@item.Status</td>
+                                                   @*  <td>
+                                                        <a href="#" onclick="EditAttendance(@item.AttendanceId, @item.StudentName, @item.ClassName, @item.SubjectName, '@item.Date?.ToString("yyyy-MM-dd")', '@item.Status')"
+                                                           title="Edit" class="text-primary">
+                                                            <button type="button" class="waves-effect waves-circle btn btn-circle btn-primary btn-xs">
+                                                                <i class="fa fa-edit"></i>
+                                                            </button>
+                                                        </a>
+                                                        <a href="#" onclick="DeleteAttendance(@item.AttendanceId)" title="Delete">
+                                                            <button type="button" class="waves-effect waves-circle btn btn-circle btn-danger btn-xs">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </a>
+                                                    </td> *@
+                                                </tr>
+                                                sno++;
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Add Attendance</h5>
+            </div>
+            <div class="modal-body">
+                <form id="SubjectForm">
+                    @Html.AntiForgeryToken()
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="addStudentRows">
+                            <!-- Rows will be added dynamically here -->
+                        </tbody>
+                    </table>
+
+                    <div class="modal-footer">
+                        <button type="button" onclick="submitAttendance()" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Attendance</h5>
+            </div>
+            <div class="modal-body">
+                <form id="editAttendanceForm" action="@Url.Action("UpdateStudentAttendence", "StudentAttendence")" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="AttendanceId" id="editAttendanceId" value="" />
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Open Add Modal and populate the rows
+       // When class is selected, fetch today's attendance and update the list
+    $('#classDropdown').change(function () {
+        var classId = $(this).val();
+        if (classId) {
+            $.ajax({
+                url: '/StudentAttendence/GetTodayAttendance',
+                type: 'GET',
+                data: { classId: classId },
+                success: function (response) {
+                    var attendanceRows = '';
+                    $.each(response.attendance, function (index, item) {
+                        attendanceRows += `
+                            <tr>
+                                <td>${item.AttendanceId}</td>
+                                <td>${item.StudentName}</td>
+                                <td>${item.ClassName}</td>
+                                <td>${item.SubjectName}</td>
+                                <td>${new Date(item.Date).toLocaleDateString()}</td>
+                                <td>${item.Status}</td>
+                                <td>
+                                    <a href="#" onclick="openEditModal(${item.AttendanceId})" class="text-primary">
+                                        <button type="button" class="btn btn-primary btn-xs">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                    </a>
+                                    <a href="#" onclick="deleteAttendance(${item.AttendanceId})">
+                                        <button type="button" class="btn btn-danger btn-xs">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    $('#example2 tbody').html(attendanceRows);
+                }
+            });
+        }
+    });
+
+    // When Add Attendance is clicked, populate modal with students of the selected class
+    // Open Add Modal and populate the rows
+    // Open the Add Modal and populate rows dynamically
+    function openAddModal() {
+        var classId = $('#classDropdown').val();
+        if (classId) {
+            $.ajax({
+                url: '/StudentAttendence/GetStudentsByClass',
+                type: 'GET',
+                data: { classId: classId },
+                success: function (response) {
+                    var studentRows = '';
+                    $.each(response.students, function (index, student) {
+                        studentRows += `
+                            <tr>
+                                <td><input type="hidden" name="attendanceList[${index}].StudentId" value="${student.StudentId}">${student.StudentName}</td>
+                                <td><input type="hidden" name="attendanceList[${index}].ClassId" value="${classId}">${student.ClassName}</td>
+                                <td>
+                                    <select class="form-control" name="attendanceList[${index}].SubjectId" required>
+                                        <option value="">--Select--</option>
+    @foreach (var item in ViewBag.Subjects)
+    {
+                                                <option value="@item.SubjectId">@item.SubjectName</option>
+    }
+                                    </select>
+                                </td>
+                                <td><input type="date" class="form-control" name="attendanceList[${index}].Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly /></td>
+                                <td>
+                                    <select class="form-control" name="attendanceList[${index}].Status" required>
+                                        <option value="Present">Present</option>
+                                        <option value="Absent">Absent</option>
+                                        <option value="Late">Late</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    $('#addStudentRows').html(studentRows);
+                    $('#addModal').modal('show');
+                },
+                error: function () {
+                    alert("Failed to fetch student data.");
+                }
+            });
+        } else {
+            alert("Please select a class first.");
+        }
+    }
+
+    // Submit Form Data
+    function submitAttendance() {
+        var formData = $('#SubjectForm').serialize(); // Serialize form data
+
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        $.ajax({
+            url: '/StudentAttendence/AddStudentAttendance',
+            type: 'POST',
+            headers: {
+                'RequestVerificationToken': token
+            },
+            contentType: 'application/x-www-form-urlencoded',
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred: " + error);
+            }
+        });
+    }
+
+
+    // Open Edit Modal and populate data
+    function openEditModal(attendanceId) {
+        $.ajax({
+            url: '/StudentAttendence/GetAttendanceDetails/' + attendanceId,
+            type: 'GET',
+            success: function (response) {
+                if (response) {
+                    var editRows = '';
+                    $.each(response.attendances, function (index, attendance) {
+                        editRows += `
+                            <tr>
+                                <td>${attendance.StudentName}</td>
+                                <td><input type="hidden" name="ClassIds[]" value="${attendance.ClassId}">${attendance.ClassName}</td>
+                         
+                                              <td>
+                                <select class="form-control" name="SubjectIds[]" required>
+                                    <option value="">--Select--</option>
+    @foreach (var item in ViewBag.Subjects)
+    {
+                                                       <option value="@item.SubjectName">@item.SubjectName</option>
+    }
+                                </select>
+                            </td>
+                                <td><input type="date" class="form-control" name="Dates[]" value="${attendance.Date}" readonly /></td>
+                                <td>
+                                    <select class="form-control" name="Statuses[]" required>
+                                        <option value="Present" ${attendance.Status === 'Present' ? 'selected' : ''}>Present</option>
+                                        <option value="Absent" ${attendance.Status === 'Absent' ? 'selected' : ''}>Absent</option>
+                                        <option value="Late" ${attendance.Status === 'Late' ? 'selected' : ''}>Late</option>
+                                        <option value="Excused" ${attendance.Status === 'Excused' ? 'selected' : ''}>Excused</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    $('#editStudentRows').html(editRows);
+                    $('#editAttendanceId').val(response.AttendanceId);
+                    $('#editModal').modal('show');
+                }
+            }
+        });
+    }
+
+    // Cascading Subjects based on Class selection
+    $(document).on('change', '[name="ClassIds[]"]', function () {
+        var classId = $(this).val();
+        var subjectSelect = $(this).closest('tr').find('select[name="SubjectIds[]"]');
+        $.ajax({
+            url: '/StudentAttendence/GetSubjectsByClass/' + classId,
+            type: 'GET',
+            success: function (data) {
+                subjectSelect.empty().append('<option value="">--Select--</option>');
+                $.each(data, function (index, item) {
+                    subjectSelect.append('<option value="' + item.SubjectId + '">' + item.SubjectName + '</option>');
+                });
+            }
+        });
+    });
+
+    // Form Submission for Add Attendance
+    $('#SubjectForm').submit(function (e) {
+        e.preventDefault();
+
+        // Serialize the form into an array of objects
+        var formData = [];
+        $('#addStudentRows tr').each(function () {
+            var row = $(this);
+            formData.push({
+                StudentId: row.find('input[name="StudentIds[]"]').val(),
+                ClassId: row.find('input[name="ClassIds[]"]').val(),
+                SubjectId: row.find('select[name="SubjectIds[]"]').val(),
+                Date: row.find('input[name="Dates[]"]').val(),
+                Status: row.find('select[name="Statuses[]"]').val()
+            });
+        });
+
+        console.log(formData); // Check if data is collected correctly
+
+        $.ajax({
+            url: '/StudentAttendence/AddStudentAttendance',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred: " + error);
+            }
+        });
+    });
+
+    // Form Submission for Edit Attendance
+    $('#editAttendanceForm').submit(function (e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        $.post('/StudentAttendence/UpdateStudentAttendence', formData, function (response) {
+            if (response.success) {
+                alert('Attendance Updated Successfully');
+                window.location.reload();
+            } else {
+                alert('Failed to Update Attendance');
+            }
+        });
+    });
+
+    // Delete Attendance
+    function deleteAttendance(attendanceId) {
+        if (confirm('Are you sure you want to delete this attendance?')) {
+            $.post('/StudentAttendence/DeleteStudentAttendence/' + attendanceId, function (response) {
+                if (response.success) {
+                    alert('Attendance Deleted Successfully');
+                    window.location.reload();
+                } else {
+                    alert('Failed to Delete Attendance');
+                }
+            });
+        }
+    }
+</script>

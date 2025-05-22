@@ -1,0 +1,355 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.TeachersDto>
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+</style>
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Teachers</h4>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search Classes..." style="width: 300px;" />
+
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add Teacher
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="teachersTable" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Teacher Name</th>
+                                        <th>Subject Name</th>
+                                        <th>Class Name</th>
+                                        <th>School Name </th>
+                                        <th>Action </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="classTableBody">
+
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@sno</td>
+                                            <td>@item.FullName</td>
+                                            <td>@item.SubjectName</td>
+                                            <td>@item.Class</td>
+                                            <td>@item.School</td>
+                                            <td>
+                                                <a href="#" onclick="editTeacher('@item.TeacherId', '@item.FullName', '@item.SubjectName','@item.Class', '@item.School')" title="Edit">
+
+                                                    <button class="btn btn-circle btn-primary btn-xs"><i class="fa fa-edit"></i></button>
+                                                </a>
+                                                <a href="#" onclick="deleteTeacher('@item.TeacherId')" title="Delete">
+                                                    <button class="btn btn-circle btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        sno++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination Controls -->
+                        <ul id="pagination" class="pagination justify-content-end"></ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Teacher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="teacherForm" action="@Url.Action("Create", "Teachers")" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label for="FullName">Teacher Name <span class="required">*</span></label>
+                            <select class="form-control" id="FullName" name="FullName" required>
+                                <option value="">-- Select Teacher --</option>
+                                @foreach (var user in ViewBag.Users)
+                                {
+                                    <option value="@user.FullName">@user.FullName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label for="SubjectName">Subject Name <span class="required">*</span></label>
+                            <select class="form-control" id="SubjectName" name="SubjectName" required>
+                                <option value="">-- Select Subject --</option>
+                                @foreach (var subject in ViewBag.Subjects)
+                                {
+                                    <option value="@subject.SubjectName">@subject.SubjectName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label for="ClassId">Class Name <span class="required">*</span></label>
+                            <select class="form-control" id="ClassId" name="ClassId" required>
+                                <option value="">-- Select Class --</option>
+                                @foreach (var cls in ViewBag.Classes)
+                                {
+                                    <option value="@cls.ClassId">@cls.Grade - @cls.Section</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <input type="hidden" class="form-control" id="School" name="School" value="@ViewBag.SchoolName" readonly />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirects()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Teacher Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <form id="editTeacherForm" action="@Url.Action("Edit", "Teachers")" method="post">
+
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="TeacherId" id="editTeacherId" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Teacher</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label for="editFullName">Teacher Name <span class="required">*</span></label>
+                            <select class="form-control" id="editFullName" name="FullName" required>
+                                <option value="">-- Select Teacher --</option>
+                                @foreach (var user in ViewBag.Users)
+                                {
+                                    <option value="@user.FullName">@user.FullName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label for="editSubjectName">Subject Name <span class="required">*</span></label>
+                            <select class="form-control" id="editSubjectName" name="SubjectName" required>
+                                <option value="">-- Select Subject --</option>
+                                @foreach (var subject in ViewBag.Subjects)
+                                {
+                                    <option value="@subject.SubjectName">@subject.SubjectName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label for="editClassId">Class Name <span class="required">*</span></label>
+                            <select class="form-control" id="editClassId" name="ClassId" required>
+                                <option value="">-- Select Class --</option>
+                                @foreach (var cls in ViewBag.Classes)
+                                {
+                                    <option value="@cls.ClassId">@cls.Grade - @cls.Section</option>
+                                }
+                            </select>
+                        </div>
+
+
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" type="submit">Update</button>
+                            <button type="button" class="btn btn-danger" onclick="cancelAndRedirects()">Cancel</button>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+</div>
+
+<script>
+
+    // Document Ready
+    window.openAddModal = function () {
+        $('#addModal').modal('show');
+    };
+
+    // Document Ready
+    $(document).ready(function () {
+
+        // Add Teacher Form Submission
+        $('#teacherForm').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/Teachers/Create',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Success!", "Teacher added successfully.", "success")
+                            .then(() => {
+                                window.location.reload();
+                            });
+                    } else {
+                        Swal.fire("Error!", response.message || "Teacher already exists.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "There was an error processing your request.", "error");
+                }
+            });
+        });
+
+        // Open Edit Modal and fill fields
+        window.editTeacher = function (teacherId, fullName, subjectName, classId, schoolName) {
+            $('#editTeacherId').val(teacherId);
+            $('#editFullName').val(fullName);
+            $('#editSubjectName').val(subjectName);
+            $('#editClassId').val(classId);
+            $('#editSchool').val(schoolName);
+
+            $('#editModal').modal('show');
+        };
+
+        // Edit Teacher Form Submission
+        $('#editTeacherForm').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/Teachers/Edit',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Updated!", "Teacher updated successfully.", "success")
+                            .then(() => {
+                                $('#editModal').modal('hide');
+                                window.location.reload();
+                            });
+                    } else {
+                        Swal.fire("Error!", response.message || "Failed to update Teacher.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "An error occurred while updating the Teacher.", "error");
+                }
+            });
+        });
+
+        // Delete Teacher Function
+        window.deleteTeacher = function (teacherId) {
+            if (!teacherId) {
+                Swal.fire("Error!", "Teacher ID is not valid.", "error");
+                return;
+            }
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Teachers/Delete/' + teacherId,
+                        type: 'POST',
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire("Deleted!", "Teacher has been deleted.", "success")
+                                    .then(() => {
+                                        window.location.reload();
+                                    });
+                            } else {
+                                Swal.fire("Error!", response.message || "There was an issue deleting the Teacher.", "error");
+                            }
+                        },
+                        error: function (xhr) {
+                            Swal.fire("Error!", "There was an error processing your request. Status: " + xhr.status, "error");
+                        }
+                    });
+                }
+            });
+        };
+
+        // Search in Table
+        $('#searchInput').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $("#classTableBody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+
+        // Initialize Pagination (if you have a function for this)
+        setupPagination('classTableBody', 'pagination');
+
+        // Cancel Buttons
+        window.cancelAdd = function () {
+            $('#addModal').modal('hide');
+        };
+
+        window.cancelEdit = function () {
+            $('#editModal').modal('hide');
+        };
+
+        window.cancelAndRedirect = function () {
+            $('#addModal').modal('hide');
+            setTimeout(function () {
+                window.location.href = '@Url.Action("TeachersIndex", "Teachers")';
+            }, 300);
+        };
+
+        window.cancelAndRedirects = function () {
+            $('#editModal').modal('hide');
+            setTimeout(function () {
+                window.location.href = '@Url.Action("TeachersIndex", "Teachers")';
+            }, 300);
+        };
+    });
+
+</script>

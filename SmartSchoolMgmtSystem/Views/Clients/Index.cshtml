@@ -1,0 +1,46 @@
+﻿@model IEnumerable<SmartSchool.Models.Entity.ClientEntity>
+
+@{
+
+ }
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary">Client List</h2>
+        <a asp-action="Create" class="btn btn-primary">+ Add Client</a>
+    </div>
+
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var client in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card border-primary shadow h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary fw-bold">@client.FullName</h5>
+                            <p class="card-text"><strong>Email:</strong> @client.Email</p>
+                            <p class="card-text"><strong>Phone:</strong> @client.Phone</p>
+                            <p class="card-text"><strong>Company:</strong> @client.Company</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-primary d-flex justify-content-between">
+                            <a asp-action="Details" asp-route-id="@client.ClientId" class="btn btn-sm btn-outline-info">View</a>
+                            <a asp-action="Edit" asp-route-id="@client.ClientId" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@client.ClientId" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    No clients available. Click "Add Client" to create one.
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,571 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.StudentDTO>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+
+</style>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Student Details</h4>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search Classes..." style="width: 300px;" />
+
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add Student
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="list" role="tabpanel">
+                                <!-- Table -->
+                                <div class="table-responsive">
+                                    <table id="example2" class="table table-striped" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Student Name</th>
+                                                <th>Class</th>
+                                                <th>Address</th>
+                                                <th>AdharcardNo</th>
+                                                <th>Photo</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="classTableBody">
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@sno</td>
+                                                    <td>
+                                                        <a href="@Url.Action("GetFeepayments", "FeePayments", new { studentId = item.StudentId })">
+                                                            @item.StudentName
+                                                        </a>
+                                                    </td>
+                                                    <td>@item.Class</td>
+                                                    <td>@item.Address</td>
+                                                    <td>@item.AdharcardNo</td>
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(item.Photo))
+                                                        {
+                                                            <img src="@Url.Content(item.Photo)" alt="Profile" style="height: 40px; width: 40px; object-fit: cover; border-radius: 50%;" />
+                                                            }
+                                                        else
+                                                        {
+                                                            <span>No Image</span>
+                                                        }
+                                                        </td>
+                                                    <td>
+                                                        <a href="#"
+                                                           onclick="EditStudent('@item.StudentId', '@item.StudentName', '@item.Class', '@item.Address', '@item.DOB?.ToString("yyyy-MM-dd")', '@item.Gender', '@item.AdharcardNo', '@item.Photo', '@item.Name', '@item.Relation', '@item.ContactNumber')"
+                                                           title="Edit" class="text-primary">
+                                                            <button type="button" class="waves-effect waves-circle btn btn-circle btn-primary btn-xs">
+                                                                <i class="fa fa-edit"></i>
+                                                            </button>
+                                                        </a>
+                                                        <a href="#" onclick="DeleteStudent(@item.StudentId)" title="Delete">
+                                                            <button type="button" class="waves-effect waves-circle btn btn-circle btn-danger btn-xs">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                sno++;
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Pagination Controls -->
+                                <ul id="pagination" class="pagination justify-content-end"></ul>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <!-- Added modal-xl and custom class -->
+        <div class="modal-content">
+
+            <div class="col-lg-12">
+                <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Student Details</h5>
+            </div>
+            <div class="modal-body">
+                <form id="studentForm" action="@Url.Action("AddStudent", "Student")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        
+                        <div class="col-lg-6">
+                            <label for="Student">Student Name <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="StudentName" name="StudentName" required placeholder="Enter Student Full Name" />
+
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="Class">Class<span class="required">*</span></label>
+                            <select class="form-control" id="Class" name="Class" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.Classes as List<SmartSchool.Models.DTO.ClassesDto>)
+                                {
+                                    <option value="@item.ClassId">@item.Grade - @item.Section</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="Address">Address<span class="required">*</span></label>
+                            <input type="text" class="form-control" id="Address" name="Address" />
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label for="DOB">Date Of Birth<span class="required">*</span></label>
+                            <input type="date" class="form-control" id="DOB" name="DOB" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="AdharcardNo">AdharcardNo<span class="required">*</span></label>
+                            <input type="text" class="form-control" id="AdharcardNo" name="AdharcardNo" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="Photo">Photo</label>
+                            <input type="file" class="form-control" id="Photo" name="Photo" accept="image/*"  />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Preview</label><br />
+                            <img id="profilePreview" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Gender <span class="required">*</span></label>
+                            <div class="d-flex">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="Male" required>
+                                    <label class="form-check-label" for="genderMale">Male</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="Female" required>
+                                    <label class="form-check-label" for="genderFemale">Female</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div id="familyDetailsSection" class="row mt-3">
+                            <div class="col-lg-12">
+                                <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Family Details</h5>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="FamilyName">Name <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="Name" name="Name" required />
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="Relation">Relation <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="Relation" name="Relation" required />
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="ContactNumber">Contact Number <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="ContactNumber" name="ContactNumber" required />
+                            </div>
+                        </div>
+                            
+                        </div>
+                    <!-- In both addModal and editModal footer sections -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirect()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editstudentModal" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-lg-12">
+                    <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Student Details</h5>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="editStudentForm" action="@Url.Action("UpdateStudent", "Student")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="StudentId" id="editStudentId" />
+                    <div class="row">
+                      
+                        <div class="col-lg-6">
+                            <label for="editStudentName">Student Name <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editStudentName" name="StudentName" required placeholder="Enter Student Full Name" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editClass">Class <span class="required">*</span></label>
+                            <select class="form-control" id="editClass" name="Class" required>
+                                <option value="">--Select--</option>
+                                @foreach (var item in ViewBag.Classes as List<SmartSchool.Models.DTO.ClassesDto>)
+                                {
+                                    <option value="@item.ClassId">@item.Grade - @item.Section</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label for="editAddress">Address<span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editAddress" name="Address" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editDOB">Date Of Birth<span class="required">*</span></label>
+                            <input type="date" class="form-control" id="editDOB" name="DOB" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editAdharcardNo">Adharcard No<span class="required">*</span></label>
+                            <input type="number" class="form-control" id="editAdharcardNo" name="AdharcardNo" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editPhoto">Photo<span class="required">*</span></label>
+                            <input type="file" class="form-control" id="editPhoto" name="Photo" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Preview</label><br />
+                            <img id="editProfilePreview" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Gender <span class="required">*</span></label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="Gender" id="editGenderMale" value="Male">
+                                <label class="form-check-label" for="editGenderMale">Male</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="Gender" id="editGenderFemale" value="Female">
+                                <label class="form-check-label" for="editGenderFemale">Female</label>
+                            </div>
+                        </div>
+
+                        <div id="editFamilyDetailsSection" class="row mt-3">
+                            <div class="col-lg-12">
+                                <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Family Details</h5>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="editFamilyName">Name <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="editFamilyName" name="Name" required />
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="editRelation">Relation <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="editRelation" name="Relation" required />
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="editContactNumber">Contact Number <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="editContactNumber" name="ContactNumber" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-3">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="reset" class="btn btn-success">Reset</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirects()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+         $(document).ready(function () {
+
+            window.openAddModal = function () {
+                $('#addModal').modal('show');
+            };
+
+        });
+                    $('#studentForm').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/Student/AddStudent',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Success!", "Student added successfully.", "success")
+                            .then(() => {
+                                window.location.reload();
+                            });
+                    } else {
+                        Swal.fire("Error!", response.message || "Student already exists.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "There was an error processing your request.", "error");
+                }
+            });
+        });
+
+
+        // Edit User Type Form Submission
+            function EditStudent(
+        studentId, studentName, studentClass, address, dob, gender,
+        adharcardNo, photo, familyName, relation, contactNumber
+    ) {
+        // Populate Student Details
+        $('#editStudentId').val(studentId);
+        $('#editStudentName').val(studentName);
+        $('#editClass').val(studentClass); // Ensure ClassId is used
+        $('#editAddress').val(address);
+        $('#editDOB').val(dob);
+        $('#editAdharcardNo').val(adharcardNo);
+
+        // Set Gender
+        $('input[name="Gender"]').prop('checked', false);
+        if (gender === "Male") {
+            $('#editGenderMale').prop('checked', true);
+        } else if (gender === "Female") {
+            $('#editGenderFemale').prop('checked', true);
+        }
+
+        // Set Family Details
+        $('#editFamilyName').val(familyName);
+        $('#editRelation').val(relation);
+        $('#editContactNumber').val(contactNumber);
+
+        // Handle Photo Preview
+        if (photo) {
+            $('#editProfilePreview').attr('src', photo).show();
+        } else {
+            $('#editProfilePreview').hide();
+        }
+
+        $('#editstudentModal').modal('show');
+    }
+
+
+    // Edit form submit
+    $('#editStudentForm').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/Student/UpdateStudent',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Updated!", "Student updated successfully.", "success").then(() => {
+                        $('#editstudentModal').modal('hide');
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire("Error!", response.message || "Failed to update student.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "An error occurred while updating the student.", "error");
+            }
+        });
+    });
+
+    // Delete User Type Function
+    function DeleteStudent(StudentId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Student/DeleteStudent/' + StudentId,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Deleted!", "Student has been deleted.", "success").then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error!", response.message || "There was an issue deleting the Student.", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "There was an error processing your request.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+    //For Address
+
+    // $(document).ready(function () {
+    //     $('#User').on('blur', function () {
+    //         var fullName = $(this).val();
+
+    //         if (fullName) {
+    //             $.ajax({
+    //                 url: '@Url.Action("GetAddressByFullName", "Student")',
+    //                 type: 'GET',
+    //                 data: { fullName: fullName },
+    //                 success: function (response) {
+    //                     if (response && response.address) {
+    //                         $('#Address').val(response.address);
+    //                     } else {
+    //                         $('#Address').val('');
+    //                     }
+    //                 },
+    //                 error: function () {
+    //                     console.error("Failed to fetch address.");
+    //                     $('#Address').val('');
+    //                 }
+    //             });
+    //         }
+    //     });
+    // });
+
+    // //Hidden Family details
+    //  document.getElementById('showFamilyDetailsCheckbox').addEventListener('change', function () {
+    //     const familySection = document.getElementById('familyDetailsSection');
+    //     const isChecked = this.checked;
+
+    //     // Toggle section visibility
+    //     familySection.style.display = isChecked ? 'flex' : 'none';
+
+    //     // Toggle required attributes
+    //     document.getElementById('FamilyName').required = isChecked;
+    //     document.getElementById('Relation').required = isChecked;
+    //     document.getElementById('ContactNumber').required = isChecked;
+    // });
+
+    //     document.getElementById('editShowFamilyDetailsCheckbox').addEventListener('change', function () {
+    //     const familySection = document.getElementById('editFamilyDetailsSection');
+    //     const isChecked = this.checked;
+
+    //     familySection.style.display = isChecked ? 'flex' : 'none';
+
+    //     document.getElementById('editFamilyName').required = isChecked;
+    //     document.getElementById('editRelation').required = isChecked;
+    //     document.getElementById('editContactNumber').required = isChecked;
+    // });
+
+    //Address field
+    // $(document).ready(function () {
+    //     $('#User').on('blur', function () {
+    //         var fullName = $(this).val();
+
+    //         if (fullName.trim() !== '') {
+    //             $.ajax({
+    //                 url: '/Student/GetAddressByName',
+    //                 type: 'GET',
+    //                 data: { fullName: fullName },
+    //                 success: function (response) {
+    //                     if (response && response.address) {
+    //                         $('#Address').val(response.address);
+    //                     } else {
+    //                         $('#Address').val('');
+    //                         Swal.fire("Not Found", "No address found for the given name.", "info");
+    //                     }
+    //                 },
+    //                 error: function () {
+    //                     Swal.fire("Error", "Failed to fetch address.", "error");
+    //                 }
+    //             });
+    //         }
+    //     });
+    // });
+
+        //search field in table
+    $(document).ready(function () {
+        $('#searchInput').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $("#classTableBody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    }); 
+
+      $(document).ready(function () {
+        setupPagination('classTableBody', 'pagination');
+    });
+
+    function previewPhoto() {
+        const fileInput = document.getElementById('Photo');
+        const preview = document.getElementById('profilePreview');
+
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+        }
+    }
+
+        function previewEditProfileImage() {
+        const fileInput = document.getElementById('editPhoto');
+        const preview = document.getElementById('editProfilePreview');
+
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+        }
+    }
+
+
+        //Cancel Button
+        function cancelAndRedirect() {
+        $('#addModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetStudents", "Student")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+       }
+       function cancelAndRedirects() {
+        $('#editstudentModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetStudents", "Student")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+
+</script>

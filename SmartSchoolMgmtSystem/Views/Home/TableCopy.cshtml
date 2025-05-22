@@ -1,0 +1,317 @@
+﻿
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<!-- [ breadcrumb ] start -->
+<div class="page-header">
+    <div class="page-block">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <div class="page-header-title">
+                    <h5 class="m-b-10">Bootstrap Basic Tables</h5>
+                </div>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
+                    <li class="breadcrumb-item"><a href="#!">Bootstrap Table</a></li>
+                    <li class="breadcrumb-item"><a href="#!">Basic Tables</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- [ breadcrumb ] end -->
+<!-- [ Main Content ] start -->
+<div class="row">
+    <!-- [ basic-table ] start -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Basic Table</h5>
+                <span class="d-block m-t-5">use class <code>table</code> inside table element</span>
+            </div>
+            <div class="card-body table-border-style">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Username</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>mdo</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>fat</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Larry</td>
+                                <td>the Bird</td>
+                                <td>twitter</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- [ basic-table ] end -->
+    <!-- [ inverse-table ] start -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Inverse Table</h5>
+                <span class="d-block m-t-5">use class <code>table-inverse</code> inside table element</span>
+            </div>
+            <div class="card-body table-border-style">
+                <div class="table-responsive">
+                    <table class="table table-inverse">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Username</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>mdo</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>fat</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Larry</td>
+                                <td>the Bird</td>
+                                <td>twitter</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- [ inverse-table ] end -->
+</div>
+<!-- [ Main Content ] end -->
+
+
+<div class="row">
+                                <!-- [ form-element ] start -->
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Basic Componant</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <h5>Form controls</h5>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Email address</label>
+                                                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                                                            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Password</label>
+                                                            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                                        </div>
+                                                        <div class="form-group form-check">
+                                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <label>Text</label>
+                                                            <input type="text" class="form-control" placeholder="Text">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="exampleFormControlSelect1">Example select</label>
+                                                            <select class="form-control" id="exampleFormControlSelect1">
+                                                                <option>1</option>
+                                                                <option>2</option>
+                                                                <option>3</option>
+                                                                <option>4</option>
+                                                                <option>5</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="exampleFormControlTextarea1">Example textarea</label>
+                                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Input group -->
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Input Group</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="basic-addon1"></span>
+                                                </div>
+                                                <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                                            </div>
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="basic-addon2">example.com</span>
+                                                </div>
+                                            </div>
+                                            <label for="basic-url">Your vanity URL</label>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="basic-addon3">https://example.com/users/</span>
+                                                </div>
+                                                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+                                            </div>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">.00</span>
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">With textarea</span>
+                                                </div>
+                                                <textarea class="form-control" aria-label="With textarea"></textarea>
+                                            </div>
+                                            <h5 class="mt-5">Button Addons</h5>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="input-group mb-3">
+                                                        <div class="input-group-prepend">
+                                                            <button class="btn btn-primary" type="button">Button</button>
+                                                        </div>
+                                                        <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-primary" type="button">Button</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="input-group mb-3">
+                                                        <div class="input-group-prepend">
+                                                            <button class="btn btn-primary" type="button">Button</button>
+                                                            <button class="btn btn-secondary" type="button">Button</button>
+                                                        </div>
+                                                        <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-secondary" type="button">Button</button>
+                                                            <button class="btn btn-primary" type="button">Button</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h5 class="mt-5">Buttons With Dropdowns</h5>
+                                                    <hr>
+                                                    <div class="input-group mb-3">
+                                                        <div class="input-group-prepend">
+                                                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="#!">Action</a>
+                                                                <a class="dropdown-item" href="#!">Another action</a>
+                                                                <a class="dropdown-item" href="#!">Something else here</a>
+                                                                <div role="separator" class="dropdown-divider"></div>
+                                                                <a class="dropdown-item" href="#!">Separated link</a>
+                                                            </div>
+                                                        </div>
+                                                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="#!">Action</a>
+                                                                <a class="dropdown-item" href="#!">Another action</a>
+                                                                <a class="dropdown-item" href="#!">Something else here</a>
+                                                                <div role="separator" class="dropdown-divider"></div>
+                                                                <a class="dropdown-item" href="#!">Separated link</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h5 class="mt-5">Segmented Buttons</h5>
+                                                    <hr>
+                                                    <div class="input-group mb-3">
+                                                        <div class="input-group-prepend">
+                                                            <button type="button" class="btn btn-secondary">Action</button>
+                                                            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="sr-only">Toggle
+                                                                    Dropdown</span></button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="#!">Action</a>
+                                                                <a class="dropdown-item" href="#!">Another action</a>
+                                                                <a class="dropdown-item" href="#!">Something else here</a>
+                                                                <div role="separator" class="dropdown-divider"></div>
+                                                                <a class="dropdown-item" href="#!">Separated link</a>
+                                                            </div>
+                                                        </div>
+                                                        <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+                                                        <div class="input-group-append">
+                                                            <button type="button" class="btn btn-secondary">Action</button>
+                                                            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="sr-only">Toggle
+                                                                    Dropdown</span></button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="#!">Action</a>
+                                                                <a class="dropdown-item" href="#!">Another action</a>
+                                                                <a class="dropdown-item" href="#!">Something else here</a>
+                                                                <div role="separator" class="dropdown-divider"></div>
+                                                                <a class="dropdown-item" href="#!">Separated link</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- [ form-element ] end -->
+                                <!-- [ Main Content ] end -->
+                            </div>
+

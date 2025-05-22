@@ -1,0 +1,830 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard with Background Slider</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+            color: #333;
+        }
+
+        .slider-container {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* background-color: rgba(0, 0, 0, 0.6); */
+            z-index: 5;
+        }
+
+        .slider {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+            .slide.active {
+                opacity: 1;
+            }
+
+        .slide-indicators {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            z-index: 10;
+        }
+
+        .indicator {
+            width: 15px;
+            height: 15px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            margin: 0 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            visibility: hidden;
+        }
+
+            .indicator.active {
+                background-color: white;
+            }
+
+        .control-buttons {
+            position: fixed;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10;
+        }
+
+        .btn {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn:hover {
+                background-color: rgba(255, 255, 255, 0.5);
+            }
+
+        /* Dashboard Styles */
+        .dashboard-container {
+            position: relative;
+            z-index: 10;
+            padding: 30px;
+            color: white;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header-title h5 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            list-style: none;
+        }
+
+        .breadcrumb-item {
+            margin-right: 10px;
+        }
+
+            .breadcrumb-item a {
+                color: #fff;
+                text-decoration: none;
+            }
+
+        .card {
+            background-color: White;
+            border-radius: 5px;
+            padding: 5px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -15px;
+        }
+
+        .col-xl-3, .col-md-6 {
+            flex: 0 0 25%;
+            max-width: 25%;
+            padding: 0 15px;
+        }
+
+     
+
+      
+
+        .col-xl-8 {
+            flex: 0 0 66.666667%;
+            max-width: 66.666667%;
+            padding: 0 15px;
+        }
+
+        .col-xl-4 {
+            flex: 0 0 33.333333%;
+            max-width: 33.333333%;
+            padding: 0 15px;
+        }
+
+
+        .prod-p-card {
+            /* background-color: rgba(255, 255, 255, 0.15); */
+            color: white;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .m-b-25 {
+            margin-bottom: 25px;
+        }
+
+        .m-b-5 {
+            margin-bottom: 5px;
+        }
+
+        .m-b-0 {
+            margin-bottom: 0;
+        }
+
+        .m-r-10 {
+            margin-right: 10px;
+        }
+
+        .label {
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .label-danger {
+            background-color: #ff5252;
+        }
+
+        .label-primary {
+            background-color: #448aff;
+        }
+
+        .label-success {
+            background-color: #11c15b;
+        }
+
+        .label-warning {
+            background-color: #ff9800;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table th, .table td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+        .session-scroll {
+            height: 478px;
+            overflow-y: auto;
+        }
+
+        .progress {
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        .bg-danger {
+            background-color: #ff5252;
+        }
+
+        .bg-primary {
+            background-color: #448aff;
+        }
+
+        .bg-warning {
+            background-color: #ff9800;
+        }
+
+        .bg-success {
+            background-color: #11c15b;
+        }
+
+        .bg-info {
+            background-color: #00bcd4;
+        }
+
+        .user-card {
+            text-align: center;
+        }
+
+        .img-radius {
+            border-radius: 50%;
+        }
+
+        .wid-100 {
+            width: 100px;
+        }
+
+        .m-auto {
+            margin: auto;
+        }
+
+        .m-t-25 {
+            margin-top: 25px;
+        }
+
+        .m-b-10 {
+            margin-bottom: 10px;
+        }
+
+        .f-w-600 {
+            font-weight: 600;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        .m-t-15 {
+            margin-top: 15px;
+        }
+
+        .m-t-10 {
+            margin-top: 10px;
+        }
+
+        .counter-block {
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .bg-c-blue {
+            background-color: #448aff;
+        }
+
+        .text-white {
+            color: white;
+        }
+
+        .f-20 {
+            font-size: 20px;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mb-0 {
+            margin-bottom: 0;
+        }
+
+        .user-social-link {
+            display: flex;
+            justify-content: center;
+        }
+
+        .col-auto {
+            flex: 0 0 auto;
+            width: auto;
+            max-width: 100%;
+            padding: 0 5px;
+        }
+
+        .text-primary {
+            color: #448aff;
+        }
+
+        .text-c-info {
+            color: #00bcd4;
+        }
+
+        .text-c-red {
+            color: #ff5252;
+        }
+
+        .f-22 {
+            font-size: 22px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to bottom, #1E90FF, White);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        .white-background {
+            background-color: white !important;
+            color: black;
+            border: none;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Background Slider -->
+    <div class="slider-container">
+        <div class="overlay"></div>
+        <div class="slider">
+            <!-- Using placeholder images -->
+            <div class="slide active" style="background-image: url('@ViewBag.pic1')"></div>
+            <div class="slide" style="background-image: url('@ViewBag.pic2')"></div>
+            <div class="slide" style="background-image: url('@ViewBag.pic3')"></div>
+        </div>
+
+        <div class="slide-indicators">
+            <div class="indicator active" data-index="0"></div>
+            <div class="indicator" data-index="1"></div>
+            <div class="indicator" data-index="2"></div>
+        </div>
+
+        <div class="control-buttons">
+            <button class="btn prev">❮</button>
+            <button class="btn next">❯</button>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <div class="page-header">
+            <div class="page-header-title">
+                <h5 class="gradient-text">@ViewBag.SchoolName</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i> Home</a></li>
+                <li class="breadcrumb-item"><a href="#!">Analytics Dashboard</a></li>
+            </ul>
+        </div>
+
+        <!-- Dashboard Widgets -->
+        <div class="row">
+            <div class="col-xl-3 col-md-6">
+                <div class="card prod-p-card bg-primary" onclick="loadTeacherList()">
+                    <div class="card-body">
+                        <div class="row align-items-center m-b-25">
+                            <div class="col">
+                                <h6 class="m-b-5 text-white">Teachers</h6>
+                                <h3 class="m-b-0 text-white">@ViewBag.TotalTeacher</h3>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-money-bill-alt text-white f-18"></i>
+                            </div>
+                        </div>
+                        <p class="m-b-0 text-white">
+                            <span class="label label-danger m-r-10">+11%</span>From Previous Month
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="card prod-p-card bg-info" onclick="loadStudentList()">
+                    <div class="card-body">
+                        <div class="row align-items-center m-b-25">
+                            <div class="col">
+                                <h6 class="m-b-5 text-white">Students</h6>
+                                <h3 class="m-b-0 text-white">@ViewBag.TotalStudent</h3>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-database text-white f-18"></i>
+                            </div>
+                        </div>
+                        <p class="m-b-0 text-white">
+                            <span class="label label-primary m-r-10">+12%</span>From Previous Month
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div id="closedSubscriptionsCard" class="card prod-p-card bg-success" onclick="loadFeePaymentsList()">
+                    <div class="card-body">
+                        <div class="row align-items-center m-b-25">
+                            <div class="col">
+                                <h6 class="m-b-5 text-white">Fees</h6>
+                                <h3 class="m-b-0 text-white">@ViewBag.CollectedFee/@ViewBag.TotalFee</h3>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign text-white f-18"></i>
+                            </div>
+                        </div>
+                        <p class="m-b-0 text-white">
+                            <span class="label label-success m-r-10">+52%</span>From Previous Month
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-3 col-md-6">
+                <div class="card prod-p-card bg-warning">
+                    <div class="card-body">
+                        <div class="row align-items-center m-b-25">
+                            <div class="col">
+                                <h6 class="m-b-5 text-white">Expenses</h6>
+                                <h3 class="m-b-0 text-white">6,784</h3>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-tags text-white f-18"></i>
+                            </div>
+                        </div>
+                        <p class="m-b-0 text-white">
+                            <span class="label label-warning m-r-10">+52%</span>From Previous Month
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- product profit end -->
+            <!-- sessions-section start -->
+ 
+
+        <!-- Table and Profile Row -->
+        <div class="row">
+            <!-- Table Section -->
+            <div class="col-xl-8 col-md-6">
+                    <div class="card table-card" style="background-color: white;">
+                        <div class="card-header" style="background-color: white; border-bottom: none;">
+                        <h5>Site visitors session log</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div class="session-scroll">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Clicks</th>
+                                            <th>Cost</th>
+                                            <th>CTR</th>
+                                            <th>Revenue</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Total</td>
+                                            <td>1300</td>
+                                            <td>$1025</td>
+                                            <td>14.5%</td>
+                                            <td>$4500</td>
+                                        </tr>
+                                        <tr>
+                                            <td>08-11-2024</td>
+                                            <td>
+                                                786
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-danger" style="width: 60%"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                $485
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-primary" style="width: 50%"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                45.3%
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" style="width: 60%"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                $1055
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-warning" style="width: 70%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>15-10-2024</td>
+                                            <td>
+                                                624
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-danger" style="width: 45%"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                $436
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-primary" style="width: 55%"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                78.3%
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" style="width: 38%"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                $905
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-warning" style="width: 67%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>11-12-2024</td>
+                                            <td>
+                                                423
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-danger" style="width: 54%"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                $123
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-primary" style="width: 70%"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                78.6%
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" style="width: 60%"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                $745
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-warning" style="width: 40%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="col-xl-4 col-md-6">
+                <div class="card user-card">
+                    <div class="card-header">
+                        <h5>Profile</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="usre-image">
+                            <img src="@ViewBag.Profile" class="img-radius wid-100 m-auto" alt="User-Profile-Image">
+                        </div>
+                        <h6 class="f-w-600 m-t-25 m-b-10">@ViewBag.Name</h6>
+                            <p style ="color: black;"> Active</p>
+                        <hr>
+                        <p class="m-t-15">Activity Level: 87%</p>
+                        <div class="bg-c-blue counter-block m-t-10 p-20">
+                            <div class="row">
+                                <div class="col-4">
+                                    <i class="fas fa-calendar-check text-white f-20"></i>
+                                    <h6 class="text-white mt-2 mb-0">1256</h6>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-user text-white f-20"></i>
+                                    <h6 class="text-white mt-2 mb-0">8562</h6>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-folder-open text-white f-20"></i>
+                                    <h6 class="text-white mt-2 mb-0">189</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="m-t-15">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                        <hr>
+                        <div class="row justify-content-center user-social-link">
+                            <div class="col-auto"><a href="#!"><i class="fab fa-facebook-f text-primary f-22"></i></a></div>
+                            <div class="col-auto"><a href="#!"><i class="fab fa-twitter text-c-info f-22"></i></a></div>
+                            <div class="col-auto"><a href="#!"><i class="fab fa-dribbble text-c-red f-22"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@*         <!-- Modal to display the teacher list -->
+        <div class="modal fade" id="teacherListModal" tabindex="-1" role="dialog" aria-labelledby="teacherListModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="teacherListModalLabel">Teachers List</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="teachersTable" class="table table-striped" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Teacher Name</th>
+                                                <th>Subject Name</th>
+                                                <th>Class Name</th>
+                                                <th>School Name </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody id="classTableBody">
+
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@sno</td>
+                                                    <td>@item.FullName</td>
+                                                    <td>@item.SubjectName</td>
+                                                    <td>@item.Class</td>
+                                                    <td>@item.School</td>
+
+                                                </tr>
+                                                sno++;
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Pagination Controls -->
+                                <ul id="pagination" class="pagination justify-content-end"></ul>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+ *@
+
+    <!-- Font Awesome (for icons) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+
+    <!-- Slider Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const indicators = document.querySelectorAll('.indicator');
+            const prevBtn = document.querySelector('.prev');
+            const nextBtn = document.querySelector('.next');
+
+            let currentIndex = 0;
+            let slideInterval;
+
+            // Start the automatic slider
+            startSlider();
+
+            // Function to start automatic slider
+            function startSlider() {
+                slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds (changed from 1 second)
+            }
+
+            // Function to stop automatic slider
+            function stopSlider() {
+                clearInterval(slideInterval);
+            }
+
+            // Function to show a specific slide
+            function showSlide(index) {
+                // Remove active class from all slides and indicators
+                slides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
+
+                indicators.forEach(indicator => {
+                    indicator.classList.remove('active');
+                });
+
+                // Add active class to current slide and indicator
+                slides[index].classList.add('active');
+                indicators[index].classList.add('active');
+
+                currentIndex = index;
+            }
+
+            // Next slide function
+            function nextSlide() {
+                let nextIndex = currentIndex + 1;
+                if (nextIndex >= slides.length) {
+                    nextIndex = 0;
+                }
+                showSlide(nextIndex);
+            }
+
+            // Previous slide function
+            function prevSlide() {
+                let prevIndex = currentIndex - 1;
+                if (prevIndex < 0) {
+                    prevIndex = slides.length - 1;
+                }
+                showSlide(prevIndex);
+            }
+
+            // Event listeners for manual controls
+            nextBtn.addEventListener('click', function() {
+                stopSlider();  // Stop automatic sliding
+                nextSlide();
+                startSlider(); // Restart automatic sliding
+            });
+
+            prevBtn.addEventListener('click', function() {
+                stopSlider();  // Stop automatic sliding
+                prevSlide();
+                startSlider(); // Restart automatic sliding
+            });
+
+            // Event listeners for indicators
+            indicators.forEach(indicator => {
+                indicator.addEventListener('click', function() {
+                    stopSlider();  // Stop automatic sliding
+                    const index = parseInt(this.getAttribute('data-index'));
+                    showSlide(index);
+                    startSlider(); // Restart automatic sliding
+                });
+            });
+
+            // Pause slider on hover
+            const sliderContainer = document.querySelector('.slider-container');
+            sliderContainer.addEventListener('mouseenter', stopSlider);
+            sliderContainer.addEventListener('mouseleave', startSlider);
+        });
+
+                             function loadTeacherList() {
+                    window.location.href = '@Url.Action("TeachersIndex", "Teachers")';
+            }
+
+                                     function loadStudentList() {
+                                window.location.href = '@Url.Action("GetStudents", "Student")';
+                }
+                                            function loadFeePaymentsList() {
+                                        window.location.href = '@Url.Action("GetFeePayments", "FeePayments")';
+                    }
+    </script>
+</body>
+</html>

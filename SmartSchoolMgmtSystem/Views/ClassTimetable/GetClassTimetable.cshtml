@@ -1,0 +1,388 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.ClassTimetableDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+</style>
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Class Timetable</h4>
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add Timetable
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example2" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Class</th>
+                                        <th>Subject</th>
+                                        <th>Teacher</th>
+                                        <th>Room</th>
+                                        <th>Day</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var timetable in Model)
+                                    {
+                                        <tr>
+                                            <td>@sno</td>
+                                            <td>@timetable.Class</td>
+                                            <td>@timetable.Subject</td>
+                                            <td>@timetable.Teacher</td>
+                                            <td>@timetable.Room</td>
+                                            <td>@timetable.DayOfWeek</td>
+                                            <td>@timetable.StartTime</td>
+                                            <td>@timetable.EndTime</td>
+                                            <td>
+                                                <a href="#" onclick="EditTimetable(@timetable.TimetableId, @timetable.ClassId, @timetable.SubjectId, @timetable.TeacherId, '@timetable.Room', '@timetable.DayOfWeek', '@timetable.StartTime', '@timetable.EndTime')" class="text-primary">
+                                                    <button type="button" class="btn btn-circle btn-primary btn-xs">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                </a>
+                                                <a href="#" onclick="DeleteTimetable(@timetable.TimetableId)">
+                                                    <button type="button" class="btn btn-circle btn-danger btn-xs">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        sno++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Timetable</h5>
+            </div>
+            <div class="modal-body">
+                <form id="timetableForm" action="@Url.Action("AddTimetable", "Timetable")" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <!-- Class -->
+                        <div class="col-lg-6">
+                            <label>Class <span class="required">*</span></label>
+                            <select class="form-control" id="ClassId" name="ClassId" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.Classes)
+                                {
+                                    <option value="@item.ClassId">@item.Grade-@item.Section</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Subject -->
+                        <div class="col-lg-6">
+                            <label>Subject <span class="required">*</span></label>
+                            <select class="form-control" id="SubjectId" name="SubjectId" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.Subjects)
+                                {
+                                    <option value="@item.SubjectId">@item.SubjectName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Teacher -->
+                        <div class="col-lg-6">
+                            <label>Teacher <span class="required">*</span></label>
+                            <select class="form-control" id="FullName" name="FullName" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.Teacher)
+                                {
+                                    <option value="@item.FullName">@item.FullName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Room -->
+                        <div class="col-lg-6">
+                            <label>Room <span class="required">*</span></label>
+                            <input type="text" name="Room" class="form-control" required />
+                        </div>
+
+                        <!-- Day of Week -->
+                        <div class="col-lg-6">
+                            <label>Day <span class="required">*</span></label>
+                            <select class="form-control" id="DayOfWeek" name="DayOfWeek" required>
+                                <option value="" selected>--Select--</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                        </div>
+
+                        <!-- Start Time -->
+                        <div class="col-lg-6">
+                            <label>Start Time <span class="required">*</span></label>
+                            <input type="time" name="StartTime" class="form-control" required />
+                        </div>
+
+                        <!-- End Time -->
+                        <div class="col-lg-6">
+                            <label>End Time <span class="required">*</span></label>
+                            <input type="time" name="EndTime" class="form-control" required />
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirect()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editTimetableModal" tabindex="-1" aria-labelledby="editTimetableModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTimetableModalLabel">Edit Timetable</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editTimetableForm" action="@Url.Action("UpdateTimetable", "Timetable")" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="TimetableId" id="editTimetableId" />
+
+                    <div class="row">
+                        <!-- Class -->
+                        <div class="col-lg-6">
+                            <label>Class <span class="required">*</span></label>
+                            <select class="form-control" id="editClassId" name="ClassId" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.Classes)
+                                {
+                                    <option value="@item.ClassId">@item.Grade-@item.Section</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Subject -->
+                        <div class="col-lg-6">
+                            <label>Subject <span class="required">*</span></label>
+                            <select class="form-control" id="editSubjectId" name="SubjectId" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.Subjects)
+                                {
+                                    <option value="@item.SubjectId">@item.SubjectName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Teacher -->
+                        <div class="col-lg-6">
+                            <label>Teacher <span class="required">*</span></label>
+                            <select class="form-control" id="editTeacherId" name="TeacherId" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.Teacher)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Room -->
+                        <div class="col-lg-6">
+                            <label>Room <span class="required">*</span></label>
+                            <input type="text" id="editRoom" name="Room" class="form-control" required />
+                        </div>
+
+                        <!-- Day of Week -->
+                        <div class="col-lg-6">
+                            <label>Day <span class="required">*</span></label>
+                            <select class="form-control" id="editDayOfWeek" name="DayOfWeek" required>
+                                <option value="" selected>--Select--</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                        </div>
+
+                        <!-- Start Time -->
+                        <div class="col-lg-6">
+                            <label>Start Time <span class="required">*</span></label>
+                            <input type="time" id="editStartTime" name="StartTime" class="form-control" required />
+                        </div>
+
+                        <!-- End Time -->
+                        <div class="col-lg-6">
+                            <label>End Time <span class="required">*</span></label>
+                            <input type="time" id="editEndTime" name="EndTime" class="form-control" required />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-3">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirectEdit()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        window.openAddModal = function () {
+            $('#addModal').modal('show');
+        };
+    });
+
+    $('#timetableForm').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/ClassTimetable/AddClassTimetable',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Success!", "Timetable added successfully.", "success")
+                        .then(() => {
+                            window.location.reload();
+                        });
+                } else {
+                    Swal.fire("Error!", response.message || "Timetable entry already exists.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "There was an error processing your request.", "error");
+            }
+        });
+    });
+
+    function EditTimetable(timetableId, classId, subjectId, teacherId, room, dayOfWeek, startTime, endTime) {
+        $('#editTimetableId').val(timetableId);
+        $('#editClassId').val(classId);
+        $('#editSubjectId').val(subjectId);
+        $('#editTeacherId').val(teacherId);
+        $('#editRoom').val(room);
+        $('#editDayOfWeek').val(dayOfWeek);
+        $('#editStartTime').val(startTime);
+        $('#editEndTime').val(endTime);
+
+        $('#editTimetableModal').modal('show');
+    }
+
+    $('#editTimetableForm').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/ClassTimetable/UpdateClassTimetable',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Updated!", "Timetable updated successfully.", "success").then(() => {
+                        $('#editTimetableModal').modal('hide');
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire("Error!", response.message || "Failed to update timetable.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "An error occurred while updating the timetable.", "error");
+            }
+        });
+    });
+
+    function DeleteTimetable(timetableId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/ClassTimetable/DeleteClassTimetables/' + timetableId,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Deleted!", "Timetable has been deleted.", "success").then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error!", response.message || "There was an issue deleting the timetable.", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "There was an error processing your request.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+    //Cancel Button
+    function cancelAndRedirect() {
+        $('#addModal').modal('hide'); // Hides the modal
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetClassTimetable", "ClassTimetable")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+
+    function cancelAndRedirectEdit() {
+        $('#editTimetableModal').modal('hide'); // Hides the modal
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetClassTimetable", "ClassTimetable")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+</script>

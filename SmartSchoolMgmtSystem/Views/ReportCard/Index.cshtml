@@ -1,0 +1,182 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.ReportCardDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex">
+            <select id="classId" class="form-control me-2">
+                <option value="">-- Select Class --</option>
+                @foreach (var item in ViewBag.Classes as List<SmartSchool.Models.DTO.ClassesDto>)
+                {
+                    <option value="@item.ClassId">@item.Grade - @item.Section</option>
+                }
+            </select>
+            <div class="p-3 d-flex gap-2">
+                <button type="button" class="btn btn-primary" id="generateTable"  style="width: 160px;">
+                    Generate Table
+                </button>
+                <button type="button" class="btn btn-success" id="downloadList"  style="width: 160px;">
+                    Download List
+                </button>
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col-auto">
+                <input type="file" id="uploadExcel" class="form-control" />
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-info" id="uploadFile">Upload & Update</button>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr id="tableHeader">
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Class</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="reportCardTable">
+            <!-- Rows will be populated here -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for Entering Subjects -->
+<div class="modal fade" id="subjectModal" tabindex="-1" aria-labelledby="subjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subjectModalLabel">Enter Subjects</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label>Enter Subjects (Comma-separated):</label>
+                <textarea id="subjectList" class="form-control" rows="3" placeholder="e.g., Math, Science, English"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="addSubjects">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let subjects = [];
+
+    function loadTable(classId) {
+        $.get(`/ReportCard/GetReportCards?classId=${classId}`, function (data) {
+            $("#reportCardTable").empty();
+            data.forEach(item => {
+                let subjectColumns = subjects.map(subject => `<td>N/A</td>`).join("");
+                $("#reportCardTable").append(`
+                    <tr>
+                        <td>${item.studentId}</td>
+                        <td>${item.studentName}</td>
+                        <td>${item.class}</td>
+                        ${subjectColumns}
+                        <td>
+                            <button class='btn btn-primary btn-sm edit-btn' data-id='${item.studentId}'>Edit</button>
+                            <button class='btn btn-danger btn-sm delete-btn' data-id='${item.studentId}'>Delete</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        });
+    }
+
+    // When Generate Table button is clicked, open the modal
+        $("#generateTable").click(function () {
+        const classId = $("#classId").val();
+        if (!classId) {
+            alert("Please select a class.");
+            return;
+        }
+
+        // Open the modal to enter subjects first
+        $("#subjectModal").modal('show');
+    });
+
+    // Add Subjects button inside the modal
+    $("#addSubjects").click(function () {
+        const subjectText = $("#subjectList").val();
+        if (!subjectText) {
+            alert("Please enter subjects.");
+            return;
+        }
+
+        // Split the subjects by comma and trim whitespace
+        subjects = subjectText.split(",").map(s => s.trim());
+
+        // Clear the previous headers if any
+        $("#tableHeader").find("th.subject-column").remove();
+
+        // Append new headers dynamically
+        subjects.forEach(subject => {
+            $("#tableHeader").append(`<th class="subject-column">${subject}</th>`);
+        });
+
+        // Close the modal
+        $("#subjectModal").modal('hide');
+
+        // Call the backend to generate the table with subjects
+        const classId = $("#classId").val();
+        $.post('/ReportCard/Generate', { classId: classId, subjects: subjects }, function (response) {
+            alert(response.message);
+
+            // Load the table data after subjects are added
+            loadTable(classId);
+
+        }).fail(function (xhr) {
+            alert("Error: " + xhr.responseText);
+        });
+    });
+
+    $("#downloadList").click(function () {
+        const classId = $("#classId").val();
+        if (!classId) {
+            alert("Please select a class before downloading.");
+            return;
+        }
+        window.location.href = `/ReportCard/DownloadList?classId=${classId}`;
+    });
+
+    $("#uploadFile").click(function () {
+        const fileInput = $("#uploadExcel")[0];
+        if (fileInput.files.length === 0) {
+            alert("Please select an Excel file to upload.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        $.ajax({
+            url: '/ReportCard/Upload',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                alert(response.message);
+                loadTable($("#classId").val());
+            },
+            error: function (xhr) {
+                alert("Failed to upload file. Check the format and try again.");
+            }
+        });
+    });
+
+    $("#classId").change(function () {
+        const classId = $(this).val();
+        if (classId) {
+            subjects = [];
+            loadTable(classId);
+        }
+    });
+</script>

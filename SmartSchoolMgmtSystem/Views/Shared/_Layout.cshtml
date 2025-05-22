@@ -1,0 +1,802 @@
+﻿@* <!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<title>Flash Able - Most Trusted Admin Template</title>
+	<!-- HTML5 Shim and Respond.js IE11 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 11]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="description" content="Flash Able Bootstrap admin template made using Bootstrap 4 and it has huge amount of ready made feature, UI components, pages which completely fulfills any dashboard needs." />
+	<meta name="keywords"
+		content="admin templates, bootstrap admin templates, bootstrap 4, dashboard, dashboard templets, sass admin templets, html admin templates, responsive, bootstrap admin templates free download,premium bootstrap admin templates, Flash Able, Flash Able bootstrap admin template">
+	<meta name="author" content="Codedthemes" />
+
+    <!-- Favicon icon -->
+    <img src="~/resources/assets/images/favicon.ico" />
+	<link rel="icon" href="~/resources/assets/images/favicon.ico" type="image/x-icon">
+	<!-- fontawesome icon -->
+	<link rel="stylesheet" href="~/resources/assets/fonts/fontawesome/css/fontawesome-all.min.css">
+	<!-- animation css -->
+	<link rel="stylesheet" href="~/resources/assets/plugins/animation/css/animate.min.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+	<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+	<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+	<!-- vendor css -->
+	<link rel="stylesheet" href="~/resources/assets/css/style.css">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body class="">
+	<!-- [ Pre-loader ] start -->
+	<div class="loader-bg">
+		<div class="loader-track">
+			<div class="loader-fill"></div>
+		</div>
+	</div>
+	<!-- [ Pre-loader ] End -->
+
+	<!-- [ navigation menu ] start -->
+	<nav class="pcoded-navbar menupos-fixed menu-light brand-blue ">
+		<div class="navbar-wrapper ">
+			<div class="navbar-brand header-logo">
+				<a href="index.html" class="b-brand">
+					<img src="~/resources/assets/images/logo.svg" alt="" class="logo images">
+					<img src="~/resources/assets/images/logo-icon.svg" alt="" class="logo-thumb images">
+				</a>
+				<a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
+			</div>
+			<div class="navbar-content scroll-div">
+				<ul class="nav pcoded-inner-navbar">
+					<li class="nav-item pcoded-menu-caption">
+						<label>Navigation</label>
+					</li>
+					<li class="nav-item">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Dashboard</span></a>
+						
+						<ul class="pcoded-submenu">
+							<a href="~/Home/Index" class="nav-link"><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Super Admin</span></a>
+						<a href="~/Home/AdminDashboard" class="nav-link"><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Admin Dashboard</span></a>
+						<a href="~/Home/TeacherDashboard" class="nav-link"><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Teacher Dashboard</span></a>
+						</ul>
+					</li>
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Masters</span></a>
+						<ul class="pcoded-submenu">
+							<li class=""><a href="~/Home/Index"  class="">User Type</a></li>
+							<li class=""><a href="~/UserManagement/GetUser" class="">User Master</a></li>
+							<li class=""><a href="~/Class/GetClasses" class="">Class Master</a></li>
+							<li class=""><a href="~/Subject/GetSubject" class="">Subject</a></li>
+							<li class=""><a href="~/FeeCategory/GetFeeCategoryName" class="">FeeCategory</a></li>
+							<li class=""><a href="~/SubscriptionsType/GetSubscriptionsType" class="">SubscriptionsType</a></li>
+							<li class=""><a href="~/Duration/GetDuration" class="">Duration</a></li>
+						</ul>
+					</li>
+					
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class='bx bxs-school'></i></span><span class="pcoded-mtext">School</span></a>
+						<ul class="pcoded-submenu">
+							<li class=""><a href="~/School/GetSchool" class="">School Master</a></li>
+							
+						</ul>
+					</li>
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class='bx bxs-user'></i></span><span class="pcoded-mtext">Teachers</span></a>
+						<ul class="pcoded-submenu">
+							<li class=""><a href="~/Teachers/TeachersIndex" class="">Teachers</a></li>
+						</ul>
+					</li>
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class='bx bxs-shopping-bag'></i></span><span class="pcoded-mtext">Student</span></a>
+						<ul class="pcoded-submenu">
+							<li class=""><a href="~/Student/GetStudents" class="">Student</a></li>
+							<li class=""><a href="~/ReportCard/Index" class="">Report Cards</a></li>
+							<li class=""><a href="~/StudentAttendence/GetStudentAttendence" class="">StudentAttendence</a></li>
+						</ul>
+					</li>
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class='bx bxs-user'></i></span><span class="pcoded-mtext">ClassTimetable</span></a>
+						<ul class="pcoded-submenu">
+							<li class=""><a href="~/ClassTimetable/GetClassTimetable" class="">ClassTimetable</a></li>
+						</ul>
+					</li>
+
+					<li class="nav-item pcoded-hasmenu">
+
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class='bx bx-book'></i></span><span class="pcoded-mtext">Subscription</span></a>
+						<ul class="pcoded-submenu">
+							
+							<li class=""><a href="~/SubscriptionPayments/GetPayment" class="">Subscription Payments</a></li>
+						</ul>
+					</li>
+
+							
+					</li>
+
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class='bx bx-book-content'></i></span><span class="pcoded-mtext">Admissions</span></a>
+						<ul class="pcoded-submenu">
+							<li class=""><a href="~/Admissions/GetAdmissions" class="">Admissions</a></li>
+						</ul>
+					</li>
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Modules</span></a>
+						<ul class="pcoded-submenu">
+							<li class=""><a href="~/Modules/GetModule" class="">Module</a></li>
+						</ul>
+					</li>
+					
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class='bx bxs-bank'></i></span><span class="pcoded-mtext">Fee</span></a>
+							<ul class="pcoded-submenu">
+							<li class=""><a href="~/FeeItems/GetFeeItems" class="">FeeItems</a></li>
+							<li class=""><a href="~/FeePayments/GetFeePayments" class="">FeePayments</a></li>
+							</ul>
+					</li>
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Teachers</span></a>
+						<ul class="pcoded-submenu">
+							<li class=""><a href="~/Teachers/TeachersIndex" class="">Teachers</a></li>
+						</ul>
+					</li>
+@* 
+					<li class="nav-item pcoded-menu-caption">
+						<label>UI Element</label>
+					</li>
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Componant</span></a>
+						<ul class="pcoded-submenu">
+							<li class=""><a href="bc_button.html" class="">Button</a></li>
+							<li class=""><a href="bc_badges.html" class="">Badges</a></li>
+							<li class=""><a href="bc_breadcrumb-pagination.html" class="">Breadcrumb & paggination</a></li>
+							<li class=""><a href="bc_collapse.html" class="">Collapse</a></li>
+							<li class=""><a href="bc_progress.html" class="">Progress</a></li>
+							<li class=""><a href="bc_tabs.html" class="">Tabs & pills</a></li>
+							<li class=""><a href="bc_typography.html" class="">Typography</a></li>
+						</ul>
+					</li>
+					<li class="nav-item pcoded-menu-caption">
+						<label>Forms &amp; table</label>
+					</li>
+					<li class="nav-item">
+						<a href="form_elements.html" class="nav-link"><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Form elements</span></a>
+					</li>
+					<li class="nav-item">
+						<a href="tbl_bootstrap.html" class="nav-link"><span class="pcoded-micon"><i class="feather icon-align-justify"></i></span><span class="pcoded-mtext">Bootstrap table</span></a>
+					</li>
+					<li class="nav-item pcoded-menu-caption">
+						<label>Chart & Maps</label>
+					</li>
+					<li class="nav-item">
+						<a href="chart-morris.html" class="nav-link"><span class="pcoded-micon"><i class="feather icon-pie-chart"></i></span><span class="pcoded-mtext">Chart</span></a>
+					</li>
+					<li class="nav-item">
+						<a href="map-google.html" class="nav-link"><span class="pcoded-micon"><i class="feather icon-map"></i></span><span class="pcoded-mtext">Maps</span></a>
+					</li>
+					<li class="nav-item pcoded-menu-caption">
+						<label>Pages</label>
+					</li>
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link"><span class="pcoded-micon"><i class="feather icon-lock"></i></span><span class="pcoded-mtext">Authentication</span></a>
+						<ul class="pcoded-submenu">
+							<li class=""><a href="auth-signup.html" class="" target="_blank">Sign up</a></li>
+							<li class=""><a href="auth-signin.html" class="" target="_blank">Sign in</a></li>
+						</ul>
+					</li>
+					<li class="nav-item"><a href="sample-page.html" class="nav-link"><span class="pcoded-micon"><i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Sample page</span></a></li>
+					<li class="nav-item disabled"><a href="#!" class="nav-link"><span class="pcoded-micon"><i class="feather icon-power"></i></span><span class="pcoded-mtext">Disabled menu</span></a></li>
+ *@				</ul>
+			
+			@* </div>
+		</div>
+	</nav>
+	<!-- [ navigation menu ] end -->
+
+	<!-- [ Header ] start -->
+	<header class="navbar pcoded-header navbar-expand-lg navbar-light headerpos-fixed">
+		<div class="m-header">
+			<a class="mobile-menu" id="mobile-collapse1" href="#!"><span></span></a>
+			<a href="index.html" class="b-brand">
+				<img src="~/resources/assets/images/logo.svg" alt="" class="logo images">
+				<img src="~/resources/assets/images/logo-icon.svg" alt="" class="logo-thumb images">
+			</a>
+		</div>
+		<a class="mobile-menu" id="mobile-header" href="#!">
+			<i class="feather icon-more-horizontal"></i>
+		</a>
+		<div class="collapse navbar-collapse">
+			<a href="#!" class="mob-toggler"></a>
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<div class="main-search open">
+						<div class="input-group">
+							<input type="text" id="m-search" class="form-control" placeholder="Search . . .">
+							<a href="#!" class="input-group-append search-close">
+								<i class="feather icon-x input-group-text"></i>
+							</a>
+							<span class="input-group-append search-btn btn btn-primary">
+								<i class="feather icon-search input-group-text"></i>
+							</span>
+						</div>
+					</div>
+				</li>
+			</ul>
+			<ul class="navbar-nav ml-auto">
+				<li>
+					<div class="dropdown">
+						<a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="icon feather icon-bell"></i></a>
+						<div class="dropdown-menu dropdown-menu-right notification">
+							<div class="noti-head">
+								<h6 class="d-inline-block m-b-0">Notifications</h6>
+								<div class="float-right">
+									<a href="#!" class="m-r-10">mark as read</a>
+									<a href="#!">clear all</a>
+								</div>
+							</div>
+							<ul class="noti-body">
+								<li class="n-title">
+									<p class="m-b-0">NEW</p>
+								</li>
+								<li class="notification">
+									<div class="media">
+										<img class="img-radius" src="~/resources/assets/images/user/avatar-1.jpg" alt="Generic placeholder image">
+										<div class="media-body">
+											<p><strong>John Doe</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>5 min</span></p>
+											<p>New ticket Added</p>
+										</div>
+									</div>
+								</li>
+								<li class="n-title">
+									<p class="m-b-0">EARLIER</p>
+								</li>
+								<li class="notification">
+									<div class="media">
+										<img class="img-radius" src="~/resources/assets/images/user/avatar-2.jpg" alt="Generic placeholder image">
+										<div class="media-body">
+											<p><strong>Joseph William</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>10 min</span></p>
+											<p>Prchace New Theme and make payment</p>
+										</div>
+									</div>
+								</li>
+								<li class="notification">
+									<div class="media">
+										<img class="img-radius" src="~/resources/assets/images/user/avatar-3.jpg" alt="Generic placeholder image">
+										<div class="media-body">
+											<p><strong>Sara Soudein</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>12 min</span></p>
+											<p>currently login</p>
+										</div>
+									</div>
+								</li>
+								<li class="notification">
+									<div class="media">
+										<img class="img-radius" src="~/resources/assets/images/user/avatar-1.jpg" alt="Generic placeholder image">
+										<div class="media-body">
+											<p><strong>Joseph William</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>30 min</span></p>
+											<p>Prchace New Theme and make payment</p>
+										</div>
+									</div>
+								</li>
+								<li class="notification">
+									<div class="media">
+										<img class="img-radius" src="~/resources/assets/images/user/avatar-3.jpg" alt="Generic placeholder image">
+										<div class="media-body">
+											<p><strong>Sara Soudein</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>1 hour</span></p>
+											<p>currently login</p>
+										</div>
+									</div>
+								</li>
+								<li class="notification">
+									<div class="media">
+										<img class="img-radius" src="~/resources/assets/images/user/avatar-1.jpg" alt="Generic placeholder image">
+										<div class="media-body">
+											<p><strong>Joseph William</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>2 hour</span></p>
+											<p>Prchace New Theme and make payment</p>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<div class="noti-footer">
+								<a href="#!">show all</a>
+							</div>
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="dropdown drp-user">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							<i class="icon feather icon-settings"></i>
+						</a>
+						<div class="dropdown-menu dropdown-menu-right profile-notification">
+							<div class="pro-head">
+								<img src="~/resources/assets/images/user/avatar-1.jpg" class="img-radius" alt="User-Profile-Image">
+								<span>John Doe</span>
+								<a href="auth-signin.html" class="dud-logout" title="Logout">
+									<i class="feather icon-log-out"></i>
+								</a>
+							</div>
+							<ul class="pro-body">
+								<li><a href="#!" class="dropdown-item"><i class="feather icon-settings"></i> Settings</a></li>
+								<li><a href="#!" class="dropdown-item"><i class="feather icon-user"></i> Profile</a></li>
+								<li><a href="message.html" class="dropdown-item"><i class="feather icon-mail"></i> My Messages</a></li>
+								<li><a href="auth-signin.html" class="dropdown-item"><i class="feather icon-lock"></i> Lock Screen</a></li>
+							</ul>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</header>
+	@{
+		var currentController = ViewContext.RouteData.Values["controller"]?.ToString()?.ToLower();
+		var currentAction = ViewContext.RouteData.Values["action"]?.ToString()?.ToLower();
+
+		bool isDashboardActive = currentController == "home" && (currentAction == "index" || currentAction == "AdminDashboard" || currentAction == "TeacherDashboard");
+		bool isDurationActive = currentController == "Duration" && (currentAction == "GetDuration" || currentAction == "GetClasses" || currentAction == "GetClassTimeTable");
+		bool isAdmissionsActive = currentController == "Admissions";
+		bool isUserTypeActive = currentController == "UserManagement" && currentAction.Contains("GetUserType");
+		bool isUserActive = currentController == "UserManagement" && currentAction.Contains("GetUser");
+		bool isTeacherActive = currentController == "Teachers" && currentAction.Contains("TeachersIndex");
+		bool isSubject = currentController == "Subject" && currentAction.Contains("GetSubject");
+		bool isSubscriptionTypeActive = currentController == "SubScriptionsType" && currentAction.Contains("GetSubscriptionsType");
+		bool isReportCardActive = currentController == "ReportCard" && currentAction.Contains("Index");
+		bool isSchool = currentController == "School" && currentAction.Contains("GetSchool");
+		bool isSchoolAddressActive = currentController == "SchoolAddress" && currentAction.Contains("GetSchoolAddresses");
+		bool isClassActive = currentController == "Class" && currentAction.Contains("GetClasses");
+		bool isTimeTableStructure = currentController == "ClassTimeTable" && currentAction.Contains("GetClassTimeTable");
+		bool isFeeItemActive = currentController == "FeeItem" && currentAction.Contains("GetFeeItems");
+		bool isFeeCategoryActive = currentController == "FeeCategory" && currentAction.Contains("GetFeeCategoryName");
+		bool isFeePaymentActive = currentController == "FeePayments" && currentAction.Contains("GetFeePayments");
+		bool isSubscriptionPaymentActive = currentController == "SubScriptionPayments" && currentAction == "GetPayments";
+		bool isStudentAttendenceActive = currentController == "StudentAttendence" && currentAction == "GetStudentAttendence";
+	}
+
+	<div class="sidebar-inner slimscroll">
+		<div id="sidebar-menu" class="sidebar-menu">
+			<ul>
+				<li class="menu-title"><span>MAIN MENU</span></li>
+
+				@if (User.HasClaim("UserType", "Super Admin"))
+				{
+					<li class="@(isDashboardActive ? "active" : "")">
+						<a href="~/Home/Index"><i class="ti ti-smart-home"></i><span>Dashboard</span></a>
+					</li>
+					<li class="@(isDurationActive ? "active" : "")">
+						<a href="~/Duration/GetDuration"><i class="ti ti-calendar-user"></i><span>Duration</span></a>
+					</li>
+					<li class="@(isSubscriptionTypeActive ? "active" : "")">
+						<a href="~/SubscriptionsType/GetSubscriptionsType"><i class="ti ti-checklist"></i><span>SubscriptionsType</span></a>
+					</li>
+					<li class="@(isSchool ? "active" : "")">
+						<a href="~/School/GetSchool"><i class="ti ti-beach"></i><span>School</span></a>
+					</li>
+					<li class="@(isSchoolAddressActive ? "active" : "")">
+						<a href="~/SchoolAddress/GetSchoolAddresses"><i class="ti ti-logout-2"></i><span>SchoolAddress</span></a>
+					</li>
+					<li class="@(isSubscriptionPaymentActive ? "active" : "")">
+						<a href="~/SubscriptPayments/GetPayment"><i class="ti ti-wallet"></i><span>Payroll</span></a>
+					</li>
+				}
+				else if (User.HasClaim("UserType", "Admin") || User.HasClaim("UserType", "Teacher"))
+				{
+					<li class="@(isDashboardActive ? "active" : "")">
+						<a href="~/Home/AdminDashboard"><i class="ti ti-smart-home"></i><span>Dashboard</span></a>
+					</li>
+					<li class="@(isAdmissionsActive ? "active" : "")">
+						<a href="~/Admissions/GetAdmissions"><i class="ti ti-users"></i><span>Admissions</span></a>
+					</li>
+					<li class="@(isUserTypeActive ? "active" : "")">
+						<a href="~/UserManagement/GetUserType"><i class="ti ti-credit-card"></i><span>User Type</span></a>
+					</li>
+					<li class="@(isUserActive ? "active" : "")">
+						<a href="~/UserManagement/GetUser"><i class="ti ti-credit-card"></i><span>User</span></a>
+					</li>
+					<li class="@(isTeacherActive ? "active" : "")">
+						<a href="~/Teachers/TeachersIndex"><i class="ti ti-credit-card"></i><span>Teachers</span></a>
+					</li>
+					<li class="@(isSubject ? "active" : "")">
+						<a href="~/Subject/GetSubject"><i class="ti ti-beach"></i><span>Subjects</span></a>
+					</li>
+					<li class="@(isReportCardActive ? "active" : "")">
+						<a href="~/ReportCard/Index"><i class="ti ti-calendar-user"></i><span>Report Cards</span></a>
+					</li>
+					<li class="@(isClassActive ? "active" : "")">
+						<a href="~/Class/GetClasses"><i class="ti ti-checklist"></i><span>Daily Tasks</span></a>
+					</li>
+					<li class="@(isTimeTableStructure ? "active" : "")">
+						<a href="~/ClassTimeTable/GetClassTimeTable"><i class="ti ti-calendar"></i><span>TimeTable</span></a>
+					</li>
+					<li class="@(isFeeItemActive ? "active" : "")">
+						<a href="~/FeeItems/GetFeeItems"><i class="ti ti-wallet"></i><span>FeeItem</span></a>
+					</li>
+					<li class="@(isFeeCategoryActive ? "active" : "")">
+						<a href="~/FeeCategory/GetFeeCategoryName"><i class="ti ti-wallet"></i><span>FeeItem</span></a>
+					</li>
+					<li class="@(isFeePaymentActive ? "active" : "")">
+						<a href="~/FeePayments/GetFeePayments"><i class="ti ti-wallet"></i><span>FeeItem</span></a>
+					</li>
+				}
+			</ul>
+		</div>
+	</div>
+
+	<!-- [ Header ] end -->
+
+	<!-- [ Main Content ] start -->
+	<div class="pcoded-main-container">
+		<div class="pcoded-wrapper">
+			<div class="pcoded-content">
+				<div class="pcoded-inner-content">
+					<div class="main-body">
+						<div class="page-wrapper">
+							@RenderBody()
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [ Main Content ] end -->
+
+	<!-- Warning Section start -->
+	<!-- Older IE warning message -->
+	<!--[if lt IE 11]>
+        <div class="ie-warning">
+            <h1>Warning!!</h1>
+            <p>You are using an outdated version of Internet Explorer, please upgrade
+               <br/>to any of the following web browsers to access this website.
+            </p>
+            <div class="iew-container">
+                <ul class="iew-download">
+                    <li>
+                        <a href="http://www.google.com/chrome/">
+                            <img src="~/resources/assets/images/browser/chrome.png" alt="Chrome">
+                            <div>Chrome</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.mozilla.org/en-US/firefox/new/">
+                            <img src="~/resources/assets/images/browser/firefox.png" alt="Firefox">
+                            <div>Firefox</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://www.opera.com">
+                            <img src="~/resources/assets/images/browser/opera.png" alt="Opera">
+                            <div>Opera</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.apple.com/safari/">
+                            <img src="~/resources/assets/images/browser/safari.png" alt="Safari">
+                            <div>Safari</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie">
+                            <img src="~/resources/assets/images/browser/ie.png" alt="">
+                            <div>IE (11 & above)</div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <p>Sorry for the inconvenience!</p>
+        </div>
+    <![endif]-->
+	<!-- Warning Section Ends -->
+
+	<!-- Required Js -->
+	<script src="~/resources/assets/js/vendor-all.min.js"></script>
+	<script src="~/resources/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+	<script src="~/resources/assets/js/pcoded.min.js"></script>
+	<script src="~/js/your-script.js"></script>
+
+</body>
+</html>  *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>School Management System</title>
+	<!-- Meta Tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="description" content="School Management System">
+	<meta name="author" content="Your Company">
+
+	<!-- Favicon -->
+	<link rel="icon" href="~/resources/assets/images/favicon.ico" type="image/x-icon">
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="~/resources/assets/fonts/fontawesome/css/fontawesome-all.min.css">
+	<link rel="stylesheet" href="~/resources/assets/plugins/animation/css/animate.min.css">
+	<link rel="stylesheet" href="~/resources/assets/css/style.css">
+	<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+	<!-- Scripts -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="">
+	<!-- [ Pre-loader ] start -->
+	<div class="loader-bg">
+		<div class="loader-track">
+			<div class="loader-fill"></div>
+		</div>
+	</div>
+	<!-- [ Pre-loader ] End -->
+	<!-- [ Navigation Menu ] start -->
+	<nav class="pcoded-navbar menupos-fixed menu-light brand-blue ">
+		<div class="navbar-wrapper ">
+			<div class="navbar-brand header-logo">
+				<a href="index.html" class="b-brand">
+					<img src="~/resources/assets/images/SSMSLogo.png" alt="Logo" class="logo images" width="180" height="60	">
+					@*<img src="~/resources/assets/images/logo-icon.svg" alt="Logo" class="logo-thumb images">*@
+				</a>
+				<a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
+			</div>
+			<div class="navbar-content scroll-div">
+				<ul class="nav pcoded-inner-navbar">
+					@* <li class="nav-item pcoded-menu-caption">
+						<label>Main Navigation</label>
+					</li> *@
+
+					@if (User.Identity.IsAuthenticated)
+					{
+						<!-- Super Admin Menu -->
+						@if (User.HasClaim("UserType", "Super Admin"))
+						{
+							<li class="nav-item">
+								<a href="~/Home/Index" class="nav-link">
+									<span class="pcoded-micon"><i class="feather icon-home"></i></span>
+									<span class="pcoded-mtext">Dashboard</span>
+								</a>
+							</li>
+
+							<li class="nav-item pcoded-hasmenu">
+								<a href="#!" class="nav-link">
+									<span class="pcoded-micon"><i class="feather icon-settings"></i></span>
+									<span class="pcoded-mtext">System Setup</span>
+								</a>
+								<ul class="pcoded-submenu">
+									<li><a href="~/UserManagement/GetUser">User Management</a></li>
+									<li><a href="~/School/GetSchool">School Management</a></li>
+									<li><a href="~/SubscriptionsType/GetSubscriptionsType">Subscription Types</a></li>
+									<li><a href="~/Duration/GetDuration">Durations</a></li>
+									<li><a href="~/Modules/GetModules">Module</a></li>
+								</ul>
+							</li>
+
+							<li class="nav-item pcoded-hasmenu">
+								<a href="#!" class="nav-link">
+									<span class="pcoded-micon"><i class='bx bx-money'></i></span>
+									<span class="pcoded-mtext">Financials</span>
+								</a>
+								<ul class="pcoded-submenu">
+									<li><a href="~/SubscriptionPayments/GetPayment">Subscriptions</a></li>
+								</ul>
+							</li>
+						}
+
+						<!-- School Admin Menu -->
+						@if (User.HasClaim("UserType", "School Admin"))
+						{
+							<li class="nav-item">
+								<a href="~/Home/AdminDashboard" class="nav-link">
+									<span class="pcoded-micon"><i class="feather icon-home"></i></span>
+									<span class="pcoded-mtext">Dashboard</span>
+								</a>
+							</li>
+							<!-- Admin menu items -->
+							<li class="nav-item pcoded-hasmenu">
+								<a href="#!" class="nav-link">
+									<span class="pcoded-micon"><i class='bx bxs-school'></i></span>
+									<span class="pcoded-mtext">School Management</span>
+								</a>
+								<ul class="pcoded-submenu">
+									<li><a href="~/Class/GetClasses">Classes</a></li>
+									<li><a href="~/Subject/GetSubject">Subjects</a></li>
+									<li><a href="~/Teachers/TeachersIndex">Teachers</a></li>
+									<li><a href="~/Student/GetStudents">Student</a></li>
+									<li><a href="~/ClassTimetable/GetClassTimetable">ClassTimetable</a></li>
+								</ul>
+							</li>
+							<li class="nav-item pcoded-hasmenu">
+								<a href="#!" class="nav-link"><span class="pcoded-micon"><i class='bx bxs-bank'></i></span><span class="pcoded-mtext">Fee</span></a>
+								<ul class="pcoded-submenu">
+									<li class=""><a href="~/FeeCategory/GetFeeCategoryName" class="">FeeCategory</a></li>
+									<li class=""><a href="~/FeeItems/GetFeeItems" class="">FeeItems</a></li>
+									<li class=""><a href="~/FeePayments/GetFeePayments" class="">FeePayments</a></li>
+								</ul>
+							</li>
+							<li class="nav-item pcoded-hasmenu">
+								<a href="#!" class="nav-link"><span class="pcoded-micon"><i class='bx bx-book-content'></i></span><span class="pcoded-mtext">Admissions</span></a>
+								<ul class="pcoded-submenu">
+									<li class=""><a href="~/Admissions/GetAdmissions" class="">Admissions</a></li>
+								</ul>
+							</li>
+
+						}
+
+						<!-- Teacher Menu -->
+						@if (User.HasClaim("UserType", "Teacher"))
+						{
+							<li class="nav-item">
+								<a href="~/Home/TeacherDashboard" class="nav-link">
+									<span class="pcoded-micon"><i class="feather icon-home"></i></span>
+									<span class="pcoded-mtext">Dashboard</span>
+								</a>
+							</li>
+							<!-- Teacher menu items -->
+							<li class="nav-item pcoded-hasmenu">
+								<a href="#!" class="nav-link">
+									<span class="pcoded-micon"><i class='bx bx-book'></i></span>
+									<span class="pcoded-mtext">My Classes</span>
+								</a>
+								<ul class="pcoded-submenu">
+									<li><a href="~/ClassTimetable/GetClassTimetable">Timetable</a></li>
+									<li><a href="~/StudentAttendence/GetStudentAttendence">Attendance</a></li>
+									<li><a href="~/Student/GetStudents">Student</a></li>
+									<li >
+										<a href="~/ReportCard/Index"><i class="ti ti-calendar-user"></i><span>Report Cards</span></a>
+									</li>
+								</ul>
+							</li>
+							<li class="nav-item pcoded-hasmenu">
+								<a href="#!" class="nav-link"><span class="pcoded-micon"><i class='bx bx-book-content'></i></span><span class="pcoded-mtext">Admissions</span></a>
+								<ul class="pcoded-submenu">
+									<li class=""><a href="~/Admissions/GetAdmissions" class="">Admissions</a></li>
+								</ul>
+							</li>
+
+						}
+
+						
+					
+						<!-- Common Menu Items -->
+						<li class="nav-item pcoded-hasmenu">
+							<a href="#!" class="nav-link">
+								<span class="pcoded-micon"><i class='bx bx-user'></i></span>
+								<span class="pcoded-mtext">Account</span>
+							</a>
+							<ul class="pcoded-submenu">
+								<li><a href="~/Account/Profile">My Profile</a></li>
+								<li><a href="~/Account/ChangePassword">Change Password</a></li>
+								<li><a href="~/Account/Logout">Logout</a></li>
+							</ul>
+						</li>
+					}
+					else
+					{
+						<li class="nav-item">
+							<a href="~/Authenticate/Login" class="nav-link">
+								<span class="pcoded-micon"><i class='bx bx-log-in'></i></span>
+								<span class="pcoded-mtext">Login</span>
+							</a>
+						</li>
+					}
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<!-- [ Navigation Menu ] end -->
+	<!-- [ Header ] start -->
+	<header class="navbar pcoded-header navbar-expand-lg navbar-light headerpos-fixed">
+		<div class="m-header">
+			<a class="mobile-menu" id="mobile-collapse1" href="#!"><span></span></a>
+			<a href="index.html" class="b-brand">
+				<img src="~/resources/assets/images/logo.svg" alt="Logo" class="logo images">
+			</a>
+		</div>
+		<div class="collapse navbar-collapse">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item dropdown">
+					<a class="dropdown-toggle" href="#" data-toggle="dropdown">
+						<i class="icon feather icon-bell"></i>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right notification">
+						<!-- Notification content -->
+					</div>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="dropdown-toggle" href="#" data-toggle="dropdown">
+						<i class="icon feather icon-settings"></i>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right profile-notification">
+						<div class="pro-head">
+							<img src="~/resources/assets/images/user/avatar-1.jpg" class="img-radius" alt="User Profile">
+							<span>@User.Identity.Name</span>
+						</div>
+						<ul class="pro-body">
+							<li><a href="~/Account/Profile" class="dropdown-item"><i class="feather icon-user"></i> Profile</a></li>
+							<li><a href="~/Account/Logout" class="dropdown-item"><i class="feather icon-log-out"></i> Logout</a></li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</header>
+	<!-- [ Header ] end -->
+	<!-- [ Main Content ] start -->
+	<div class="pcoded-main-container">
+		<div class="pcoded-wrapper">
+			<div class="pcoded-content">
+				<div class="pcoded-inner-content">
+					<div class="main-body">
+						<div class="page-wrapper">
+							@RenderBody()
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [ Main Content ] end -->
+	<!-- Required Scripts -->
+	<script src="~/resources/assets/js/vendor-all.min.js"></script>
+	<script src="~/resources/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+	<script src="~/resources/assets/js/pcoded.min.js"></script>
+	@RenderSection("scripts", required: false)
+
+	
+</body>
+</html>
+<script>
+	// Pagination configuration
+	const rowsPerPage = 5;
+
+	function setupPagination(tableBodyId, paginationId) {
+		const rows = $(`#${tableBodyId} tr`);
+		const rowsCount = rows.length;
+		const pageCount = Math.ceil(rowsCount / rowsPerPage);
+		let currentPage = 1;
+
+		// Generate pagination buttons
+		function generatePagination() {
+			$(`#${paginationId}`).empty();
+			for (let i = 1; i <= pageCount; i++) {
+				$(`#${paginationId}`).append(`
+					<li class="page-item ${i === 1 ? 'active' : ''}">
+						<a class="page-link" href="#" onclick="goToPage(${i}, '${tableBodyId}', '${paginationId}')">${i}</a>
+					</li>
+				`);
+			}
+		}
+
+		// Display rows for the selected page
+		function displayRows(page) {
+			const start = (page - 1) * rowsPerPage;
+			const end = start + rowsPerPage;
+			rows.hide();
+			rows.slice(start, end).show();
+		}
+
+		// Handle page navigation
+		window.goToPage = function (page, bodyId, paginationId) {
+			if (page < 1 || page > pageCount) return;
+			currentPage = page;
+			displayRows(page);
+
+			$(`#${paginationId} li`).removeClass('active');
+			$(`#${paginationId} li:nth-child(${page})`).addClass('active');
+		}
+
+		// Initialize pagination
+		displayRows(1);
+		generatePagination();
+	}
+</script>
+

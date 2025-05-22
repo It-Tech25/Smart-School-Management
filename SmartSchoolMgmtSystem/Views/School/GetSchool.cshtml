@@ -1,0 +1,691 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.SchoolDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 50%;
+        width: 50%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">School Management</h4>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search Classes..." style="width: 300px;" />
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add School
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="schoolTable" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Code</th>
+                                        <th>Profile Picture</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="classTableBody">
+                                    @foreach (var school in Model)
+                                    {
+                                        <tr>
+                                            <td>@sno</td>
+                                            <td>@school.Name</td>
+                                            <td>@school.Code</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(school.ProfilePhoto1))
+                                                {
+                                                    <img src="@Url.Content(school.ProfilePhoto1)" alt="Profile" style="height: 40px; width: 40px; object-fit: cover; border-radius: 50%;" />
+                                                    <img src="@Url.Content(school.ProfilePhoto2)" alt="Profile" style="height: 40px; width: 40px; object-fit: cover; border-radius: 50%;" />
+                                                    <img src="@Url.Content(school.ProfilePhoto3)" alt="Profile" style="height: 40px; width: 40px; object-fit: cover; border-radius: 50%;" />
+                                                }
+                                                else
+                                                {
+                                                    <span>No Image</span>
+                                                }
+                                            <td>
+                                                <button class="btn btn-primary btn-xs" onclick="loadSchoolData(@school.SchoolId)">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+
+                                                <button class="btn btn-danger btn-xs" onclick="DeleteSchool(@school.SchoolId)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        sno++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination Controls -->
+                        <ul id="pagination" class="pagination justify-content-end"></ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add School</h5>
+            </div>
+            <div class="modal-body">
+                <form id="schoolForm" action="@Url.Action("AddSchool", "School")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <!-- Existing Fields -->
+                        <div class="col-lg-6">
+                            <label>Name <span class="required">*</span></label>
+                            <input type="text" name="Name" class="form-control" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Code <span class="required">*</span></label>
+                            <input type="text" name="Code" class="form-control" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="PrincipalName">Principal Name <span class="required">*</span></label>
+                            <select class="form-control" id="UserName" name="UserName" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.Principle)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-12 mt-4">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">
+                                Address
+                            </h5>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label for="AddressType">Address Type <span class="required">*</span></label>
+                            <select class="form-control" id="AddressType" name="AddressType" required>
+                                <option value="" selected>--Select--</option>
+                                <option value="Urban">Urban</option>
+                                <option value="Rural">Rural</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="Address">Address <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="AddressLine" name="AddressLine" required placeholder="Enter Address" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="States">State <span class="required">*</span></label>
+                            <select class="form-control" id="State" name="State" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.State)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="City">City <span class="required">*</span></label>
+                            <select class="form-control" id="City" name="City" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.city)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="Zipcode">Zipcode <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="Zipcode" name="Zipcode" required
+                                   placeholder="Enter Zipcode" maxlength="6" pattern="\d{6}"
+                                   title="Zipcode must be exactly 6 digits" />
+                        </div>
+
+                        <!-- Profile Photos Section -->
+
+                        <div class="col-lg-12 mt-4">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">
+                                Profile Photos (Optional)
+                            </h5>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="ProfilePhoto1">Profile Photo 1</label>
+                            <input type="file" class="form-control" id="ProfilePhoto1" name="ProfilePhoto1" accept="image/*" onchange="previewProfileImage()" />
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="col-md-6 mb-3">
+                            <label>Preview</label><br />
+                            <img id="profilePreview1" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="ProfilePhoto2">Profile Photo 2</label>
+                            <input type="file" class="form-control" id="ProfilePhoto2" name="ProfilePhoto2" accept="image/*" onchange="previewProfileImage()" />
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="col-md-6 mb-3">
+                            <label>Preview</label><br />
+                            <img id="profilePreview2" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="ProfilePhoto3">Profile Photo 3</label>
+                            <input type="file" class="form-control" id="ProfilePhoto3" name="ProfilePhoto3" accept="image/*" onchange="previewProfileImage()" />
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="col-md-6 mb-3">
+                            <label>Preview</label><br />
+                            <img id="profilePreview3" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
+                        </div>
+
+
+                        <div class="col-lg-12 mt-3">
+                            <p id="photoCount" style="font-weight:bold;">Photos Uploaded: 0/3</p>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-3">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirect()">Cancel</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editSchoolModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit School</h5>
+            </div>
+            <div class="modal-body">
+                <form id="editSchoolForm" action="@Url.Action("UpdateSchool", "School")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="SchoolId" id="editSchoolId" />
+                    <div class="row">
+                        <!-- Existing Fields -->
+                        <div class="col-lg-6">
+                            <label>Name <span class="required">*</span></label>
+                            <input type="text" name="Name" id="editName" class="form-control" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Code <span class="required">*</span></label>
+                            <input type="text" name="Code" id="editCode" class="form-control" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="EditPrincipalName">Principal Name <span class="required">*</span></label>
+                            <select class="form-control" id="EditUserName" name="UserName" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.Principle)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-lg-12 mt-4">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">
+                                Address
+                            </h5>
+                        </div>
+
+                        <!-- New Address Fields -->
+                        <div class="col-lg-6">
+                            <label for="editAddressType">Address Type <span class="required">*</span></label>
+                            <select class="form-control" id="editAddressType" name="AddressType" required>
+                                <option value="" selected>--Select--</option>
+                                <option value="Urban">Urban</option>
+                                <option value="Rural">Rural</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editAddress">Address <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editAddress" name="AddressLine" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editState">State <span class="required">*</span></label>
+                            <select class="form-control" id="editState" name="State" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.State)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editCity">City <span class="required">*</span></label>
+                            <select class="form-control" id="editCity" name="City" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.city)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editZipcode">Zipcode <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editZipcode" name="Zipcode" required
+                                   maxlength="6" pattern="\d{6}" title="Zipcode must be exactly 6 digits" />
+                        </div>
+
+                        <!-- Profile Photos Section -->
+                        <div class="col-lg-12 mt-4">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">
+                                Profile Photos (Optional)
+                            </h5>
+                        </div>
+
+                        <!-- Photo 1 -->
+                        <div class="col-md-6 mb-3">
+                            <label for="EditProfilePhoto1">Profile Photo 1</label>
+                            <input type="file" class="form-control" id="EditProfilePhoto1" name="ProfilePhoto1" accept="image/*" />
+                            <img id="editProfilePreview1" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
+                        </div>
+
+                        <!-- Photo 2 -->
+                        <div class="col-md-6 mb-3">
+                            <label for="EditProfilePhoto2">Profile Photo 2</label>
+                            <input type="file" class="form-control" id="EditProfilePhoto2" name="ProfilePhoto2" accept="image/*" />
+                            <img id="editProfilePreview2" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
+                        </div>
+
+                        <!-- Photo 3 -->
+                        <div class="col-md-6 mb-3">
+                            <label for="EditProfilePhoto3">Profile Photo 3</label>
+                            <input type="file" class="form-control" id="EditProfilePhoto3" name="ProfilePhoto3" accept="image/*" />
+                            <img id="editProfilePreview3" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
+                        </div>
+
+                        <div class="col-lg-12 mt-3">
+                            <p id="editPhotoCount" style="font-weight:bold;">Photos Uploaded: 0/3</p>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-3">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirects()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+       function openAddModal() {
+        $('#addModal').modal('show');
+    }
+        $('#editSchoolForm').submit(function (e) {
+        e.preventDefault();
+
+        // Sync edit checkbox value
+        if ($('#editIsActiveCheckbox').is(':checked')) {
+            $('#editIsActiveHidden').val('Active');
+        } else {
+            $('#editIsActiveHidden').val('InActive');
+        }
+
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/School/UpdateSchool',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Updated!", "School updated successfully.", "success").then(() => {
+                        $('#editSchoolModal').modal('hide');
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire("Error!", response.message || "Failed to update School.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "An error occurred while updating the School.", "error");
+            }
+        });
+    });
+
+    function EditSchool(schoolId, name, code, isActive, addressType, address, state, city, zipcode, images) {
+        $('#editSchoolId').val(schoolId);
+        $('#editName').val(name);
+        $('#editCode').val(code);
+        $('#editAddressType').val(addressType);
+        $('#editAddress').val(address);
+        $('#editState').val(state);
+        $('#editCity').val(city);
+        $('#editZipcode').val(zipcode);
+
+        // Set checkbox state
+        if (isActive === "Active") {
+            $("#editIsActiveCheckbox").prop("checked", true);
+            $("#editIsActiveHidden").val("Active");
+        } else {
+            $("#editIsActiveCheckbox").prop("checked", false);
+            $("#editIsActiveHidden").val("InActive");
+        }
+
+        // Clear previous previews
+        for (let i = 1; i <= 3; i++) {
+            $(`#editProfilePreview${i}`).attr('src', '#').hide();
+        }
+
+        // Load new previews if images are available
+        if (images) {
+            images.forEach((img, index) => {
+                if (img) {
+                    $(`#editProfilePreview${index + 1}`).attr('src', img).show();
+                }
+            });
+            updateEditPhotoCount();
+        }
+
+        $('#editSchoolModal').modal('show');
+    }
+
+      $('#schoolForm').submit(function (e) {
+        e.preventDefault();
+
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/School/AddSchool',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Success!", "School added successfully.", "success")
+                        .then(() => {
+                            window.location.reload();
+                        });
+                } else {
+                    Swal.fire("Error!", response.message || "School already exists.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "There was an error processing your request.", "error");
+            }
+        });
+    });
+
+            $('#editSchoolForm').submit(function (e) {
+            e.preventDefault();
+             // Sync edit checkbox value
+        if ($('#editIsActiveCheckbox').is(':checked')) {
+            $('#editIsActiveHidden').val('Active');
+        } else {
+            $('#editIsActiveHidden').val('InActive');
+        }
+            var formData = new FormData(this);
+            $.ajax({
+                url: '/School/UpdateSchool',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Updated!", "School updated successfully.", "success").then(() => {
+                            $('#editModal').modal('hide');
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire("Error!", response.message || "Failed to update School.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "An error occurred while updating the School.", "error");
+                }
+            });
+        });
+
+
+    function DeleteSchool(schoolId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You want to delete this school?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post('/School/DeleteSchool/' + schoolId, function (response) {
+                    if (response.success) {
+                        Swal.fire("Deleted!", "School deleted successfully.", "success").then(() => location.reload());
+                    } else {
+                        Swal.fire("Error!", response.message || "Failed to delete school.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+      function updateEditPhotoCount() {
+        const count = Array.from(document.querySelectorAll('input[id^="EditProfilePhoto"]'))
+            .filter(input => input.files.length > 0).length;
+        document.getElementById('editPhotoCount').innerText = `Photos Uploaded: ${count}/3`;
+    }
+
+
+        $(document).ready(function () {
+        $('#IsActiveCheckbox').change(function () {
+            if ($(this).is(':checked')) {
+                $('#IsActiveHidden').val('Active');
+            } else {
+                $('#IsActiveHidden').val('InActive');
+            }
+        });
+    });
+
+        function loadSchoolData(schoolId) {
+        $.ajax({
+            url: '/School/GetSchoolById',
+            type: 'GET',
+            data: { id: schoolId },
+            success: function (response) {
+                if (response.success) {
+                    const data = response.data;
+                    $('#editSchoolId').val(data.SchoolId);
+                    $('#editName').val(data.Name);
+                    $('#editCode').val(data.Code);
+                    $('#editAddressType').val(data.AddressType);
+                    $('#editAddress').val(data.AddressLine);
+                    $('#editState').val(data.State);
+
+                    // Populate city dropdown dynamically
+                    updateEditCityDropdown(data.State, data.City);
+
+                    $('#editZipcode').val(data.ZipCode);
+
+                    if (data.IsActive === "Active") {
+                        $("#editIsActiveCheckbox").prop("checked", true);
+                        $("#editIsActiveHidden").val("Active");
+                    } else {
+                        $("#editIsActiveCheckbox").prop("checked", false);
+                        $("#editIsActiveHidden").val("InActive");
+                    }
+
+                    $('#editSchoolModal').modal('show');
+                } else {
+                    Swal.fire("Error", response.message, "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error", "Failed to fetch school data", "error");
+            }
+        });
+    }
+
+    // Helper to update city dropdown in edit form
+    function updateEditCityDropdown(state, selectedCity) {
+        $.ajax({
+            url: '/School/GetCitiesByState',
+            type: 'GET',
+            data: { state: state },
+            success: function (cities) {
+                var $cityDropdown = $('#editCity');
+                $cityDropdown.empty();
+                $cityDropdown.append('<option value="">--Select--</option>');
+                $.each(cities, function (index, city) {
+                    if (city === selectedCity) {
+                        $cityDropdown.append('<option value="' + city + '" selected>' + city + '</option>');
+                    } else {
+                        $cityDropdown.append('<option value="' + city + '">' + city + '</option>');
+                    }
+                });
+            },
+            error: function () {
+                Swal.fire("Error", "Could not load cities", "error");
+            }
+        });
+    }
+    function previewProfileImage() {
+        const fileInputs = [
+            { inputId: 'ProfilePhoto1', previewId: 'profilePreview1' },
+            { inputId: 'ProfilePhoto2', previewId: 'profilePreview2' },
+            { inputId: 'ProfilePhoto3', previewId: 'profilePreview3' }
+        ];
+
+        fileInputs.forEach(({ inputId, previewId }) => {
+            const fileInput = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                preview.src = '#';
+                preview.style.display = 'none';
+            }
+        });
+
+        // Update the photo count after previewing
+        updatePhotoCount();
+    }
+
+    document.querySelectorAll('input[id^="EditProfilePhoto"]').forEach(input => {
+        input.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const previewId = `editProfilePreview${this.id.slice(-1)}`;
+                const previewImage = document.getElementById(previewId);
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+
+                updateEditPhotoCount();
+            } else {
+                // Hide the image if it's removed
+                $(`#editProfilePreview${this.id.slice(-1)}`).hide();
+                updateEditPhotoCount();
+            }
+        });
+    });
+
+
+        //search field in table
+    $(document).ready(function () {
+        $('#searchInput').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $("#classTableBody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+
+
+    //city Dropdown
+     $(document).ready(function () {
+        $('#State').change(function () {
+            var selectedState = $(this).val();
+
+            if (selectedState) {
+                $.ajax({
+                    url: '@Url.Action("GetCitiesByState", "School")',
+                    type: 'GET',
+                    data: { state: selectedState },
+                    success: function (data) {
+                        var $cityDropdown = $('#City');
+                        $cityDropdown.empty();
+                        $cityDropdown.append('<option value="">--Select--</option>');
+
+                        $.each(data, function (index, value) {
+                            $cityDropdown.append('<option value="' + value + '">' + value + '</option>');
+                        });
+                    },
+                    error: function () {
+                        alert('Failed to retrieve cities.');
+                    }
+                });
+            }
+        });
+    });
+
+      $(document).ready(function () {
+        setupPagination('classTableBody', 'pagination');
+    });
+    //Cancel Button
+    function cancelAndRedirect() {
+        $('#addModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetSchool", "School")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+     function cancelAndRedirects() {
+        $('#editSchoolModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetSchool", "School")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+
+</script>
+
+

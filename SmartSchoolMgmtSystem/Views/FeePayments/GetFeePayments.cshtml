@@ -1,0 +1,371 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.FeePaymentsDTO>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+
+</style>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">FeePayments</h4>
+                        @* <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add FeePayments
+                        </button> *@
+                    </div>
+
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="list" role="tabpanel">
+                                <!-- Table -->
+                                <div class="table-responsive">
+                                    <table id="example2" class="table table-striped" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>PaymentId</th>
+                                                <th>Student Name</th>
+                                                <th>PaymentDate</th>
+                                                <th>Amount</th>
+                                                <th>ReceiptNumber</th>
+                                               @*  <th>Action</th> *@
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@sno</td>
+                                                    <td>
+                                                        <a href="#"
+                                                           class="open-add-fee-payment"
+                                                           data-payment-id="@item.PaymentId"
+                                                           data-student-id="@item.StudentId"
+                                                           data-student-name="@item.Name"
+                                                           title="Add Fee Payment">
+                                                            @item.Name
+                                                        </a>
+                                                    </td>
+
+                                                    <td>@item.PaymentDate</td>
+                                                    <td>@item.Amount</td>
+                                                    <td>@item.ReceiptNumber</td>
+                                                   
+
+
+                                                    @* <td>
+                                                        <a href="#" onclick="EditFeePayments('@item.PaymentId', '@item.StudentId', '@item.ItemId' '@item.Amount' )"
+                                                           title="Edit" class="text-primary">
+                                                            <button type="button" class="waves-effect waves-circle btn btn-circle btn-primary btn-xs">
+                                                                <i class="fa fa-edit"></i>
+                                                            </button>
+                                                        </a>
+                                                        <a href="#" onclick="DeleteFeePayments(@item.PaymentId)" title="Delete">
+                                                            <button type="button" class="waves-effect waves-circle btn btn-circle btn-danger btn-xs">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </a>
+                                                    </td> *@
+                                                </tr>
+                                                sno++;
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Add Fee Payments</h5>
+            </div>
+            <div class="modal-body">
+                <form id="FeePaymentsForm" action="@Url.Action("AddFeePayments", "FeePayments")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="PaymentId" id="PaymentId" value="" />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">
+                                Fee Payments
+                            </h5>
+                        </div>
+
+                        <!-- Student Name (Readonly) -->
+                        <div class="col-lg-6">
+                            <label for="StudentName">Student Name</label>
+                            <input type="text" class="form-control" id="StudentName" name="StudentName" readonly />
+                        </div>
+
+                        <!-- Student ID Dropdown -->
+                        <div class="col-lg-6">
+                            <label for="StudentId">StudentId <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="StudentId" name="StudentId" readonly />
+                        </div>
+
+
+                        <!-- Fee Item Dropdown -->
+                        <div class="col-lg-6">
+                            <label for="Class">ItemId <span class="required">*</span></label>
+                            <select class="form-control" id="ItemId" name="ItemId" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.FeeItems as List<SmartSchool.Models.DTO.FeeItemsDto>)
+                                {
+                                    <option value="@item.ItemId">@item.ItemId</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Amount Input -->
+                        <div class="col-lg-6">
+                            <label for="Amount">Amount <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="Amount" name="Amount" required placeholder="Enter Amount" />
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label for="PaymentDate">Payment Date <span class="required">*</span></label>
+                            <input type="date" class="form-control" id="PaymentDate" name="PaymentDate" readonly />
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirect()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <!-- Added modal-xl and custom class -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit FeePayments</h5>
+            </div>
+            <div class="modal-body">
+                <form id="editFeePaymentsForm" action="@Url.Action("UpdateFeePayments", "FeePayments")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="PaymentId" id="editPaymentId" value="" />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">FeePayment Details</h5>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="Student">StudentId<span class="required">*</span></label>
+                            <select class="form-control" id="StudentId" name="StudentId" required>
+                                <option value="" selected>--Select--</option>
+                                @foreach (var item in ViewBag.Students as List<SmartSchool.Models.DTO.StudentDTO>)
+                                {
+                                    <option value="@item.StudentId">@item.StudentId</option>
+                                }
+                            </select>
+                            <div class="col-lg-6">
+                                <label for="ItemId">ItemId<span class="required">*</span></label>
+                                <select class="form-control" id="ItemId" name="ItemId" required>
+                                    <option value="" selected>--Select--</option>
+                                    @foreach (var item in ViewBag.FeeItems as List<SmartSchool.Models.DTO.FeeItemsDto>)
+                                    {
+                                        <option value="@item.ItemId">@item.ItemId</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="Name">Amount <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="Amount" name="Amount" required placeholder="Enter Amount" />
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="Payment Date">Payment Date<span class="required">*</span></label>
+                                <input type="date" class="form-control" id="Payment Date" name="Payment Date" />
+                            </div>
+
+                        </div>
+
+                       
+
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" class="btn btn-success">Reset</button>
+                            <button type="button" class="btn btn-danger" onclick="cancelAndRedirects()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+             // Event handler for opening the modal
+    $(document).on('click', '.open-add-fee-payment', function () {
+        var paymentId = $(this).data('payment-id');
+        var studentId = $(this).data('student-id');
+        var studentName = $(this).data('student-name');
+        openAddFeePaymentModal(paymentId,studentId, studentName);
+    });
+
+    // Function to open the modal and populate fields
+    function openAddFeePaymentModal(paymentId,studentId, studentName) {
+        // Set the readonly field for Student Name
+        $('#PaymentId').val(paymentId);
+        $('#StudentId').val(studentId);
+        $('#StudentName').val(studentName);
+
+        // Set the dropdown to the correct student
+        
+
+        // Open the modal
+        $('#addModal').modal('show');
+    }
+
+               $('#FeePaymentsForm').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/FeePayments/AddFeePayments',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Success!", "FeePayments added successfully.", "success")
+                        .then(() => {
+                            window.location.reload();
+                        });
+                } else {
+                    Swal.fire("Error!", response.message || "FeePayments already exists.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "There was an error processing your request.", "error");
+            }
+        });
+    });
+
+
+        // Edit User Type Form Submission
+        $('#editFeePaymentsForm').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                url: '/FeePayments/UpdateFeePayments',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Updated!", "FeePayments updated successfully.", "success").then(() => {
+                            $('#editFeePaymentsModal').modal('hide');
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire("Error!", response.message || "Failed to update FeePayments.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "An error occurred while updating the FeePayments.", "error");
+                }
+            });
+        });
+
+        function EditFeePayments(PaymentId, StudentId, ItemId, Amount, PaymentDate) {
+        $('#editPaymentId').val(PaymentId);
+        $('#editStudentId').val(StudentId);
+        $('#editItemId').val(ItemId);
+        $('#editAmount').val(Amount);
+        $('#editPaymentDate').val(PaymentDate);
+
+          $('#editModal').modal('show');
+    }
+
+
+
+    // Delete User Type Function
+    function DeleteFeePayments(CategoryId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/FeePayments/DeleteFeePayments/' + PaymentId,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Deleted!", "FeePayments has been deleted.", "success").then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error!", response.message || "There was an issue deleting the FeePayments.", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "There was an error processing your request.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+        $(document).ready(function () {
+        // Get today's date in YYYY-MM-DD format
+        var today = new Date().toISOString().split('T')[0];
+        $('#PaymentDate').val(today);
+    });
+
+
+        //Cancel Button
+        function cancelAndRedirect() {
+        $('#addModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetFeePayments", "FeePayments")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+       }
+       function cancelAndRedirects() {
+        $('#editModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetFeePayments", "FeePayments")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+
+</script>

@@ -1,0 +1,296 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.SubscriptionsTypeDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+</style>
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Subscription Type</h4>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search Classes..." style="width: 300px;" />
+
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add Subscription Type
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example2" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Modules Enabled</th>
+                                        <th>Action</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody id="classTableBody">
+                                    @foreach (var subscriptionType in Model)
+                                    {
+                                        <tr>
+                                            <td>@sno</td>
+                                            <td>@subscriptionType.ModulesEnabled</td>
+
+                                            <td>
+                                                <a href="#" onclick="EditSubscriptionType(@subscriptionType.SubscriptionTypeId, '@subscriptionType.SubscriptionTypeId', '@subscriptionType.ModulesEnabled')" class="text-primary">
+                                                    <button type="button" class="btn btn-circle btn-primary btn-xs">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                </a>
+                                                <a href="#" onclick="DeleteSubscriptionType(@subscriptionType.SubscriptionTypeId)">
+                                                    <button type="button" class="btn btn-circle btn-danger btn-xs">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        sno++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination Controls -->
+                        <ul id="pagination" class="pagination justify-content-end"></ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Subscription Type</h5>
+            </div>
+            <div class="modal-body">
+                <form id="subscriptionTypeForm" action="@Url.Action("AddSubscriptionType", "SubscriptionManagement")" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <!-- Subscription Type Name -->
+                        <div class="col-lg-6">
+                            <label>Subscription Type <span class="required">*</span></label>
+                            <input type="text" name="SubscriptionTypeName" class="form-control" required />
+                        </div>
+
+                        <!-- Modules Enabled -->
+                        <div class="col-lg-6">
+                            <label>Modules Enabled <span class="required">*</span></label>
+                            <input type="text" name="ModulesEnabled" class="form-control" required />
+                        </div>
+
+
+                        <!-- Status -->
+                        <div class="col-lg-6">
+                            <label>Status</label>
+                            <select class="form-control" name="IsActive">
+                                <option value="true" selected>Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirect()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editSubscriptionTypeModal" tabindex="-1" aria-labelledby="editSubscriptionTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSubscriptionTypeModalLabel">Edit Subscription Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editSubscriptionTypeForm" action="@Url.Action("UpdateSubscriptionType", "SubscriptionManagement")" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="SubscriptionTypeId" id="editSubscriptionTypeId" />
+
+                    <div class="row">
+                        <!-- Subscription Type  -->
+                        <div class="col-lg-6">
+                            <label>Subscription Type  <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editSubscriptionTypeName" name="SubscriptionTypeName" required />
+                        </div>
+
+                        <!-- Modules Enabled -->
+                        <div class="col-lg-6">
+                            <label>Modules Enabled <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editModulesEnabled" name="ModulesEnabled" required />
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-lg-6">
+                            <label>Status</label>
+                            <select class="form-control" id="editIsActive" name="IsActive">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-3">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirectEdit()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        window.openAddModal = function () {
+            $('#addModal').modal('show');
+        };
+    });
+
+    $('#subscriptionTypeForm').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/SubscriptionsType/AddSubscriptionsType',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Success!", "Subscription type added successfully.", "success")
+                        .then(() => {
+                            window.location.reload();
+                        });
+                } else {
+                    Swal.fire("Error!", response.message || "Subscription type already exists.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "There was an error processing your request.", "error");
+            }
+        });
+    });
+
+    function EditSubscriptionType(subscriptionTypeId, subscriptionTypeName, modulesEnabled, isActive) {
+        $('#editSubscriptionTypeId').val(subscriptionTypeId);
+        $('#editSubscriptionTypeName').val(subscriptionTypeName);
+        $('#editModulesEnabled').val(modulesEnabled);
+        $('#editIsActive').val(isActive);
+
+        $('#editSubscriptionTypeModal').modal('show');
+    }
+
+    $('#editSubscriptionTypeForm').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/SubscriptionsType/UpdateSubscriptionsType',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Updated!", "Subscription type updated successfully.", "success").then(() => {
+                        $('#editSubscriptionTypeModal').modal('hide');
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire("Error!", response.message || "Failed to update subscription type.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "An error occurred while updating the subscription type.", "error");
+            }
+        });
+    });
+
+    function DeleteSubscriptionType(subscriptionTypeId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/SubscriptionsType/DeleteSubscriptionsType/' + subscriptionTypeId,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Deleted!", "Subscription type has been deleted.", "success").then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error!", response.message || "There was an issue deleting the subscription type.", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "There was an error processing your request.", "error");
+                    }
+                });
+            }
+        });
+    }
+        //search field in table
+    $(document).ready(function () {
+        $('#searchInput').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $("#classTableBody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+
+      $(document).ready(function () {
+        setupPagination('classTableBody', 'pagination');
+    });
+
+    function cancelAndRedirect() {
+        $('#addModal').modal('hide');
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetSubscriptionsType", "SubscriptionsType")';
+        }, 300);
+    }
+
+    function cancelAndRedirectEdit() {
+        $('#editSubscriptionTypeModal').modal('hide');
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetSubscriptionsType", "SubscriptionsType")';
+        }, 300);
+    }
+</script>

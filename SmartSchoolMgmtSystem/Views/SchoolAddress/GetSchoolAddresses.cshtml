@@ -1,0 +1,227 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.TeachersDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+</style>
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Teachers</h4>
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add Teacher
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="teachersTable" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>User ID</th>
+                                        <th>School ID</th>
+                                        <th>Class ID</th>
+                                        <th>Direction ID</th>
+                                        <th>Subscription Type</th>
+                                        <th>Subject ID</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@sno</td>
+                                            <td>@item.UserId</td>
+                                            <td>@item.SchoolId</td>
+                                            <td>@item.ClassId</td>
+                                            <td>@item.DirectionId</td> 
+                                            <td>@item.SubjectId</td>
+                                            <td>
+                                                <a href="#" onclick="editTeacher('@item.TeacherId', '@item.UserId', '@item.SchoolId', '@item.ClassId', '@item.DirectionId', '@item.SubjectId')" title="Edit">
+                                                    <button class="btn btn-circle btn-primary btn-xs"><i class="fa fa-edit"></i></button>
+                                                </a>
+                                                <a href="#" onclick="deleteTeacher('@item.TeacherId')" title="Delete">
+                                                    <button class="btn btn-circle btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        sno++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Teacher</h5>
+            </div>
+            <div class="modal-body">
+                <form id="teacherForm" action="@Url.Action("AddTeacher", "Teachers")" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label>User ID <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="UserId" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>School ID <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="SchoolId" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Class ID <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="ClassId" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Direction ID <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="DirectionId" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Subscription Type ID <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="SubscriptionTypeId" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Subject ID <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="SubjectId" required />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAdd()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Teacher Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <div class="modal-content">
+            <form id="editTeacherForm" action="@Url.Action("UpdateTeacher", "Teachers")" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="TeacherId" id="editTeacherId" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Teacher</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label>User ID</label>
+                            <input type="text" class="form-control" name="UserId" id="editUserId" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>School ID</label>
+                            <input type="text" class="form-control" name="SchoolId" id="editSchoolId" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Class ID</label>
+                            <input type="text" class="form-control" name="ClassId" id="editClassId" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Direction ID</label>
+                            <input type="text" class="form-control" name="DirectionId" id="editDirectionId" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Subscription Type ID</label>
+                            <input type="text" class="form-control" name="SubscriptionTypeId" id="editSubscriptionTypeId" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Subject ID</label>
+                            <input type="text" class="form-control" name="SubjectId" id="editSubjectId" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit">Update</button>
+                    <button type="button" class="btn btn-danger" onclick="cancelEdit()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAddModal() {
+        $('#addModal').modal('show');
+    }
+
+    function editTeacher(id, userId, schoolId, classId, directionId, subscriptionTypeId, subjectId) {
+        $('#editTeacherId').val(id);
+        $('#editUserId').val(userId);
+        $('#editSchoolId').val(schoolId);
+        $('#editClassId').val(classId);
+        $('#editDirectionId').val(directionId);
+        $('#editSubscriptionTypeId').val(subscriptionTypeId);
+        $('#editSubjectId').val(subjectId);
+        $('#editModal').modal('show');
+    }
+
+    function deleteTeacher(teacherId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Teachers/DeleteTeacher/' + teacherId,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Deleted!", "Teacher has been deleted.", "success")
+                                .then(() => window.location.reload());
+                        } else {
+                            Swal.fire("Error!", response.message || "Deletion failed.", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "An error occurred while deleting the teacher.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+    function cancelAdd() {
+        $('#addModal').modal('hide');
+    }
+
+    function cancelEdit() {
+        $('#editModal').modal('hide');
+    }
+</script>
