@@ -110,8 +110,18 @@ app.UseSession();
 app.UseAuthentication(); 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Authenticate}/{action=Login}/{id?}");
+app.UseEndpoints(endpoints =>
+{
+    // Route for URLs like /guardians/MahatmaEMSchool/Principal
+    endpoints.MapControllerRoute(
+        name: "guardians",
+        pattern: "guardians/{schoolName}/{role?}",
+        defaults: new { controller = "Authenticate", action = "Login" });
+
+    // Default route
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Authenticate}/{action=Login}/{schoolName?}/{role?}");
+});
 
 app.Run();

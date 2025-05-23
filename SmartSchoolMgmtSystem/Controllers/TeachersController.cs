@@ -44,7 +44,7 @@ namespace SmartSchool.Controllers
 
 
 
-        [HttpPost]
+        [HttpPost]    
         [ValidateAntiForgeryToken]
         public IActionResult Create(TeachersDto dto)
         {

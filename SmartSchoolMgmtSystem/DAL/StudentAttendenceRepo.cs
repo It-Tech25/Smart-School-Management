@@ -41,11 +41,9 @@ namespace SmartSchool.DAL
             var result = (from attendence in _context.studentattendenceEntity
                           join student in _context.studentEntity on attendence.StudentId equals student.StudentId
                           join classes in _context.classEntity on attendence.ClassId equals classes.ClassId
-                          join subject in _context.subjectEntity on attendence.SubjectId equals subject.SubjectId
                           where attendence.IsDeleted == false
                                 && student.IsDeleted == false
                                 && classes.IsDeleted == false
-                                && subject.IsDeleted == false
                           select new StudentAttendenceDto
                           {
                               AttendanceId = attendence.AttendanceId,
@@ -53,8 +51,6 @@ namespace SmartSchool.DAL
                               StudentName = student.StudentName,
                               ClassId = attendence.ClassId,
                              // ClassName = classes.ClassName,
-                              SubjectId = attendence.SubjectId,
-                              SubjectName = subject.SubjectName,
                               Date = attendence.Date,
                               Status = attendence.Status
                           }).ToList();
@@ -74,7 +70,6 @@ namespace SmartSchool.DAL
                 {AttendanceId = aid+1,
                     StudentId = attendance.StudentId,
                     ClassId = attendance.ClassId,
-                    SubjectId = attendance.SubjectId,
                     Date = attendance.Date,
                     Status = attendance.Status,
                     IsDeleted = false,
@@ -113,7 +108,6 @@ namespace SmartSchool.DAL
                     result.AttendanceId = obj.AttendanceId;
                     result.StudentId = obj.StudentId;
                     result.ClassId = obj.ClassId;
-                    result.SubjectId = obj.SubjectId;
                     result.Date = DateTime.Now;
                     result.Status = obj.Status;
                     result.IsDeleted = false;

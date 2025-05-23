@@ -53,8 +53,9 @@ namespace SmartSchool.Controllers
                 State = form["State"],
                 City = form["City"],
                 ZipCode = form["ZipCode"]
+              
             };
-
+            
             // Create the directory if it doesn't exist
             var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
             if (!Directory.Exists(uploadPath))
@@ -103,6 +104,9 @@ namespace SmartSchool.Controllers
 
                 user.ProfilePhoto3 = "/uploads/" + fileName3;
             }
+            string userType = "Principal";
+            string schoolName = user.Name.Replace(" ", "").Replace("/", "").Replace("\\", "");
+            user.URL = $"{Request.Scheme}://{Request.Host}/guardians/{schoolName}/{userType}";
 
             // Call the service to save the data
             response = _school.AddSchool(user, loggedInUser.userId);

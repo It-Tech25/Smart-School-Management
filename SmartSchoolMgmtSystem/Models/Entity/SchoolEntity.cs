@@ -9,7 +9,8 @@ namespace SmartSchool.Models.Entity
 
         public string Name { get; set; }
 
-        public string Code { get; set; }
+        public string? Code { get; set; }
+        public string? URL { get; set; }
 
         public bool? IsActive { get; set; }
 

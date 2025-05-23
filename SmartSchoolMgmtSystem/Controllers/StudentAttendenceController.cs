@@ -88,7 +88,7 @@ namespace SmartSchool.Controllers
 
             foreach (var attendance in attendanceList)
             {
-                Console.WriteLine($"StudentId: {attendance.StudentId}, ClassId: {attendance.ClassId}, SubjectId: {attendance.SubjectId}, Date: {attendance.Date}, Status: {attendance.Status}");
+                Console.WriteLine($"StudentId: {attendance.StudentId}, ClassId: {attendance.ClassId}, Date: {attendance.Date}, Status: {attendance.Status}");
             }
 
             // Proceed with the database insertion

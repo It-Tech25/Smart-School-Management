@@ -686,6 +686,11 @@
         }, 300); // 300ms matches Bootstrap's fade animation
     }
 
+        function updatePhotoCount() {
+        const count = Array.from(document.querySelectorAll('input[id^="ProfilePhoto"]'))
+            .filter(input => input.files.length > 0).length;
+        document.getElementById('photoCount').textContent = `Photos Uploaded: ${count}/3`;
+    }
 </script>
 
 
