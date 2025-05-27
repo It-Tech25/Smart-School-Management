@@ -21,5 +21,12 @@
         public string Subject { get; set; }
         public string FullName { get; set; }
         public string Teacher { get; set; }
+
+
+        public string Day { get; set; }
+        public string ClassName { get; set; }
+        public string SubjectName { get; set; }
+        public string TeacherName { get; set; }
+
     }
 }

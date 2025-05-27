@@ -106,6 +106,16 @@ namespace SmartSchool.Controllers
             }
         }
 
+
+        public IActionResult GetClassTimetables(string? state)
+        {
+           
+    var res = _ClassTimetableServices.GetAllClassTimetable(); // this gets the timetable
+           
+    return View(res); // passes the timetable to the view
+        }
+
+
         [HttpGet]
         public JsonResult GetCitiesByState(string state)
         {

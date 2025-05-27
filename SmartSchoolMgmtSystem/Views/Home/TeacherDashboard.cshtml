@@ -23,28 +23,30 @@
 
 	<!-- product profit start -->
 	<div class="col-xl-3 col-md-6">
-		<div class="card prod-p-card" onclick="openTimetablePopup(@ViewBag.TeacherId)">
-			<div class="card-body">
-				<div class="row align-items-center m-b-25">
-					<div class="col">
-						<h6 class="m-b-5">Classes Assigned</h6>
-						<h3 class="m-b-0">@ViewBag.Classes</h3>
+		<a href="@Url.Action("GetClassTimetables", "ClassTimetable")" style="text-decoration: none; color: inherit;">
+			<div class="card prod-p-card">
+				<div class="card-body">
+					<div class="row align-items-center m-b-25">
+						<div class="col">
+							<h6 class="m-b-5">Classes Assigned</h6>
+							<h3 class="m-b-0">@ViewBag.Classes</h3>
+						</div>
+						<div class="col-auto">
+							<i class="fas fa-money-bill-alt text-c-red f-18"></i>
+						</div>
 					</div>
-					<div class="col-auto">
-						<i class="fas fa-money-bill-alt text-c-red f-18"></i>
-					</div>
+					<p class="m-b-0"><span class="label label-danger m-r-10">+11%</span>From Previous Month</p>
 				</div>
-				<p class="m-b-0"><span class="label label-danger m-r-10">+11%</span>From Previous Month</p>
 			</div>
-		</div>
+		</a>
 	</div>
-
+ 
 	<div class="col-xl-3 col-md-6">
 		<div class="card prod-p-card">
 			<div class="card-body">
 				<div class="row align-items-center m-b-25">
 					<div class="col">
-						<h6 class="m-b-5">Total Orders</h6>
+						<h6 class="m-b-5">Students Present</h6>
 						<h3 class="m-b-0">15,830</h3>
 					</div>
 					<div class="col-auto">
@@ -60,7 +62,7 @@
 			<div class="card-body">
 				<div class="row align-items-center m-b-25">
 					<div class="col">
-						<h6 class="m-b-5">Average Price</h6>
+						<h6 class="m-b-5">Task</h6>
 						<h3 class="m-b-0">$6,780</h3>
 					</div>
 					<div class="col-auto">
@@ -76,7 +78,7 @@
 			<div class="card-body">
 				<div class="row align-items-center m-b-25">
 					<div class="col">
-						<h6 class="m-b-5">Product Sold</h6>
+						<h6 class="m-b-5">Notification</h6>
 						<h3 class="m-b-0 text-white">6,784</h3>
 					</div>
 					<div class="col-auto">
@@ -546,7 +548,7 @@
 				<div class="usre-image">
 					<img src="~/resources/assets/images/widget/img-round1.jpg" class="img-radius wid-100 m-auto" alt="User-Profile-Image">
 				</div>
-				<h6 class="f-w-600 m-t-25 m-b-10">Alessa Robert</h6>
+				<h6 class="f-w-600 m-t-25 m-b-10">Teacher</h6>
 				<p>Active | Male | Born 23.05.1992</p>
 				<hr>
 				<p class="m-t-15">Activity Level: 87%</p>
