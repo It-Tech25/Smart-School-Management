@@ -1,10 +1,11 @@
 
-using SmartSchool.Utilities;
+using NuGet.Protocol.Core.Types;
 using SmartSchool.Models.DTO;
  
 ﻿using SmartSchool.Models.DTO; 
 using SmartSchool.Models.Entity;
 using SmartSchool.Repository;
+using SmartSchool.Utilities;
 
 namespace SmartSchool.Service
     {
@@ -16,16 +17,24 @@ namespace SmartSchool.Service
             {
                 _repo = repo;
             }
-         
+       
             public List<TeachersDto> GetAllAsync(int id)
             {
                 var teachers =  _repo.GetAllAsync(id);
                 return teachers;
             }
-        public List<ClassTimetableDto> GetClassesById(int id)
+       
+        public TimetableResponseDto GetClassesById(int id)
         {
-            var res = _repo.GetClassesById(id);
-            return res;
+            //var res = _repo.GetClassesById(id);
+            //return res;
+            var durations = _repo.GetDurations(id);
+            var entries = _repo.GetClassesById(id);
+            return new TimetableResponseDto
+            {
+                Durations = durations,
+                Entries = entries
+            };
         }
 
         public GenericResponse AddAsync(TeachersDto dto, int id)

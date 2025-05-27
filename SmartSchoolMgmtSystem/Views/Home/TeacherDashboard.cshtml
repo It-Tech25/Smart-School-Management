@@ -23,24 +23,27 @@
 
 	<!-- product profit start -->
 	<div class="col-xl-3 col-md-6">
-		<a href="@Url.Action("GetClassTimetables", "ClassTimetable")" style="text-decoration: none; color: inherit;">
-			<div class="card prod-p-card">
-				<div class="card-body">
-					<div class="row align-items-center m-b-25">
-						<div class="col">
-							<h6 class="m-b-5">Classes Assigned</h6>
-							<h3 class="m-b-0">@ViewBag.Classes</h3>
-						</div>
-						<div class="col-auto">
-							<i class="fas fa-money-bill-alt text-c-red f-18"></i>
-						</div>
+		<div class="card prod-p-card"
+			 data-bs-toggle="modal"
+			 data-bs-target="#timetableModal"
+			 onclick="openTimetablePopup(@ViewBag.TeacherId)">
+			<div class="card-body">
+				<div class="row align-items-center m-b-25">
+					<div class="col">
+						<h6 class="m-b-5">Classes Assigned</h6>
+						<h3 class="m-b-0">@ViewBag.Classes</h3>
 					</div>
-					<p class="m-b-0"><span class="label label-danger m-r-10">+11%</span>From Previous Month</p>
+					<div class="col-auto">
+						<i class="fas fa-money-bill-alt text-c-red f-18"></i>
+					</div>
 				</div>
+				<p class="m-b-0">
+					<span class="label label-danger m-r-10">+11%</span>From Previous Month
+				</p>
 			</div>
-		</a>
+		</div>
 	</div>
- 
+
 	<div class="col-xl-3 col-md-6">
 		<div class="card prod-p-card">
 			<div class="card-body">
@@ -587,14 +590,12 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body" id="timetableContent">
-				<!-- Data will be loaded here via AJAX -->
-				<div class="text-center">
-					<span class="spinner-border text-primary" role="status"></span>
-				</div>
+				<!-- Data loaded via JS -->
 			</div>
 		</div>
 	</div>
 </div>
+
 <script>
 		function openTimetablePopup(teacherId) {
 		$('#timetableModal').modal('show');
@@ -604,10 +605,41 @@
 			url: '/Teachers/GetClassesById',
 			type: 'GET',
 			data: { id: teacherId },
-			success: function (response) {
-				// assuming the controller returns partial view/html
-				$('#timetableContent').html(response);
-			},
+				success: function (response) {
+		console.log("AJAX response:", response); // debug
+
+		const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		let html = '<table class="table table-bordered"><thead><tr><th>Time</th>';
+		days.forEach(day => html += `<th>${day}</th>`);
+		html += '</tr></thead><tbody>';
+
+		// Handle missing entries/durations gracefully
+		const entries = response.entries || [];
+		const durations = response.durations || [];
+
+		const entriesMap = {};
+		entries.forEach(entry => {
+			if (!entriesMap[entry.Period]) entriesMap[entry.Period] = {};
+			entriesMap[entry.Period][entry.Day] = entry;
+		});
+
+		durations.forEach(duration => {
+			html += `<tr><td>${duration.StartTime}–${duration.EndTime}</td>`;
+			days.forEach(day => {
+				const entry = (entriesMap[duration.Period] || {})[day];
+				if (entry) {
+					html += `<td>${entry.Subject}<br/><small>${entry.Class}</small></td>`;
+				} else {
+					html += '<td></td>';
+				}
+			});
+			html += '</tr>';
+		});
+
+		html += '</tbody></table>';
+		$('#timetableContent').html(html);
+	}
+	,
 			error: function () {
 				$('#timetableContent').html('<div class="alert alert-danger">Failed to load timetable.</div>');
 			}

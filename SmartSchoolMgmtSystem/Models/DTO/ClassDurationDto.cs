@@ -3,7 +3,7 @@
     public class ClassDurationDto
     {
         public int ClassDurationId { get; set; }
-
+        public string? Period { get; set; }
         public TimeSpan? StartTime { get; set; }
 
         public TimeSpan? EndTime { get; set; }

@@ -1,10 +1,10 @@
-﻿using SmartSchool.Models.Entity;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartSchool.Models.DTO;
+using SmartSchool.Models.Entity;
+using SmartSchool.Utilities; 
+using System; 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using System; 
-using SmartSchool.Models.DTO;
-using SmartSchool.Utilities; 
 
 namespace SmartSchool.Repository
 {
@@ -32,19 +32,29 @@ namespace SmartSchool.Repository
                           }).ToList();
             return result;
         }
+        public List<DurationsDto> GetDurations(int uid)
+        {
+            int? id = _context.userEntity.Where(a => a.UserId == uid).Select(a => a.CreatedBy).FirstOrDefault();
+            return _context.classDuration
+                .OrderBy(d => d.Period).Where(a=>a.CreatedBy==id)
+                .Select(d => new DurationsDto
+                {
+                    Period = d.Period,
+                    StartTime = d.StartTime,
+                    EndTime = d.EndTime
+                }).ToList();
+        }
+
         public List<ClassTimetableDto> GetClassesById(int id)
         {
-            var result = (from classtime in _context.classtimetableEntity
-                          where (classtime.IsDeleted == false && classtime.TeacherId==id)
-                          select new ClassTimetableDto
-                          {
-                              TeacherId = classtime.TeacherId??0,
-                              StartTime=classtime.StartTime,
-                              EndTime=classtime.EndTime,
-                              Class = _context.classEntity.Where(a => a.ClassId == classtime.ClassId).Select(a => a.Grade + " - " + a.Section).FirstOrDefault(),
-
-                          }).ToList();
-            return result;
+            return _context.classtimetableEntity
+                .Where(t => t.TeacherId == id)
+                .Select(t => new ClassTimetableDto
+                {
+                    Day = t.DayOfWeek,
+                    Subject = _context.subjectEntity.Where(a=>a.SubjectId==t.SubjectId && a.IsDeleted==false).Select(a=>a.SubjectName).FirstOrDefault(),
+                    Class = _context.classEntity.Where(a=>a.ClassId== t.ClassId && a.IsDeleted==false).Select(a=>a.Grade+"-"+a.Section).FirstOrDefault(),
+                }).ToList();
         }
 
 
