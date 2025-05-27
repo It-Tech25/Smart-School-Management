@@ -29,4 +29,19 @@
         public string TeacherName { get; set; }
 
     }
+    public class DurationsDto
+    {
+        public int ClassDurationId { get; set; }
+        public string Period { get; set; }
+        public TimeSpan? StartTime { get; set; }
+
+        public TimeSpan? EndTime { get; set; }
+
+        public int? Duration { get; set; }
+    }
+    public class TimetableResponseDto
+    {
+        public List<DurationsDto> Durations { get; set; }
+        public List<ClassTimetableDto> Entries { get; set; }
+    }
 }

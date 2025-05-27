@@ -41,16 +41,18 @@ namespace SmartSchool.Controllers
             return View(teachers);
 
         }
-        public IActionResult GetClassesById()
+        [HttpGet]
+        public IActionResult GetClassesById(int id)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
             {
                 return RedirectToAction("Login", "Authenticate");
             }
-            var res = _service.GetClassesById(loggedInUser.userId);
-            return View(res);
+            var result = _service.GetClassesById(loggedInUser.userId);
+            return Json(result);
         }
+     
 
 
         [HttpPost]    
@@ -75,13 +77,6 @@ namespace SmartSchool.Controllers
             }
         }
 
-
-
-
-
-        // GET: Teachers
-       
-        // GET: Teachers/Details/5
         public async Task<ActionResult> Details(int id)
         {
             var teacher = await _service.GetByIdAsync(id);
