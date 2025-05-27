@@ -71,6 +71,8 @@ builder.Services.AddScoped<IStudentAttendenceRepo, StudentAttendenceRepo>();
 builder.Services.AddScoped<IStudentAttendenceServices, StudentAttendenceServices>();
 builder.Services.AddScoped<IReportCardRepository, ReportCardRepository>();
 builder.Services.AddScoped<IReportCardService, ReportCardService>();
+builder.Services.AddScoped<IClassDurationService, ClassDurationService>();
+builder.Services.AddScoped<IClassDurationRepo, ClassDurationRepo>();
 
 // Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -36,6 +36,7 @@ namespace SmartSchool.Models.Entity
             modelBuilder.Entity<DurationEntity>().ToTable("Duration");
             modelBuilder.Entity<ClassTimetableEntity>().ToTable("ClassTimetables");
             modelBuilder.Entity<StudentAttendenceEntity>().ToTable("StudentAttendance");
+            modelBuilder.Entity<ClassDurationEntity>().ToTable("ClassDuration");
 
 
 
@@ -67,6 +68,7 @@ namespace SmartSchool.Models.Entity
         public DbSet<StudentAttendenceEntity> studentattendenceEntity { get; set; }
 
         public DbSet<MasterReportCard> MasterReportCards { get; set; }
+        public DbSet<ClassDurationEntity> classDuration { get; set; }
 
 
         public void CreateDynamicTable(string tableName, List<string> subjects)

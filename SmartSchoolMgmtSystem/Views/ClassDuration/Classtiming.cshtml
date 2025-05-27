@@ -1,0 +1,349 @@
+﻿@model IEnumerable<SmartSchool.Models.DTO.ClassDurationDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int sno = 1;
+}
+<style>
+    .required {
+        color: red;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+        width: 90%;
+    }
+
+    th {
+        font-weight: bold;
+    }
+
+</style>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container-full">
+
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Class Duration</h4>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search Duration..." style="width: 300px;" />
+
+                        <button type="button" onclick="openAddModal()" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus"></i> Add ClassDuration
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="list" role="tabpanel">
+                                <!-- Table -->
+                                <div class="table-responsive">
+                                    <table id="example2" class="table table-striped" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Start Time</th>
+                                                <th>End Time</th>
+                                                <th>Durtaion</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="classTableBody">
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@sno</td>
+                                                    <td>@item.StartTime</td>
+                                                    <td>@item.EndTime</td>
+                                                    <td>@item.Duration</td>
+                                                    <td>
+                                                        <a href="#" onclick="EditSubject('@item.ClassDurationId', '@item.StartTime', '@item.EndTime', '@item.Duration')"
+                                                           title="Edit" class="text-primary">
+                                                            <button type="button" class="waves-effect waves-circle btn btn-circle btn-primary btn-xs">
+                                                                <i class="fa fa-edit"></i>
+                                                            </button>
+                                                        </a>
+                                                        <a href="#" onclick="DeleteSubject(@item.ClassDurationId)" title="Delete">
+                                                            <button type="button" class="waves-effect waves-circle btn btn-circle btn-danger btn-xs">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                sno++;
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Pagination Controls -->
+                                <ul id="pagination" class="pagination justify-content-end"></ul>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
+        <!-- Added modal-xl and custom class -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Add Subject</h5>
+            </div>
+            <div class="modal-body">
+                <form id="ClassForm" action="@Url.Action("AddClasstiming", "ClassDuration")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Class Duration</h5>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="StartTime">Start Time <span class="required">*</span></label>
+                            <input type="time" class="form-control" id="StartTime" name="StartTime" required  />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="EndDate">End Time<span class="required">*</span></label>
+                            <input type="time" class="form-control" id="EndTime" name="EndTime" required/>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="Duration">Duration (minutes) <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="Duration" name="Duration" readonly required />
+                        </div>
+
+                    </div>
+
+                    <!-- In both addModal and editModal footer sections -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelAndRedirect()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editSubjectModal" tabindex="-1" aria-labelledby="editSubjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSubjectModalLabel">Edit Subject</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editSubjectForm" action="@Url.Action("UpdateClasstiming", "ClassDuration")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ClassDurationId" id="editClassDurationId" value="" />
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label for="editStartTime">Start Time <span class="required">*</span></label>
+                            <input type="time" class="form-control" id="editStartTime" name="StartTime" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editEndTime">End Time <span class="required">*</span></label>
+                            <input type="time" class="form-control" id="editEndTime" name="EndTime" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="editDuration">Duration (minutes) <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="editDuration" name="Duration" readonly required />
+                        </div>
+
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" class="btn btn-success">Reset</button>
+                            <button type="button" class="btn btn-danger" onclick="cancelAndRedirects()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+     $(document).ready(function () {
+
+        window.openAddModal = function () {
+            $('#addModal').modal('show');
+        };
+
+    });
+                $('#SubjectForm').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/ClassDuration/AddClasstiming',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Success!", "ClassDuration added successfully.", "success")
+                        .then(() => {
+                            window.location.reload();
+                        });
+                } else {
+                    Swal.fire("Error!", response.message || "Class Duration already exists.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error!", "There was an error processing your request.", "error");
+            }
+        });
+    });
+
+
+        // Edit Subject Form Submission
+        $('#editSubjectForm').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                url: '/ClassDuration/UpdateClasstiming',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Updated!", "ClassDuration updated successfully.", "success").then(() => {
+                            $('#editUserTypeModal').modal('hide');
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire("Error!", response.message || "Failed to update ClassDuration.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "An error occurred while updating the ClassDuration.", "error");
+                }
+            });
+        });
+
+              $('#editStartTime, #editEndTime').on('change', function () {
+        const start = $('#editStartTime').val();
+        const end = $('#editEndTime').val();
+
+        if (start && end) {
+            const startTime = new Date(`1970-01-01T${start}:00`);
+            const endTime = new Date(`1970-01-01T${end}:00`);
+
+            let diff = (endTime - startTime) / (1000 * 60); // in minutes
+
+            if (diff < 0) {
+                diff += 1440; // handle overnight durations
+            }
+
+            $('#editDuration').val(diff);
+        }
+    });
+
+    // Attach listeners
+    document.getElementById("editStartTime").addEventListener("change", calculateEditDuration);
+    document.getElementById("editEndTime").addEventListener("change", calculateEditDuration);
+
+    // Edit User Type Function
+      window.EditSubject = function (id, startTime, endTime, duration) {
+        $("#editClassDurationId").val(id);
+        $("#editStartTime").val(startTime);
+        $("#editEndTime").val(endTime);
+        $("#editDuration").val(duration);
+        $('#editSubjectModal').modal('show');
+    };
+
+
+    // Delete User Type Function
+    function DeleteSubject(ClassDurationId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/ClassDuration/DeleteClassDuration/' + ClassDurationId,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Deleted!", "ClassDuration has been deleted.", "success").then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error!", response.message || "There was an issue deleting the ClassDuration.", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error!", "There was an error processing your request.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+
+    function calculateDuration() {
+        const start = document.getElementById("StartTime").value;
+        const end = document.getElementById("EndTime").value;
+
+        if (start && end) {
+            const startTime = new Date(`1970-01-01T${start}:00`);
+            const endTime = new Date(`1970-01-01T${end}:00`);
+
+            let diff = (endTime - startTime) / (1000 * 60); // difference in minutes
+
+            if (diff < 0) {
+                // If end time is past midnight
+                diff += 1440;
+            }
+
+            document.getElementById("Duration").value = diff;
+        }
+    }
+
+    document.getElementById("StartTime").addEventListener("change", calculateDuration);
+    document.getElementById("EndTime").addEventListener("change", calculateDuration);
+        //search field in table
+    $(document).ready(function () {
+        $('#searchInput').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $("#classTableBody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+
+      $(document).ready(function () {
+        setupPagination('classTableBody', 'pagination');
+    });
+
+        //Cancel Button
+        function cancelAndRedirect() {
+        $('#addModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("Classtiming", "ClassDuration")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+       }
+       function cancelAndRedirects() {
+        $('#editSubjectModal').modal('hide'); // Hides the modal
+
+        // Wait a bit to allow modal animation to finish before redirecting
+        setTimeout(function () {
+            window.location.href = '@Url.Action("Classtiming", "ClassDuration")';
+        }, 300); // 300ms matches Bootstrap's fade animation
+    }
+
+</script>
