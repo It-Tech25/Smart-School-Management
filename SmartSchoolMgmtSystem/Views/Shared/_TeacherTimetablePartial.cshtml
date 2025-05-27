@@ -1,0 +1,21 @@
+﻿<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Day</th>
+            <th>Time</th>
+            <th>Subject</th>
+            <th>Class</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Day</td>
+                <td>@item.Time</td>
+                <td>@item.SubjectName</td>
+                <td>@item.ClassName</td>
+            </tr>
+        }
+    </tbody>
+</table>

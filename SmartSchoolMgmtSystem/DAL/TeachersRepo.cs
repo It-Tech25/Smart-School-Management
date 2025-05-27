@@ -32,9 +32,23 @@ namespace SmartSchool.Repository
                           }).ToList();
             return result;
         }
+        public List<ClassTimetableDto> GetClassesById(int id)
+        {
+            var result = (from classtime in _context.classtimetableEntity
+                          where (classtime.IsDeleted == false && classtime.TeacherId==id)
+                          select new ClassTimetableDto
+                          {
+                              TeacherId = classtime.TeacherId??0,
+                              StartTime=classtime.StartTime,
+                              EndTime=classtime.EndTime,
+                              Class = _context.classEntity.Where(a => a.ClassId == classtime.ClassId).Select(a => a.Grade + " - " + a.Section).FirstOrDefault(),
 
-        
-        public  GenericResponse AddAsync(TeachersDto teacher, int id)
+                          }).ToList();
+            return result;
+        }
+
+
+        public GenericResponse AddAsync(TeachersDto teacher, int id)
         {
             GenericResponse res = new GenericResponse();
             int teacherid = _context.teacherEntity.OrderByDescending(a => a.TeacherId).Select(a => a.TeacherId).FirstOrDefault();

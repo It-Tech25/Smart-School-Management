@@ -41,7 +41,16 @@ namespace SmartSchool.Controllers
             return View(teachers);
 
         }
-
+        public IActionResult GetClassesById()
+        {
+            var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
+            if (loggedInUser == null)
+            {
+                return RedirectToAction("Login", "Authenticate");
+            }
+            var res = _service.GetClassesById(loggedInUser.userId);
+            return View(res);
+        }
 
 
         [HttpPost]    
@@ -88,20 +97,6 @@ namespace SmartSchool.Controllers
             return View();
         }
 
-        // POST: Teachers/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> Create(TeachersDto dto)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        await _service.CreateAsync(dto);
-        //        return RedirectToAction("TeachersIndex");
-        //    }
-        //    return View(dto);
-        //}
-
-        // GET: Teachers/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
             var teacher = await _service.GetByIdAsync(id);

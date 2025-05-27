@@ -21,4 +21,14 @@
 
 
     }
+    public class TeachersTimetableDto
+    {
+        public int TeacherId { get; set; }
+
+        public string? Class { get; set; }
+        public TimeSpan StartTime { get; set; }
+        public TimeSpan EndTime { get; set; }
+
+
+    }
 }

@@ -12,6 +12,7 @@ namespace SmartSchool.Repository
     public interface ITeachersRepo
     { 
         List<TeachersDto> GetAllAsync(int id);
+        List<ClassTimetableDto> GetClassesById(int id);
         GenericResponse AddAsync(TeachersDto dto, int id);
         GenericResponse UpdateAsync(TeachersDto dto, int id);
         GenericResponse DeleteAsync(int id,int logid); 
