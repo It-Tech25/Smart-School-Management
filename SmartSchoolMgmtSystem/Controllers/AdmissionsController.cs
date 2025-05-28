@@ -292,7 +292,18 @@ namespace SmartSchool.Controllers
                         };
 
                         _context.feePaymentEntity.Add(fee);
-
+                        FeePaymentEntity fees = new FeePaymentEntity
+                        {
+                            StudentId = newUser.StudentId,
+                            ItemId = 1,
+                            PaymentDate = DateTime.Now,
+                            Amount = admission.AdmissionFee,
+                            ReceiptNumber = GenerateReceiptNumber(),
+                            IsDeleted = false,
+                            CreatedOn = DateTime.Now,
+                            CreatedBy = loggedInUser.userId
+                        };
+                        _context.feepayment.Add(fees);
                         // Mark admission as added
                         admission.IsAdded = true;
                         _context.admissionsEntity.Update(admission);
