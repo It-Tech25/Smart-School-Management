@@ -42,6 +42,7 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
+                                                <th>Period</th>
                                                 <th>Start Time</th>
                                                 <th>End Time</th>
                                                 <th>Durtaion</th>
@@ -53,11 +54,12 @@
                                             {
                                                 <tr>
                                                     <td>@sno</td>
+                                                    <td>@item.Period</td>
                                                     <td>@item.StartTime</td>
                                                     <td>@item.EndTime</td>
                                                     <td>@item.Duration</td>
                                                     <td>
-                                                        <a href="#" onclick="EditSubject('@item.ClassDurationId', '@item.StartTime', '@item.EndTime', '@item.Duration')"
+                                                        <a href="#" onclick="EditSubject('@item.ClassDurationId', '@item.Period','@item.StartTime', '@item.EndTime', '@item.Duration')"
                                                            title="Edit" class="text-primary">
                                                             <button type="button" class="waves-effect waves-circle btn btn-circle btn-primary btn-xs">
                                                                 <i class="fa fa-edit"></i>
@@ -100,8 +102,9 @@
                     @Html.AntiForgeryToken()
 
                     <div class="row">
-                        <div class="col-lg-12">
-                            <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Class Duration</h5>
+                        <div class="col-lg-6">
+                            <label for="Period">Period <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="Period" name="Period" required />
                         </div>
                         <div class="col-lg-6">
                             <label for="StartTime">Start Time <span class="required">*</span></label>
@@ -140,6 +143,10 @@
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="ClassDurationId" id="editClassDurationId" value="" />
                     <div class="row">
+                        <div class="col-lg-6">
+                            <label for="editPeriod">Period <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editPeriod" name="Period" required />
+                        </div>
                         <div class="col-lg-6">
                             <label for="editStartTime">Start Time <span class="required">*</span></label>
                             <input type="time" class="form-control" id="editStartTime" name="StartTime" required />
@@ -228,31 +235,34 @@
             });
         });
 
-              $('#editStartTime, #editEndTime').on('change', function () {
-        const start = $('#editStartTime').val();
-        const end = $('#editEndTime').val();
+                function calculateEditDuration() {
+        const start = document.getElementById("editStartTime").value;
+        const end = document.getElementById("editEndTime").value;
 
         if (start && end) {
             const startTime = new Date(`1970-01-01T${start}:00`);
             const endTime = new Date(`1970-01-01T${end}:00`);
 
-            let diff = (endTime - startTime) / (1000 * 60); // in minutes
+            let diff = (endTime - startTime) / (1000 * 60); // difference in minutes
 
             if (diff < 0) {
-                diff += 1440; // handle overnight durations
+                // If end time is past midnight
+                diff += 1440;
             }
 
-            $('#editDuration').val(diff);
+            document.getElementById("editDuration").value = diff;
         }
-    });
+    }
 
-    // Attach listeners
+
+      document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("editStartTime").addEventListener("change", calculateEditDuration);
     document.getElementById("editEndTime").addEventListener("change", calculateEditDuration);
-
+      });
     // Edit User Type Function
-      window.EditSubject = function (id, startTime, endTime, duration) {
+      window.EditSubject = function (id,period, startTime, endTime, duration) {
         $("#editClassDurationId").val(id);
+          $("#editPeriod").val(period);
         $("#editStartTime").val(startTime);
         $("#editEndTime").val(endTime);
         $("#editDuration").val(duration);
@@ -311,9 +321,11 @@
             document.getElementById("Duration").value = diff;
         }
     }
+        document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("StartTime").addEventListener("change", calculateDuration);
+        document.getElementById("EndTime").addEventListener("change", calculateDuration);
+    });
 
-    document.getElementById("StartTime").addEventListener("change", calculateDuration);
-    document.getElementById("EndTime").addEventListener("change", calculateDuration);
         //search field in table
     $(document).ready(function () {
         $('#searchInput').on('keyup', function () {

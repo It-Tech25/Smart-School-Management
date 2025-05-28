@@ -23,18 +23,24 @@ namespace SmartSchool.Service
                 var teachers =  _repo.GetAllAsync(id);
                 return teachers;
             }
-       
-        public TimetableResponseDto GetClassesById(int id)
+        public List<DurationsDto> GetDurations(int uid)
         {
-            //var res = _repo.GetClassesById(id);
-            //return res;
-            var durations = _repo.GetDurations(id);
-            var entries = _repo.GetClassesById(id);
-            return new TimetableResponseDto
-            {
-                Durations = durations,
-                Entries = entries
-            };
+            var duration = _repo.GetDurations(uid);
+            return duration;
+        }
+
+        public List<ClassTimetableDto> GetClassesById(int id)
+        {
+            var res = _repo.GetClassesById(id);
+            return res;
+            //var durations = _repo.GetDurations(id);
+            //var entries = _repo.GetClassesById(id);
+            //return new TimetableResponseDto
+            //{
+            //    Durations = durations,
+            //    Entries = entries
+            //};
+
         }
 
         public GenericResponse AddAsync(TeachersDto dto, int id)
