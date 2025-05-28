@@ -669,6 +669,100 @@
             </div>
         </div>
     </div>
+        <!-- Teachers Modal -->
+        <div class="modal fade" id="teachersModal" tabindex="-1" role="dialog" aria-labelledby="teachersModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="teachersModalLabel">Teachers List</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table id="teachersTable" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Teacher Name</th>
+                                        <th>Subject Name</th>
+                                        <th>Class Name</th>
+                                        <th>School Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teachersTableBody">
+                                    <!-- Data will be populated here via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Student Modal -->
+        <div class="modal fade" id="studentsModal" tabindex="-1" role="dialog" aria-labelledby="studentsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="studentsModalLabel">Students List</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table id="studentsTable" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Student Name</th>
+                                        <th>Class</th>
+                                        <th>Address</th>
+                                        <th>Adharcard No</th>
+                                        <th>Photo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentsTableBody">
+                                    <!-- Data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Fee Payments Modal -->
+<div class="modal fade" id="feePaymentsModal" tabindex="-1" role="dialog" aria-labelledby="feePaymentsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="feePaymentsModalLabel">Fee Payments</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table id="feePaymentsTable" class="table table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student Name</th>
+                                <th>Payment Date</th>
+                                <th>Amount</th>
+                                <th>Receipt Number</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feePaymentsTableBody">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @*         <!-- Modal to display the teacher list -->
         <div class="modal fade" id="teacherListModal" tabindex="-1" role="dialog" aria-labelledby="teacherListModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
@@ -819,12 +913,223 @@
                     window.location.href = '@Url.Action("TeachersIndex", "Teachers")';
             }
 
-                                     function loadStudentList() {
-                                window.location.href = '@Url.Action("GetStudents", "Student")';
+                                   function loadStudentList() {
+    $.ajax({
+        url: '/Home/GetStudents',
+        type: 'GET',
+        success: function (data) {
+            var tbody = $('#studentsTableBody');
+            tbody.empty();
+            var sno = 1;
+            
+            data.forEach(function (item) {
+                var photoHtml = item.Photo 
+                    ? `<img src="${escapeHtml(item.Photo)}" alt="Profile" style="height:40px;width:40px;object-fit:cover;border-radius:50%;">`
+                    : '<span>No Image</span>';
+                
+                var dob = item.DOB ? new Date(parseInt(item.DOB.substr(6))) : null;
+                var dobString = dob ? dob.toISOString().split('T')[0] : '';
+                
+                var row = `<tr>
+                    <td>${sno}</td>
+                    <td>
+                        <a href="@Url.Action("GetFeepayments", "FeePayments")?studentId=${item.StudentId}">
+                            ${escapeHtml(item.StudentName)}
+                        </a>
+                    </td>
+                    <td>${escapeHtml(item.Class)}</td>
+                    <td>${escapeHtml(item.Address)}</td>
+                    <td>${escapeHtml(item.AdharcardNo)}</td>
+                    <td>${photoHtml}</td>
+                    <td>
+                        <a href="#" onclick="EditStudent('${item.StudentId}', '${escapeHtml(item.StudentName)}', '${escapeHtml(item.Class)}', '${escapeHtml(item.Address)}', '${dobString}', '${escapeHtml(item.Gender)}', '${escapeHtml(item.AdharcardNo)}', '${escapeHtml(item.Photo)}', '${escapeHtml(item.Name)}', '${escapeHtml(item.Relation)}', '${escapeHtml(item.ContactNumber)}')" title="Edit">
+                            <button class="btn btn-circle btn-primary btn-xs"><i class="fa fa-edit"></i></button>
+                        </a>
+                        <a href="#" onclick="DeleteStudent('${item.StudentId}')" title="Delete">
+                            <button class="btn btn-circle btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                        </a>
+                    </td>
+                </tr>`;
+                
+                tbody.append(row);
+                sno++;
+            });
+            
+            $('#studentsModal').modal('show');
+        },
+        error: function() {
+            alert('Error loading students');
+        }
+    });
+}
+
+// Reuse the same escapeHtml function from earlier
+function escapeHtml(text) {
+    if (text == null) return '';
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+                    function loadFeePaymentsList() {
+    console.log("loadFeePaymentsList function triggered");
+    
+    try {
+        $.ajax({
+            url: '/Home/GetFeePayments',
+            type: 'GET',
+            beforeSend: function() {
+                console.log("Loading fee payments...");
+                // Show loading indicator
+                $('#feePaymentsTableBody').html('<tr><td colspan="5" class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>');
+            },
+            success: function (data) {
+                console.log("Data received:", data);
+                
+                if (!data || data.length === 0) {
+                    $('#feePaymentsTableBody').html('<tr><td colspan="5" class="text-center">No fee payments found</td></tr>');
+                    return;
                 }
-                                            function loadFeePaymentsList() {
-                                        window.location.href = '@Url.Action("GetFeePayments", "FeePayments")';
-                    }
+                
+                var tbody = $('#feePaymentsTableBody');
+                tbody.empty();
+                var sno = 1;
+                
+                data.forEach(function (item) {
+                    // Format date
+                    let paymentDate = new Date(item.PaymentDate);
+                    let formattedDate = paymentDate.toLocaleDateString();
+                    
+                    // Create row
+                    let row = `<tr>
+                        <td>${sno}</td>
+                        <td>
+                            <a href="#" class="open-add-fee-payment"
+                               data-payment-id="${item.PaymentId}"
+                               data-student-id="${item.StudentId}"
+                               data-student-name="${escapeHtml(item.Name)}">
+                                ${escapeHtml(item.Name)}
+                            </a>
+                        </td>
+                        <td>${formattedDate}</td>
+                        <td>₹${item.Amount.toFixed(2)}</td>
+                        <td>${item.ReceiptNumber || 'N/A'}</td>
+                    </tr>`;
+                    
+                    tbody.append(row);
+                    sno++;
+                });
+                
+                // Show the modal
+                $('#feePaymentsModal').modal('show');
+            },
+            error: function(xhr, status, error) {
+                console.error("Error loading fee payments:", error);
+                $('#feePaymentsTableBody').html(
+                    '<tr><td colspan="5" class="text-center text-danger">Error loading data: ' + 
+                    error + '</td></tr>'
+                );
+                $('#feePaymentsModal').modal('show');
+            }
+        });
+    } catch (e) {
+        console.error("Exception in loadFeePaymentsList:", e);
+        alert("Error loading fee payments: " + e.message);
+    }
+}
+
+// Utility function to escape HTML
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+            // Helper function to escape HTML characters
+            function escapeHtml(text) {
+                return text
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+            function loadFeePaymentsList() {
+    $.ajax({
+        url: '/Home/GetFeePayments',
+        type: 'GET',
+        success: function (data) {
+            var tbody = $('#feePaymentsTableBody');
+            tbody.empty();
+            var sno = 1;
+            
+            data.forEach(function (item) {
+                // Format payment date
+                var paymentDate = new Date(parseInt(item.PaymentDate.substr(6)));
+                var formattedDate = paymentDate.toLocaleDateString();
+                
+                var row = `<tr>
+                    <td>${sno}</td>
+                    <td>
+                        <a href="#" class="open-add-fee-payment"
+                           data-payment-id="${item.PaymentId}"
+                           data-student-id="${item.StudentId}"
+                           data-student-name="${escapeHtml(item.Name)}"
+                           title="Add Fee Payment">
+                            ${escapeHtml(item.Name)}
+                        </a>
+                    </td>
+                    <td>${formattedDate}</td>
+                    <td>${item.Amount}</td>
+                    <td>${escapeHtml(item.ReceiptNumber)}</td>
+                </tr>`;
+                
+                tbody.append(row);
+                sno++;
+            });
+            
+            // Initialize click handlers for the links
+            $('.open-add-fee-payment').off('click').on('click', function(e) {
+                e.preventDefault();
+                var paymentId = $(this).data('payment-id');
+                var studentId = $(this).data('student-id');
+                var studentName = $(this).data('student-name');
+                
+                // Call your existing function to handle fee payments
+                // You'll need to implement this function based on your requirements
+                openFeePaymentForm(paymentId, studentId, studentName);
+            });
+            
+            $('#feePaymentsModal').modal('show');
+        },
+        error: function() {
+            alert('Error loading fee payments');
+        }
+    });
+}
+
+// Reuse the escapeHtml function
+function escapeHtml(text) {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// Example function to handle fee payment form
+function openFeePaymentForm(paymentId, studentId, studentName) {
+    // Implement your logic to open fee payment form
+    console.log(`Opening fee payment form for: ${studentName}`);
+    // Your existing implementation here
+}
     </script>
 </body>
 </html>
