@@ -49,8 +49,9 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
+            var duration = _service.GetDurations(loggedInUser.userId);
             var result = _service.GetClassesById(loggedInUser.userId);
-            return Json(result);
+            return Json(new { entries = result, durations = duration });
         }
      
 

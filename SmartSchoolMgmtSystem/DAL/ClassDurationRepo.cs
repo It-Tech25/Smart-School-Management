@@ -21,6 +21,7 @@ namespace SmartSchool.DAL
                           select new ClassDurationDto
                           {
                               ClassDurationId = user.ClassDurationId,
+                              Period = user.Period,
                               StartTime = user.StartTime,
                               EndTime = user.EndTime,
                               Duration=user.Duration
@@ -38,6 +39,7 @@ namespace SmartSchool.DAL
             {
                 if (count < 1)
                 {
+                    entity.Period = obj.Period;
                     entity.StartTime = obj.StartTime;
                     entity.EndTime = obj.EndTime;
                     entity.Duration = obj.Duration;
@@ -75,6 +77,7 @@ namespace SmartSchool.DAL
             {
                 if (count == 1)
                 {
+                    result.Period = obj.Period;
                     result.StartTime = obj.StartTime;
                     result.EndTime = obj.EndTime;
                     result.Duration = obj.Duration;

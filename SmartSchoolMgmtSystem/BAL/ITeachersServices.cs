@@ -12,7 +12,8 @@ namespace SmartSchool.Service
         public interface ITeachersServices
         { 
         List<TeachersDto> GetAllAsync(int id);
-        TimetableResponseDto GetClassesById(int id);
+        List<ClassTimetableDto> GetClassesById(int id);
+        List<DurationsDto> GetDurations(int uid);
         GenericResponse AddAsync(TeachersDto dto, int id);
         GenericResponse UpdateAsync(TeachersDto dto, int id);
         GenericResponse DeleteAsync(int id, int logid);
