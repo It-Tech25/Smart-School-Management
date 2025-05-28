@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using SmartSchool.Utilities;
 using SmartSchool.Models.Entity;
+using SmartSchool.Service;
 
 namespace Advocate_Invoceing.Controllers
 {
@@ -11,13 +12,19 @@ namespace Advocate_Invoceing.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUserService _service;
+        private readonly ITeachersServices _tservice;
+        private readonly IStudentService _sservice;
+        private readonly IFeePaymentsService _fservice;
         private readonly MyDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger,IUserService service,MyDbContext context)
+        public HomeController(ILogger<HomeController> logger,IUserService service,MyDbContext context, ITeachersServices tservice,IStudentService sservice,IFeePaymentsService fservice)
         {
             _logger = logger;
             _service = service;
             _context = context;
+            _tservice = tservice;
+            _sservice = sservice;
+            _fservice = fservice;
         }
 
         public IActionResult Index()
@@ -53,6 +60,39 @@ namespace Advocate_Invoceing.Controllers
             ViewBag.Name = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.FullName).FirstOrDefault();
 
             return View();
+        }
+        public IActionResult GetTeachers()
+        {
+            var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
+            if (loggedInUser == null)
+            {
+                return RedirectToAction("Login", "Authenticate");
+            }
+            var teachers = _tservice.GetAllAsync(loggedInUser.userId);
+
+            return Json(teachers);
+        }
+        public IActionResult GetStudents()
+        {
+            var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
+            if (loggedInUser == null)
+            {
+                return RedirectToAction("Login", "Authenticate");
+            }
+            var students = _sservice.GetStudent(loggedInUser.userId);
+
+            return Json(students);
+        }
+        public IActionResult GetFeePayments()
+        {
+            var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
+            if (loggedInUser == null)
+            {
+                return RedirectToAction("Login", "Authenticate");
+            }
+            var feePayments = _fservice.GetFeePayments(loggedInUser.userId);
+
+            return Json(feePayments);
         }
         public IActionResult TeacherDashboard()
         {
