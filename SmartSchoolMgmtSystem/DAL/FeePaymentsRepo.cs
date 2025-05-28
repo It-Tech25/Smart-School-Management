@@ -86,6 +86,7 @@ namespace SmartSchool.DAL
         public GenericResponse UpdateFeePayments(FeePaymentsDTO obj, int id)
         {
             GenericResponse response = new GenericResponse();
+            FeePaymentEntity entity = new FeePaymentEntity();
             var result = _context.feePaymentEntity.Where(a => a.StudentId == obj.StudentId&& a.PaymentId==obj.PaymentId && a.IsDeleted == false).FirstOrDefault();
             int sid = _context.studentEntity.Where(a => a.StudentId == obj.StudentId && a.IsDeleted == false).Select(a => a.StudentId).FirstOrDefault();  
             int count = _context.feePaymentEntity.Where(a => a.PaymentId == obj.PaymentId).Count();
@@ -106,6 +107,20 @@ namespace SmartSchool.DAL
                     result.UpdatedBy = id;
 
                     _context.feePaymentEntity.Update(result);
+
+                    entity.StudentId = sid;
+                    entity.ItemId = obj.ItemId;
+                    entity.PaymentDate = DateTime.Now;
+                    entity.Amount = obj.Amount;
+                    entity.ReceiptNumber = GenerateReceiptNumber();
+                    entity.IsDeleted = false;
+                    entity.CreatedOn = DateTime.Now;
+                    entity.CreatedBy = id;
+                    entity.UpdatedOn = DateTime.Now;
+                    entity.UpdatedBy = id;
+
+
+                    _context.feepayment.Add(entity);
                     _context.SaveChanges();
                     response.statuCode = 1;
                     response.message = "Success";
