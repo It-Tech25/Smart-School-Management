@@ -702,12 +702,12 @@
 <script>
     function loadSubscriptions() {
         $.ajax({
-            url: '/Home/GetSubscriptions', // Your controller action
+            url: '/Home/GetSubscription', // Your controller action
             type: 'GET',
             success: function (response) {
                 if (response.success) {
                     // Clear the table first
-                    $("#subscriptionTableBody").empty();
+                    $("#closedSubscriptionsTableBody").empty();
 
                     // Populate the table
                     $.each(response.data, function (index, subscription) {
@@ -720,7 +720,7 @@
                                 <td>${subscription.Status}</td>
                             </tr>
                         `;
-                        $("#subscriptionTableBody").append(row);
+                        $("#closedSubscriptionsTableBody").append(row);
                     });
 
                     // Show the modal

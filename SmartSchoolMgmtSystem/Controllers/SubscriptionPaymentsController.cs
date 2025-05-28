@@ -54,6 +54,36 @@ namespace SmartSchool.Controllers
                 return Json(new { success = false });
             }
         }
+        public IActionResult Index(int? schoolid, string status, DateTime? startDate, DateTime? endDate)
+        {
+            var query = _context.subscriptionsPaymentEntity.AsQueryable();
+
+            if (schoolid.HasValue)
+                query = query.Where(p => p.schoolid == schoolid);
+
+            if (!string.IsNullOrEmpty(status))
+                query = query.Where(p => p.Status == status);
+
+            if (startDate.HasValue && endDate.HasValue)
+                query = query.Where(p => p.PaidDate >= startDate && p.PaidDate <= endDate);
+
+            var payments = query
+                .Where(p => p.IsDeleted == false || p.IsDeleted == null)
+                .Select(p => new SubscriptionPaymentsEntity
+                {
+                    PaymentId = p.PaymentId,
+                    SubscriptionId = p.SubscriptionId,
+                    Amount = p.Amount,
+                    PaidDate = p.PaidDate,
+                    Status = p.Status,
+                    Modules = p.Modules,
+                    CreatedOn = p.CreatedOn
+                    // Add others as needed
+                }).ToList();
+
+            return View(payments);
+        }
+
         [HttpPost]
         public IActionResult UpdatePayment(SubscriptionPaymentsDto obj)
         {

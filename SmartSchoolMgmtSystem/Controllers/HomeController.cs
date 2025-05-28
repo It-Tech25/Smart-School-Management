@@ -61,6 +61,27 @@ namespace Advocate_Invoceing.Controllers
 
             return View();
         }
+        public IActionResult GetSubscription()
+        {
+            var query = _context.subscriptionsPaymentEntity.AsQueryable();
+
+           
+            var payments = query
+                .Where(p => p.IsDeleted == false || p.IsDeleted == null)
+                .Select(p => new SubscriptionPaymentsEntity
+                {
+                    PaymentId = p.PaymentId,
+                    SubscriptionId = p.SubscriptionId,
+                    Amount = p.Amount,
+                    PaidDate = p.PaidDate,
+                    Status = p.Status,
+                    Modules = p.Modules,
+                    CreatedOn = p.CreatedOn
+                    // Add others as needed
+                }).ToList();
+
+            return View(payments);
+        }
         public IActionResult GetTeachers()
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
