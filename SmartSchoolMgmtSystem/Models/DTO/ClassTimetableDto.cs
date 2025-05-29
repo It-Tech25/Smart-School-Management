@@ -10,7 +10,7 @@
 
         public int? TeacherId { get; set; }
 
-        public string Room { get; set; }
+        public string? Room { get; set; }
 
         public string DayOfWeek { get; set; }
 
