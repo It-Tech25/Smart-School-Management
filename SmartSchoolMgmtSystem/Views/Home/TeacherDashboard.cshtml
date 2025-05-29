@@ -597,7 +597,7 @@
 </div>
 
 <script>
-			function openTimetablePopup(teacherId) {
+		function openTimetablePopup(teacherId) {
 		$('#timetableModal').modal('show');
 		$('#timetableContent').html('<div class="text-center"><span class="spinner-border text-primary" role="status"></span></div>');
 
@@ -609,38 +609,58 @@
 				console.log("AJAX response:", response);
 
 				const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-				let html = '<table class="table table-bordered"><thead><tr><th>Time</th>';
+				const periodNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+
+				let html = '<table class="table table-bordered"><thead><tr><th>Period<br/>Time</th>';
 				days.forEach(day => html += `<th>${day}</th>`);
 				html += '</tr></thead><tbody>';
 
 				const entries = response.entries || [];
 				const durations = response.durations || [];
 
+				// Normalize helper
+				const normalize = val => (typeof val === 'string' ? val.trim().toLowerCase() : val);
+
+				// Build period-day map
 				const entriesMap = {};
 				entries.forEach(entry => {
-					const period = entry.period || entry.Period;
-					const day = entry.day || entry.Day;
+					const period = normalize(entry.period || entry.Period);
+					const day = normalize(entry.day || entry.Day);
 					if (!entriesMap[period]) entriesMap[period] = {};
 					entriesMap[period][day] = entry;
 				});
 
-				durations.forEach(duration => {
-					const period = duration.period || duration.Period;
+				if (durations.length === 0) {
+					html += `<tr><td colspan="${days.length + 1}" class="text-center text-muted">No timetable durations found.</td></tr>`;
+				}
+
+				durations.forEach((duration, index) => {
+					const period = normalize(duration.period || duration.Period);
 					const startTime = duration.startTime || duration.StartTime;
 					const endTime = duration.endTime || duration.EndTime;
-					html += `<tr><td>${startTime}–${endTime}</td>`;
+
+					const periodLabel = periodNames[index] || `Period ${index + 1}`;
+					html += `<tr><td><strong>${period}</strong><br/><small>${startTime} – ${endTime}</small></td>`;
+
 					days.forEach(day => {
-						const entry = (entriesMap[period] || {})[day];
-						if (entry && (entry.subject || entry.Subject)) {
-							const subject = entry.subject || entry.Subject;
-							const className = entry.class || entry.Class;
-							html += `<td>${subject}<br/><small>${className}</small></td>`;
+						const dayKey = normalize(day);
+						const entry = (entriesMap[period] || {})[dayKey];
+
+						if (entry && (entry.Subject || entry.subject)) {
+							const subject = entry.Subject || entry.subject;
+							const className = entry.Class || entry.class;
+							html += `<td><strong>${subject}</strong><br/><small>${className}</small></td>`;
 						} else {
-							html += '<td>-</td>'; // Show "-" when no class is assigned
+							html += '<td>-</td>';
 						}
 					});
+
 					html += '</tr>';
 				});
+
+				if (entries.length === 0) {
+					html += `<tr><td colspan="${days.length + 1}" class="text-center text-muted">No classes assigned for this teacher.</td></tr>`;
+				}
 
 				html += '</tbody></table>';
 				$('#timetableContent').html(html);
@@ -650,6 +670,7 @@
 			}
 		});
 	}
+
 
 </script>
 
