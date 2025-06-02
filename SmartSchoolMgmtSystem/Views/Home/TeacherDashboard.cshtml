@@ -627,60 +627,80 @@
     </div>
 </div>
 <script>
-    function openTimetablePopup(teacherId) {
-        $('#timetableModal').modal('show');
-        $('#timetableContent').html('<div class="text-center"><span class="spinner-border text-primary" role="status"></span></div>');
+   	function openTimetablePopup(teacherId) {
+	$('#timetableModal').modal('show');
+	$('#timetableContent').html('<div class="text-center"><span class="spinner-border text-primary" role="status"></span></div>');
 
-        $.ajax({
-            url: '/Teachers/GetClassesById',
-            type: 'GET',
-            data: { id: teacherId },
-            success: function (response) {
-                console.log("AJAX response:", response);
+	$.ajax({
+		url: '/Teachers/GetClassesById',
+		type: 'GET',
+		data: { id: teacherId },
+		success: function (response) {
+			console.log("AJAX response:", response);
 
-                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                let html = '<table class="table table-bordered"><thead><tr><th>Time</th>';
-                days.forEach(day => html += `<th>${day}</th>`);
-                html += '</tr></thead><tbody>';
+			const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+			const periodNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 
-                const entries = response.entries || [];
-                const durations = response.durations || [];
+			let html = '<table class="table table-bordered"><thead><tr><th>Period<br/>Time</th>';
+			days.forEach(day => html += `<th>${day}</th>`);
+			html += '</tr></thead><tbody>';
 
-                const entriesMap = {};
-                entries.forEach(entry => {
-                    const period = entry.period || entry.Period;
-                    const day = entry.day || entry.Day;
-                    if (!entriesMap[period]) entriesMap[period] = {};
-                    entriesMap[period][day] = entry;
-                });
+			const entries = response.entries || [];
+			const durations = response.durations || [];
 
-                durations.forEach(duration => {
-                    const period = duration.period || duration.Period;
-                    const startTime = duration.startTime || duration.StartTime;
-                    const endTime = duration.endTime || duration.EndTime;
-                    html += `<tr><td>${startTime}–${endTime}</td>`;
-                    days.forEach(day => {
-                        const entry = (entriesMap[period] || {})[day];
-                        if (entry && (entry.subject || entry.Subject)) {
-                            const subject = entry.subject || entry.Subject;
-                            const className = entry.class || entry.Class;
-                            html += `<td>${subject}<br/><small>${className}</small></td>`;
-                        } else {
-                            html += '<td>-</td>'; // Show "-" when no class is assigned
-                        }
-                    });
-                    html += '</tr>';
-                });
+			// Normalize helper
+			const normalize = val => (typeof val === 'string' ? val.trim().toLowerCase() : val);
 
-                html += '</tbody></table>';
-                $('#timetableContent').html(html);
-            },
-            error: function () {
-                $('#timetableContent').html('<div class="alert alert-danger">Failed to load timetable.</div>');
-            }
-        });
-    }
-                    function loadStudentAttendanceList() {
+			// Build period-day map
+			const entriesMap = {};
+			entries.forEach(entry => {
+				const period = normalize(entry.period || entry.Period);
+				const day = normalize(entry.day || entry.Day);
+				if (!entriesMap[period]) entriesMap[period] = {};
+				entriesMap[period][day] = entry;
+			});
+
+			if (durations.length === 0) {
+				html += `<tr><td colspan="${days.length + 1}" class="text-center text-muted">No timetable durations found.</td></tr>`;
+			}
+
+			durations.forEach((duration, index) => {
+				const period = normalize(duration.period || duration.Period);
+				const startTime = duration.startTime || duration.StartTime;
+				const endTime = duration.endTime || duration.EndTime;
+
+				const periodLabel = periodNames[index] || `Period ${index + 1}`;
+				html += `<tr><td><strong>${period}</strong><br/><small>${startTime} – ${endTime}</small></td>`;
+
+				days.forEach(day => {
+					const dayKey = normalize(day);
+					const entry = (entriesMap[period] || {})[dayKey];
+
+					if (entry && (entry.Subject || entry.subject)) {
+						const subject = entry.Subject || entry.subject;
+						const className = entry.Class || entry.class;
+						html += `<td><strong>${subject}</strong><br/><small>${className}</small></td>`;
+					} else {
+						html += '<td>-</td>';
+					}
+				});
+
+				html += '</tr>';
+			});
+
+			if (entries.length === 0) {
+				html += `<tr><td colspan="${days.length + 1}" class="text-center text-muted">No classes assigned for this teacher.</td></tr>`;
+			}
+
+			html += '</tbody></table>';
+			$('#timetableContent').html(html);
+		},
+		error: function () {
+			$('#timetableContent').html('<div class="alert alert-danger">Failed to load timetable.</div>');
+		}
+	});
+}
+                function loadStudentAttendanceList() {
         $.ajax({
             url: '/StudentAttendence/GetStudentAttendence',
             type: 'GET',
@@ -688,12 +708,10 @@
                 var tbody = $('#studentAttendanceTableBody');
                 tbody.empty();
                 var sno = 1;
-
-                data.forEach(function (item) {
+  data.forEach(function (item) {
                     var attendanceDate = new Date(parseInt(item.Date.substr(6)));
                     var formattedDate = attendanceDate.toLocaleDateString();
-
-                    var row = `<tr>
+         var row = `<tr>
                         <td>${sno}</td>
                         <td>${escapeHtml(item.StudentName)}</td>
                         <td>${formattedDate}</td>
