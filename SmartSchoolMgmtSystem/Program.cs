@@ -111,19 +111,22 @@ app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseSession();
 app.UseAuthentication(); 
 app.UseAuthorization();
-
 app.UseEndpoints(endpoints =>
 {
-    // Route for URLs like /guardians/MahatmaEMSchool/Principal
     endpoints.MapControllerRoute(
         name: "guardians",
         pattern: "guardians/{schoolName}/{role?}",
         defaults: new { controller = "Authenticate", action = "Login" });
 
-    // Default route
+    endpoints.MapControllerRoute(
+        name: "schoolDashboard",
+        pattern: "{schoolName}/Home/{action=AdminDashboard}/{id?}",
+        defaults: new { controller = "Home" });
+
     endpoints.MapControllerRoute(
         name: "default",
         pattern: "{controller=Authenticate}/{action=Login}/{schoolName?}/{role?}");
 });
+
 
 app.Run();

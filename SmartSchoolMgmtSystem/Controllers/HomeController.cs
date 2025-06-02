@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SmartSchool.BAL;
 using SmartSchool.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using SmartSchool.Utilities;
 using SmartSchool.Models.Entity;
 using SmartSchool.Service;
+using SmartSchool.Utilities;
+using System.Diagnostics;
 
 namespace Advocate_Invoceing.Controllers
 {
@@ -41,7 +42,7 @@ namespace Advocate_Invoceing.Controllers
 
             return View();
         }
-        public IActionResult AdminDashboard()
+        public IActionResult AdminDashboard(string schoolName)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
@@ -49,22 +50,50 @@ namespace Advocate_Invoceing.Controllers
                 return RedirectToAction("Login", "Authenticate");
             }
 
-            ViewBag.TotalSubscriptions = _service.TotalSubscriptions();
-            ViewBag.SchoolName = _context.schools.Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false).Select(a => a.Name).FirstOrDefault();
-            int school = _context.schools.Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false).Select(a => a.SchoolId).FirstOrDefault();
-            ViewBag.pic1 = _context.schools.Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false).Select(a => a.ProfilePhoto1).FirstOrDefault();
-            ViewBag.pic2 = _context.schools.Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false).Select(a => a.ProfilePhoto2).FirstOrDefault();
-            ViewBag.pic3 = _context.schools.Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false).Select(a => a.ProfilePhoto3).FirstOrDefault();
-            int sid = _context.userTypeEntites.Where(a => a.UserTypeName == "Student" && a.CreatedBy == loggedInUser.userId && a.IsDeleted == false).Select(a => a.UserTypeId).FirstOrDefault();
-            int tid = _context.userTypeEntites.Where(a => a.UserTypeName == "Teacher" && a.CreatedBy == loggedInUser.userId && a.IsDeleted == false).Select(a => a.UserTypeId).FirstOrDefault();
-            ViewBag.TotalTeacher = _context.userEntity.Where(a => a.UserTypeId == tid && a.CreatedBy == loggedInUser.userId && a.IsDeleted == false).Count();
-            ViewBag.TotalStudent = _context.studentEntity.Where(a => a.UserTypeId == sid && a.CreatedBy == loggedInUser.userId && a.IsDeleted == false).Count();
-            ViewBag.TotalFee = _context.studentEntity.Where(f => f.IsDeleted == false && f.SchoolId==school).Sum(f => f.TotalFee);
-            ViewBag.CollectedFee = _context.feePaymentEntity.Where(f => f.IsDeleted == false && f.CreatedBy == loggedInUser.userId).Sum(f => f.Amount);
-            ViewBag.Name = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.FullName).FirstOrDefault();
+            var school = _context.schools
+                .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
+                .FirstOrDefault();
 
-            ViewBag.Profile = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.ProfilePicture).FirstOrDefault();
-            ViewBag.Name = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.FullName).FirstOrDefault();
+            if (school == null || !string.Equals(school.Name, schoolName, StringComparison.OrdinalIgnoreCase))
+            {
+                // Either school mismatch or invalid school — redirect to correct one
+                return RedirectToAction("AdminDashboard", "Home", new { schoolName = school?.Name ?? "Unknown" });
+            }
+
+            ViewBag.SchoolName = school.Name;
+            ViewBag.pic1 = school.ProfilePhoto1;
+            ViewBag.pic2 = school.ProfilePhoto2;
+            ViewBag.pic3 = school.ProfilePhoto3;
+
+            int sid = _context.userTypeEntites
+                .Where(a => a.UserTypeName == "Student" && a.CreatedBy == loggedInUser.userId && a.IsDeleted==false)
+                .Select(a => a.UserTypeId).FirstOrDefault();
+
+            int tid = _context.userTypeEntites
+                .Where(a => a.UserTypeName == "Teacher" && a.CreatedBy == loggedInUser.userId && a.IsDeleted == false)
+                .Select(a => a.UserTypeId).FirstOrDefault();
+
+            ViewBag.TotalTeacher = _context.userEntity
+                .Count(a => a.UserTypeId == tid && a.CreatedBy == loggedInUser.userId && a.IsDeleted == false);
+
+            ViewBag.TotalStudent = _context.studentEntity
+                .Count(a => a.UserTypeId == sid && a.CreatedBy == loggedInUser.userId && a.IsDeleted == false);
+
+            ViewBag.TotalFee = _context.studentEntity
+                .Where(f => f.IsDeleted == false && f.SchoolId == school.SchoolId)
+                .Sum(f => f.TotalFee);
+
+            ViewBag.CollectedFee = _context.feePaymentEntity
+                .Where(f => f.IsDeleted == false && f.CreatedBy == loggedInUser.userId)
+                .Sum(f => f.Amount);
+
+            ViewBag.Name = _context.userEntity
+                .Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false)
+                .Select(a => a.FullName).FirstOrDefault();
+
+            ViewBag.Profile = _context.userEntity
+                .Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false)
+                .Select(a => a.ProfilePicture).FirstOrDefault();
 
             return View();
         }
