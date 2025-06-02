@@ -29,7 +29,14 @@ namespace Advocate_Invoceing.Controllers
 
         public IActionResult Index()
         {
-            
+            var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
+            if (loggedInUser == null)
+            {
+                return RedirectToAction("Login", "Authenticate");
+            }
+            ViewBag.Profile = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.ProfilePicture).FirstOrDefault();
+            ViewBag.Name = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.FullName).FirstOrDefault();
+
             ViewBag.TotalSubscriptions = _service.TotalSubscriptions();
 
             return View();
@@ -125,8 +132,9 @@ namespace Advocate_Invoceing.Controllers
 
             ViewBag.TotalSubscriptions = _service.TotalSubscriptions();
             ViewBag.Name = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.FullName).FirstOrDefault();
+            ViewBag.Studentlist = GetStudentpresence();
 
-            ViewBag.Profile = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.ProfilePicture).FirstOrDefault();
+			ViewBag.Profile = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.ProfilePicture).FirstOrDefault();
 
             return View();
         }
@@ -161,8 +169,20 @@ namespace Advocate_Invoceing.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+		public IActionResult GetStudentpresence()
+		{
+			var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
+
+			if (loggedInUser == null)
+			{
+				return RedirectToAction("Login", "Authenticate");
+			}
+			var students = _sservice.GetStudent(loggedInUser.userId);
+            
+			return View(students);
+		}
 
 
 
-    }
+	}
 }

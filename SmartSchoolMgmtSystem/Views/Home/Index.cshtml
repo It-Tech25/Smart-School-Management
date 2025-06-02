@@ -1,6 +1,7 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <style>
     .prod-p-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -563,12 +564,35 @@
             <div class="card-header">
                 <h5>Profile</h5>
             </div>
-            <div class="card-body  text-center">
+
+            <!-- Add this in the <head> to load Font Awesome -->
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px;">
+                <h3>Profile</h3>
+                <a href="javascript:void(0);" onclick="editProfile()" title="Edit">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>
+            </div>
+
+            <script>
+                function editProfile() {
+                    // Your logic goes here - for now, just showing an alert
+                    alert("Edit button clicked!");
+                    // You can replace this with opening a modal or redirect logic
+                }
+            </script>
+
+
+
+            <div class="card-body">
                 <div class="usre-image">
-                    <img src="~/resources/assets/images/widget/img-round1.jpg" class="img-radius wid-100 m-auto" alt="User-Profile-Image">
+                    <img src="@ViewBag.Profile" class="img-radius wid-100 m-auto" alt="User-Profile-Image">
                 </div>
-                <h6 class="f-w-600 m-t-25 m-b-10">Alessa Robert</h6>
-                <p>Active | Male | Born 23.05.1992</p>
+                <h6 class="f-w-600 m-t-25 m-b-10">@ViewBag.Name</h6>
+                <p style="color: black;"> Active</p>
                 <hr>
                 <p class="m-t-15">Activity Level: 87%</p>
                 <div class="bg-c-blue counter-block m-t-10 p-20">
@@ -699,15 +723,25 @@
 </div>
 
 
+
+<script>
+    function openEditModal() {
+        // Your code to open modal or navigate
+        alert("Edit button clicked!");
+    }
+</script>
+
+
+
 <script>
     function loadSubscriptions() {
         $.ajax({
-            url: '/Home/GetSubscription', // Your controller action
+            url: '/Home/GetSubscriptions', // Your controller action
             type: 'GET',
             success: function (response) {
                 if (response.success) {
                     // Clear the table first
-                    $("#closedSubscriptionsTableBody").empty();
+                    $("#subscriptionTableBody").empty();
 
                     // Populate the table
                     $.each(response.data, function (index, subscription) {
@@ -720,7 +754,7 @@
                                 <td>${subscription.Status}</td>
                             </tr>
                         `;
-                        $("#closedSubscriptionsTableBody").append(row);
+                        $("#subscriptionTableBody").append(row);
                     });
 
                     // Show the modal
