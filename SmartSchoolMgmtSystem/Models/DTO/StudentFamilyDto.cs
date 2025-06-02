@@ -6,11 +6,11 @@
 
         public int? StudentId { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        public string Relation { get; set; }
+        public string? Relation { get; set; }
 
-        public string ContactNumber { get; set; }
+        public string? ContactNumber { get; set; }
 
     }
 }

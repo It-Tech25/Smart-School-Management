@@ -198,20 +198,17 @@ namespace Advocate_Invoceing.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-		public IActionResult GetStudentpresence()
-		{
-			var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
+        [HttpGet]
+        public IActionResult GetStudentpresence()
+        {
+            var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
+            if (loggedInUser == null)
+            {
+                return RedirectToAction("Login", "Authenticate");
+            }
+            var students = _sservice.GetStudent(loggedInUser.userId);
+            return Json(new { success = true, data = students });
+        }
 
-			if (loggedInUser == null)
-			{
-				return RedirectToAction("Login", "Authenticate");
-			}
-			var students = _sservice.GetStudent(loggedInUser.userId);
-            
-			return View(students);
-		}
-
-
-
-	}
+    }
 }

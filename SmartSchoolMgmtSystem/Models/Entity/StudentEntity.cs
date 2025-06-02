@@ -11,16 +11,15 @@ namespace SmartSchool.Models.Entity
 
         [Required]
         public int? SchoolId { get; set; }
-        [Required]
+    
         public int? ClassID { get; set; }
         //  public string? Class { get; set; } 
-
-        [Required]
+         
         public string? Address { get; set; }
-        [Required]
+        
         public DateTime? DOB { get; set; }
-        [Required]
-        public string Gender { get; set; }
+        
+        public string? Gender { get; set; }
 
         public bool? IsDeleted { get; set; }
 
@@ -31,13 +30,13 @@ namespace SmartSchool.Models.Entity
         public DateTime? UpdatedOn { get; set; }
 
         public int? UpdatedBy { get; set; }
-        [Required]
+        
         public string? StudentName { get; set; }
-        [Required]
+        
         public int? UserTypeId { get; set; }
-        [Required]
+        
         public string? AdharcardNo { get; set; }
-        [Required]
+        
         public string? Photo { get; set; }
        
         public decimal? TotalFee { get; set; }

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard with Background Slider</title>
+    
+    <!-- Add Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -24,6 +27,8 @@
             overflow: hidden;
             z-index: -1;
         }
+       
+
 
         .overlay {
             position: absolute;
@@ -31,7 +36,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* background-color: rgba(0, 0, 0, 0.6); */
             z-index: 5;
         }
 
@@ -51,6 +55,8 @@
             background-position: center;
             opacity: 0;
             transition: opacity 1s ease-in-out;
+            transform: translateZ(0); /* Prevent blurriness */
+            backface-visibility: hidden;
         }
 
             .slide.active {
@@ -92,8 +98,8 @@
         }
 
         .btn {
-            background-color: rgba(255, 255, 255, 0.3);
-            color: white;
+/*               background-color: rgba(255, 255, 255, 0.3);
+ */            color: white;
             border: none;
             width: 50px;
             height: 50px;
@@ -130,6 +136,7 @@
         .breadcrumb {
             display: flex;
             list-style: none;
+            padding: 0;
         }
 
         .breadcrumb-item {
@@ -146,9 +153,14 @@
             border-radius: 5px;
             padding: 5px;
             margin-bottom: 20px;
-            backdrop-filter: blur(10px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
         }
+
+            .card:hover {
+                transform: translateY(-5px);
+            }
 
         .row {
             display: flex;
@@ -162,10 +174,6 @@
             padding: 0 15px;
         }
 
-     
-
-      
-
         .col-xl-8 {
             flex: 0 0 66.666667%;
             max-width: 66.666667%;
@@ -178,9 +186,7 @@
             padding: 0 15px;
         }
 
-
         .prod-p-card {
-            /* background-color: rgba(255, 255, 255, 0.15); */
             color: white;
         }
 
@@ -390,6 +396,35 @@
             border: none;
         }
 
+        /* Modal styles to prevent blurriness */
+        .modal {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .modal-content {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            perspective: 1000;
+        }
+
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* Fix for table text clarity */
+        .table td, .table th {
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* Ensure images are crisp */
+        img {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
     </style>
 </head>
 <body>
@@ -438,7 +473,7 @@
                                 <h3 class="m-b-0 text-white">@ViewBag.TotalTeacher</h3>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-money-bill-alt text-white f-18"></i>
+                                <i class="fas fa-chalkboard-teacher text-white f-18"></i>
                             </div>
                         </div>
                         <p class="m-b-0 text-white">
@@ -457,7 +492,7 @@
                                 <h3 class="m-b-0 text-white">@ViewBag.TotalStudent</h3>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-database text-white f-18"></i>
+                                <i class="fas fa-user-graduate text-white f-18"></i>
                             </div>
                         </div>
                         <p class="m-b-0 text-white">
@@ -476,7 +511,7 @@
                                 <h3 class="m-b-0 text-white">@ViewBag.CollectedFee/@ViewBag.TotalFee</h3>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-dollar-sign text-white f-18"></i>
+                                <i class="fas fa-money-bill-wave text-white f-18"></i>
                             </div>
                         </div>
                         <p class="m-b-0 text-white">
@@ -485,7 +520,6 @@
                     </div>
                 </div>
             </div>
-
 
             <div class="col-xl-3 col-md-6">
                 <div class="card prod-p-card bg-warning">
@@ -496,7 +530,7 @@
                                 <h3 class="m-b-0 text-white">6,784</h3>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-tags text-white f-18"></i>
+                                <i class="fas fa-receipt text-white f-18"></i>
                             </div>
                         </div>
                         <p class="m-b-0 text-white">
@@ -505,16 +539,14 @@
                     </div>
                 </div>
             </div>
-            <!-- product profit end -->
-            <!-- sessions-section start -->
- 
+        </div>
 
         <!-- Table and Profile Row -->
         <div class="row">
             <!-- Table Section -->
             <div class="col-xl-8 col-md-6">
-                    <div class="card table-card" style="background-color: white;">
-                        <div class="card-header" style="background-color: white; border-bottom: none;">
+                <div class="card table-card" style="background-color: white;">
+                    <div class="card-header" style="background-color: white; border-bottom: none;">
                         <h5>Site visitors session log</h5>
                     </div>
                     <div class="card-body">
@@ -626,23 +658,45 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- Profile Card -->
             <div class="col-xl-4 col-md-6">
                 <div class="card user-card">
-                    <div class="card-header">
-                        <h5>Profile</h5>
+                    <!-- Card Header with Edit Button -->
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Profile</h5>
+                        <button id="editBtn" class="btn btn-sm btn-primary">
+                            <i class="fas fa-edit"></i>
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <div class="usre-image">
+
+                    <div class="card-body text-center">
+                        <!-- Profile Image -->
+                        <div class="usre-image mb-3">
                             <img src="@ViewBag.Profile" class="img-radius wid-100 m-auto" alt="User-Profile-Image">
                         </div>
-                        <h6 class="f-w-600 m-t-25 m-b-10">@ViewBag.Name</h6>
-                            <p style ="color: black;"> Active</p>
+
+                        <!-- Name (editable) -->
+                        <h6 class="f-w-600 m-b-10">
+                            <span id="nameDisplay">@ViewBag.Name</span>
+                            <input type="text" id="nameInput" class="form-control d-none text-center" value="@ViewBag.Name">
+                        </h6>
+
+                        <!-- Status (editable) -->
+                        <p id="statusDisplay" style="color: black;">Active</p>
+                        <input type="text" id="statusInput" class="form-control d-none text-center mb-2" value="Active">
+
                         <hr>
-                        <p class="m-t-15">Activity Level: 87%</p>
+
+                        <!-- Activity (editable) -->
+                        <p class="m-t-15">
+                            Activity Level: <span id="activityDisplay">87%</span>
+                            <input type="number" id="activityInput" class="form-control d-none text-center mt-2" value="87">
+                        </p>
+
+                        <!-- Counters -->
                         <div class="bg-c-blue counter-block m-t-10 p-20">
-                            <div class="row">
+                            <div class="row text-center">
                                 <div class="col-4">
                                     <i class="fas fa-calendar-check text-white f-20"></i>
                                     <h6 class="text-white mt-2 mb-0">1256</h6>
@@ -657,8 +711,12 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Description -->
                         <p class="m-t-15">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
                         <hr>
+
+                        <!-- Social Links -->
                         <div class="row justify-content-center user-social-link">
                             <div class="col-auto"><a href="#!"><i class="fab fa-facebook-f text-primary f-22"></i></a></div>
                             <div class="col-auto"><a href="#!"><i class="fab fa-twitter text-c-info f-22"></i></a></div>
@@ -669,160 +727,116 @@
             </div>
         </div>
     </div>
-        <!-- Teachers Modal -->
-        <div class="modal fade" id="teachersModal" tabindex="-1" role="dialog" aria-labelledby="teachersModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="teachersModalLabel">Teachers List</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="table-responsive">
-                            <table id="teachersTable" class="table table-striped" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Teacher Name</th>
-                                        <th>Subject Name</th>
-                                        <th>Class Name</th>
-                                        <th>School Name</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="teachersTableBody">
-                                    <!-- Data will be populated here via JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
+
+    <!-- Teachers Modal -->
+    <div class="modal fade" id="teachersModal" tabindex="-1" aria-labelledby="teachersModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="teachersModalLabel">Teachers List</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table id="teachersTable" class="table table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Teacher Name</th>
+                                    <th>Subject Name</th>
+                                    <th>Class Name</th>
+                                    <th>School Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teachersTableBody">
+                                <!-- Data will be populated here via JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- Student Modal -->
-        <div class="modal fade" id="studentsModal" tabindex="-1" role="dialog" aria-labelledby="studentsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="studentsModalLabel">Students List</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="table-responsive">
-                            <table id="studentsTable" class="table table-striped" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Student Name</th>
-                                        <th>Class</th>
-                                        <th>Address</th>
-                                        <th>Adharcard No</th>
-                                        <th>Photo</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="studentsTableBody">
-                                    <!-- Data will be populated here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Fee Payments Modal -->
-<div class="modal fade" id="feePaymentsModal" tabindex="-1" role="dialog" aria-labelledby="feePaymentsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="feePaymentsModalLabel">Fee Payments</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table id="feePaymentsTable" class="table table-striped" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Student Name</th>
-                                <th>Payment Date</th>
-                                <th>Amount</th>
-                                <th>Receipt Number</th>
-                            </tr>
-                        </thead>
-                        <tbody id="feePaymentsTableBody">
-                            <!-- Data will be populated here -->
-                        </tbody>
-                    </table>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
-@*         <!-- Modal to display the teacher list -->
-        <div class="modal fade" id="teacherListModal" tabindex="-1" role="dialog" aria-labelledby="teacherListModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="teacherListModalLabel">Teachers List</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+    <!-- Student Modal -->
+    <div class="modal fade" id="studentsModal" tabindex="-1" aria-labelledby="studentsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="studentsModalLabel">Students List</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table id="studentsTable" class="table table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Student Name</th>
+                                    <th>Class</th>
+                                    <th>Address</th>
+                                    <th>Adharcard No</th>
+                                    <th>Photo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="modal-body">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table id="teachersTable" class="table table-striped" style="width:100%">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Teacher Name</th>
-                                                <th>Subject Name</th>
-                                                <th>Class Name</th>
-                                                <th>School Name </th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody id="classTableBody">
-
-                                            @foreach (var item in Model)
-                                            {
-                                                <tr>
-                                                    <td>@sno</td>
-                                                    <td>@item.FullName</td>
-                                                    <td>@item.SubjectName</td>
-                                                    <td>@item.Class</td>
-                                                    <td>@item.School</td>
-
-                                                </tr>
-                                                sno++;
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!-- Pagination Controls -->
-                                <ul id="pagination" class="pagination justify-content-end"></ul>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
- *@
+    </div>
+
+    <!-- Fee Payments Modal -->
+    <div class="modal fade" id="feePaymentsModal" tabindex="-1" aria-labelledby="feePaymentsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="feePaymentsModalLabel">Fee Payments</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table id="feePaymentsTable" class="table table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Student Name</th>
+                                    <th>Payment Date</th>
+                                    <th>Amount</th>
+                                    <th>Receipt Number</th>
+                                </tr>
+                            </thead>
+                            <tbody id="feePaymentsTableBody">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Font Awesome (for icons) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Slider Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const slides = document.querySelectorAll('.slide');
             const indicators = document.querySelectorAll('.indicator');
             const prevBtn = document.querySelector('.prev');
@@ -831,305 +845,252 @@
             let currentIndex = 0;
             let slideInterval;
 
-            // Start the automatic slider
             startSlider();
 
-            // Function to start automatic slider
             function startSlider() {
-                slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds (changed from 1 second)
+                slideInterval = setInterval(nextSlide, 5000);
             }
 
-            // Function to stop automatic slider
             function stopSlider() {
                 clearInterval(slideInterval);
             }
 
-            // Function to show a specific slide
             function showSlide(index) {
-                // Remove active class from all slides and indicators
-                slides.forEach(slide => {
-                    slide.classList.remove('active');
-                });
+                slides.forEach(slide => slide.classList.remove('active'));
+                indicators.forEach(indicator => indicator.classList.remove('active'));
 
-                indicators.forEach(indicator => {
-                    indicator.classList.remove('active');
-                });
-
-                // Add active class to current slide and indicator
                 slides[index].classList.add('active');
                 indicators[index].classList.add('active');
-
                 currentIndex = index;
             }
 
-            // Next slide function
             function nextSlide() {
-                let nextIndex = currentIndex + 1;
-                if (nextIndex >= slides.length) {
-                    nextIndex = 0;
-                }
+                let nextIndex = (currentIndex + 1) % slides.length;
                 showSlide(nextIndex);
             }
 
-            // Previous slide function
             function prevSlide() {
-                let prevIndex = currentIndex - 1;
-                if (prevIndex < 0) {
-                    prevIndex = slides.length - 1;
-                }
+                let prevIndex = (currentIndex - 1 + slides.length) % slides.length;
                 showSlide(prevIndex);
             }
 
-            // Event listeners for manual controls
-            nextBtn.addEventListener('click', function() {
-                stopSlider();  // Stop automatic sliding
+            nextBtn.addEventListener('click', function () {
+                stopSlider();
                 nextSlide();
-                startSlider(); // Restart automatic sliding
+                startSlider();
             });
 
-            prevBtn.addEventListener('click', function() {
-                stopSlider();  // Stop automatic sliding
+            prevBtn.addEventListener('click', function () {
+                stopSlider();
                 prevSlide();
-                startSlider(); // Restart automatic sliding
+                startSlider();
             });
 
-            // Event listeners for indicators
             indicators.forEach(indicator => {
-                indicator.addEventListener('click', function() {
-                    stopSlider();  // Stop automatic sliding
+                indicator.addEventListener('click', function () {
+                    stopSlider();
                     const index = parseInt(this.getAttribute('data-index'));
                     showSlide(index);
-                    startSlider(); // Restart automatic sliding
+                    startSlider();
                 });
             });
 
-            // Pause slider on hover
             const sliderContainer = document.querySelector('.slider-container');
             sliderContainer.addEventListener('mouseenter', stopSlider);
             sliderContainer.addEventListener('mouseleave', startSlider);
         });
 
-                             function loadTeacherList() {
-                    window.location.href = '@Url.Action("TeachersIndex", "Teachers")';
-            }
+        function loadTeacherList() {
+            $.ajax({
+                url: '/Home/GetTeachers',
+                type: 'GET',
+                beforeSend: function () {
+                    $('#teachersTableBody').html('<tr><td colspan="5" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
+                },
+                success: function (data) {
+                    const tbody = $('#teachersTableBody');
+                    tbody.empty();
 
-                                   function loadStudentList() {
-    $.ajax({
-        url: '/Home/GetStudents',
-        type: 'GET',
-        success: function (data) {
-            var tbody = $('#studentsTableBody');
-            tbody.empty();
-            var sno = 1;
-            
-            data.forEach(function (item) {
-                var photoHtml = item.Photo 
-                    ? `<img src="${escapeHtml(item.Photo)}" alt="Profile" style="height:40px;width:40px;object-fit:cover;border-radius:50%;">`
-                    : '<span>No Image</span>';
-                
-                var dob = item.DOB ? new Date(parseInt(item.DOB.substr(6))) : null;
-                var dobString = dob ? dob.toISOString().split('T')[0] : '';
-                
-                var row = `<tr>
-                    <td>${sno}</td>
-                    <td>
-                        <a href="@Url.Action("GetFeepayments", "FeePayments")?studentId=${item.StudentId}">
-                            ${escapeHtml(item.StudentName)}
-                        </a>
-                    </td>
-                    <td>${escapeHtml(item.Class)}</td>
-                    <td>${escapeHtml(item.Address)}</td>
-                    <td>${escapeHtml(item.AdharcardNo)}</td>
-                    <td>${photoHtml}</td>
-                    <td>
-                        <a href="#" onclick="EditStudent('${item.StudentId}', '${escapeHtml(item.StudentName)}', '${escapeHtml(item.Class)}', '${escapeHtml(item.Address)}', '${dobString}', '${escapeHtml(item.Gender)}', '${escapeHtml(item.AdharcardNo)}', '${escapeHtml(item.Photo)}', '${escapeHtml(item.Name)}', '${escapeHtml(item.Relation)}', '${escapeHtml(item.ContactNumber)}')" title="Edit">
-                            <button class="btn btn-circle btn-primary btn-xs"><i class="fa fa-edit"></i></button>
-                        </a>
-                        <a href="#" onclick="DeleteStudent('${item.StudentId}')" title="Delete">
-                            <button class="btn btn-circle btn-danger btn-xs"><i class="fa fa-trash"></i></button>
-                        </a>
-                    </td>
-                </tr>`;
-                
-                tbody.append(row);
-                sno++;
-            });
-            
-            $('#studentsModal').modal('show');
-        },
-        error: function() {
-            alert('Error loading students');
-        }
-    });
-}
+                    if (!data || data.length === 0) {
+                        tbody.html('<tr><td colspan="5" class="text-center">No teachers found</td></tr>');
+                        return;
+                    }
 
-// Reuse the same escapeHtml function from earlier
-function escapeHtml(text) {
-    if (text == null) return '';
-    return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-                    function loadFeePaymentsList() {
-    console.log("loadFeePaymentsList function triggered");
-    
-    try {
-        $.ajax({
-            url: '/Home/GetFeePayments',
-            type: 'GET',
-            beforeSend: function() {
-                console.log("Loading fee payments...");
-                // Show loading indicator
-                $('#feePaymentsTableBody').html('<tr><td colspan="5" class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>');
-            },
-            success: function (data) {
-                console.log("Data received:", data);
-                
-                if (!data || data.length === 0) {
-                    $('#feePaymentsTableBody').html('<tr><td colspan="5" class="text-center">No fee payments found</td></tr>');
-                    return;
+                    let sno = 1;
+                    data.forEach(function (item) {
+                        const photoHtml = item.Photo
+                            ? `<img src="${escapeHtml(item.Photo)}" alt="Profile" style="height:40px;width:40px;object-fit:cover;border-radius:50%;">`
+                            : '<span>No Image</span>';
+
+                        const row = `<tr>
+                                            <td>${sno}</td>
+                                            <td>${escapeHtml(item.TeacherName || 'N/A')}</td>
+                                            <td>${escapeHtml(item.Subject || 'N/A')}</td>
+                                            <td>${escapeHtml(item.Phone || 'N/A')}</td>
+                                            <td>${photoHtml}</td>
+                                        </tr>`;
+                        tbody.append(row);
+                        sno++;
+                    });
+
+                    const teachersModal = new bootstrap.Modal(document.getElementById('teachersModal'));
+                    teachersModal.show();
+                },
+                error: function () {
+                    $('#teachersTableBody').html('<tr><td colspan="5" class="text-center text-danger">Error loading teachers</td></tr>');
+                    const teachersModal = new bootstrap.Modal(document.getElementById('teachersModal'));
+                    teachersModal.show();
                 }
-                
-                var tbody = $('#feePaymentsTableBody');
-                tbody.empty();
-                var sno = 1;
-                
-                data.forEach(function (item) {
-                    // Format date
-                    let paymentDate = new Date(item.PaymentDate);
-                    let formattedDate = paymentDate.toLocaleDateString();
-                    
-                    // Create row
-                    let row = `<tr>
-                        <td>${sno}</td>
-                        <td>
-                            <a href="#" class="open-add-fee-payment"
-                               data-payment-id="${item.PaymentId}"
-                               data-student-id="${item.StudentId}"
-                               data-student-name="${escapeHtml(item.Name)}">
-                                ${escapeHtml(item.Name)}
-                            </a>
-                        </td>
-                        <td>${formattedDate}</td>
-                        <td>₹${item.Amount.toFixed(2)}</td>
-                        <td>${item.ReceiptNumber || 'N/A'}</td>
-                    </tr>`;
-                    
-                    tbody.append(row);
-                    sno++;
-                });
-                
-                // Show the modal
-                $('#feePaymentsModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.error("Error loading fee payments:", error);
-                $('#feePaymentsTableBody').html(
-                    '<tr><td colspan="5" class="text-center text-danger">Error loading data: ' + 
-                    error + '</td></tr>'
-                );
-                $('#feePaymentsModal').modal('show');
-            }
-        });
-    } catch (e) {
-        console.error("Exception in loadFeePaymentsList:", e);
-        alert("Error loading fee payments: " + e.message);
-    }
-}
-
-// Utility function to escape HTML
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.toString()
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
-            // Helper function to escape HTML characters
-            function escapeHtml(text) {
-                return text
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
-            function loadFeePaymentsList() {
-    $.ajax({
-        url: '/Home/GetFeePayments',
-        type: 'GET',
-        success: function (data) {
-            var tbody = $('#feePaymentsTableBody');
-            tbody.empty();
-            var sno = 1;
-            
-            data.forEach(function (item) {
-                // Format payment date
-                var paymentDate = new Date(parseInt(item.PaymentDate.substr(6)));
-                var formattedDate = paymentDate.toLocaleDateString();
-                
-                var row = `<tr>
-                    <td>${sno}</td>
-                    <td>
-                        <a href="#" class="open-add-fee-payment"
-                           data-payment-id="${item.PaymentId}"
-                           data-student-id="${item.StudentId}"
-                           data-student-name="${escapeHtml(item.Name)}"
-                           title="Add Fee Payment">
-                            ${escapeHtml(item.Name)}
-                        </a>
-                    </td>
-                    <td>${formattedDate}</td>
-                    <td>${item.Amount}</td>
-                    <td>${escapeHtml(item.ReceiptNumber)}</td>
-                </tr>`;
-                
-                tbody.append(row);
-                sno++;
             });
-            
-            // Initialize click handlers for the links
-            $('.open-add-fee-payment').off('click').on('click', function(e) {
-                e.preventDefault();
-                var paymentId = $(this).data('payment-id');
-                var studentId = $(this).data('student-id');
-                var studentName = $(this).data('student-name');
-                
-                // Call your existing function to handle fee payments
-                // You'll need to implement this function based on your requirements
-                openFeePaymentForm(paymentId, studentId, studentName);
-            });
-            
-            $('#feePaymentsModal').modal('show');
-        },
-        error: function() {
-            alert('Error loading fee payments');
         }
-    });
-}
 
-// Reuse the escapeHtml function
-function escapeHtml(text) {
-    return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+        function loadStudentList() {
+            $.ajax({
+                url: '/Home/GetStudents',
+                type: 'GET',
+                beforeSend: function () {
+                    $('#studentsTableBody').html('<tr><td colspan="6" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
+                },
+                success: function (data) {
+                    var tbody = $('#studentsTableBody');
+                    tbody.empty();
 
-// Example function to handle fee payment form
-function openFeePaymentForm(paymentId, studentId, studentName) {
-    // Implement your logic to open fee payment form
-    console.log(`Opening fee payment form for: ${studentName}`);
-    // Your existing implementation here
-}
+                    if (!data || data.length === 0) {
+                        tbody.html('<tr><td colspan="6" class="text-center">No students found</td></tr>');
+                        return;
+                    }
+
+                    var sno = 1;
+                    data.forEach(function (item) {
+                        var photoHtml = item.Photo
+                            ? `<img src="${escapeHtml(item.Photo)}" alt="Profile" style="height:40px;width:40px;object-fit:cover;border-radius:50%;">`
+                            : '<span>No Image</span>';
+
+                        var row = `<tr>
+                                        <td>${sno}</td>
+                                        <td>${escapeHtml(item.StudentName || 'N/A')}</td>
+                                        <td>${escapeHtml(item.Class || 'N/A')}</td>
+                                        <td>${escapeHtml(item.Address || 'N/A')}</td>
+                                        <td>${escapeHtml(item.AdharcardNo || 'N/A')}</td>
+                                        <td>${photoHtml}</td>
+                                    </tr>`;
+
+                        tbody.append(row);
+                        sno++;
+                    });
+
+                    var studentsModal = new bootstrap.Modal(document.getElementById('studentsModal'));
+                    studentsModal.show();
+                },
+                error: function () {
+                    $('#studentsTableBody').html('<tr><td colspan="6" class="text-center text-danger">Error loading students</td></tr>');
+                    var studentsModal = new bootstrap.Modal(document.getElementById('studentsModal'));
+                    studentsModal.show();
+                }
+            });
+        }
+
+        function loadFeePaymentsList() {
+            $.ajax({
+                url: '/Home/GetFeePayments',
+                type: 'GET',
+                beforeSend: function () {
+                    $('#feePaymentsTableBody').html('<tr><td colspan="5" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
+                },
+                success: function (data) {
+                    var tbody = $('#feePaymentsTableBody');
+                    tbody.empty();
+
+                    if (!data || data.length === 0) {
+                        tbody.html('<tr><td colspan="5" class="text-center">No fee payments found</td></tr>');
+                        return;
+                    }
+
+                    var sno = 1;
+                    data.forEach(function (item) {
+                        let paymentDate = new Date(item.PaymentDate);
+                        let formattedDate = paymentDate.toLocaleDateString();
+
+                        let row = `<tr>
+                                        <td>${sno}</td>
+                                        <td>${escapeHtml(item.Name || 'N/A')}</td>
+                                        <td>${formattedDate}</td>
+                                        <td>₹${item.Amount ? item.Amount.toFixed(2) : '0.00'}</td>
+                                        <td>${escapeHtml(item.ReceiptNumber || 'N/A')}</td>
+                                    </tr>`;
+
+                        tbody.append(row);
+                        sno++;
+                    });
+
+                    var feePaymentsModal = new bootstrap.Modal(document.getElementById('feePaymentsModal'));
+                    feePaymentsModal.show();
+                },
+                error: function (xhr, status, error) {
+                    $('#feePaymentsTableBody').html('<tr><td colspan="5" class="text-center text-danger">Error loading fee payments: ' + error + '</td></tr>');
+                    var feePaymentsModal = new bootstrap.Modal(document.getElementById('feePaymentsModal'));
+                    feePaymentsModal.show();
+                }
+            });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.toString()
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+    <!-- JavaScript to handle edit/save -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const editBtn = document.getElementById('editBtn');
+            const nameDisplay = document.getElementById('nameDisplay');
+            const nameInput = document.getElementById('nameInput');
+            const statusDisplay = document.getElementById('statusDisplay');
+            const statusInput = document.getElementById('statusInput');
+            const activityDisplay = document.getElementById('activityDisplay');
+            const activityInput = document.getElementById('activityInput');
+
+            let isEditing = false;
+
+            editBtn.addEventListener('click', function () {
+                isEditing = !isEditing;
+
+                if (isEditing) {
+                    // Enter edit mode
+                    editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+
+                    nameDisplay.classList.add('d-none');
+                    nameInput.classList.remove('d-none');
+
+                    statusDisplay.classList.add('d-none');
+                    statusInput.classList.remove('d-none');
+
+                    activityDisplay.classList.add('d-none');
+                    activityInput.classList.remove('d-none');
+                } else {
+                    // Save changes
+                    editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+
+                    nameDisplay.textContent = nameInput.value;
+                    statusDisplay.textContent = statusInput.value;
+                    activityDisplay.textContent = activityInput.value + '%';
+
+                    nameDisplay.classList.remove('d-none');
+                    nameInput.classList.add('d-none');
+
+                    statusDisplay.classList.remove('d-none');
+                    statusInput.classList.add('d-none');
+
+                    activityDisplay.classList.remove('d-none');
+                    activityInput.classList.add('d-none');
+                }
+            });
+        });
     </script>
 </body>
 </html>
