@@ -700,53 +700,86 @@
 		}
 	});
 }
-                function loadStudentAttendanceList() {
-        $.ajax({
-            url: '/StudentAttendence/GetStudentAttendence',
-            type: 'GET',
-            success: function (data) {
-                var tbody = $('#studentAttendanceTableBody');
-                tbody.empty();
-                var sno = 1;
-  data.forEach(function (item) {
-                    var attendanceDate = new Date(parseInt(item.Date.substr(6)));
-                    var formattedDate = attendanceDate.toLocaleDateString();
-         var row = `<tr>
-                        <td>${sno}</td>
-                        <td>${escapeHtml(item.StudentName)}</td>
-                        <td>${formattedDate}</td>
-                        <td>${escapeHtml(item.Status)}</td>
-                    </tr>`;
+                  function loadStudentAttendanceList() {
+            $.ajax({
+                        url: '/StudentAttendence/GetStudentAttendence',
+                type: 'GET',
+                success: function (data) {
+                    // If data is a string, try to parse it
+                    if (typeof data === 'string') {
+                        try {
+                            data = JSON.parse(data);
+                        } catch (e) {
+                            console.error("Failed to parse JSON:", data);
+                            alert('Invalid response format.');
+                            return;
+                        }
+                    }
 
-                    tbody.append(row);
-                    sno++;
-                });
+                    // If data is wrapped inside a property (like data.data), extract it
+                    if (data.hasOwnProperty('data')) {
+                        data = data.data;
+                    }
 
-                if ($.fn.DataTable.isDataTable('#studentAttendanceTable')) {
-                    $('#studentAttendanceTable').DataTable().destroy();
+                    // Ensure data is an array
+                    if (!Array.isArray(data)) {
+                        console.error("Expected array, got:", data);
+                        alert('Unexpected data format.');
+                        return;
+                    }
+
+                    var tbody = $('#studentAttendanceTableBody');
+                    tbody.empty();
+                    var sno = 1;
+
+                    data.forEach(function (item) {
+                        // Parse and format date
+                        var attendanceDate = new Date(parseInt(item.Date.substr(6)));
+                        var formattedDate = attendanceDate.toLocaleDateString();
+
+                        // Build row
+                        var row = `<tr>
+                            <td>${sno}</td>
+                            <td>${escapeHtml(item.StudentName)}</td>
+                            <td>${formattedDate}</td>
+                            <td>${escapeHtml(item.Status)}</td>
+                        </tr>`;
+
+                        tbody.append(row);
+                        sno++;
+                    });
+
+                    // Reinitialize DataTable
+                    if ($.fn.DataTable.isDataTable('#studentAttendanceTable')) {
+                        $('#studentAttendanceTable').DataTable().destroy();
+                    }
+                    $('#studentAttendanceTable').DataTable();
+                },
+                error: function () {
+                    alert('Error loading student attendance data');
                 }
-                $('#studentAttendanceTable').DataTable();
-            },
-            error: function () {
-                alert('Error loading student attendance data');
-            }
-        });
-    }
-
-
-            function escapeHtml(text) {
-                return text
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
-
-            // Optional trigger button
-            $(document).on('click', '#openStudentAttendanceBtn', function () {
-                loadStudentAttendanceList();
             });
+        }
+
+        // HTML escaping function to prevent XSS
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Optional button to manually trigger data load
+        $(document).on('click', '#openStudentAttendanceBtn', function () {
+            loadStudentAttendanceList();
+        });
+
+        // Optionally load data on page load
+        $(document).ready(function () {
+            loadStudentAttendanceList();
+        });
 </script>
 
 
