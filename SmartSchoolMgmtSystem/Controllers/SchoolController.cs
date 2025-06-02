@@ -34,7 +34,7 @@ namespace SmartSchool.Controllers
             return View(res);
         }
         [HttpPost]
-        public IActionResult AddSchool(IFormCollection form, IFormFile ProfilePhoto1, IFormFile ProfilePhoto2, IFormFile ProfilePhoto3)
+        public IActionResult AddSchool(IFormCollection form, IFormFile ProfilePhoto1, IFormFile ProfilePhoto2, IFormFile ProfilePhoto3,IFormFile Logo)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
@@ -104,6 +104,18 @@ namespace SmartSchool.Controllers
 
                 user.ProfilePhoto3 = "/uploads/" + fileName3;
             }
+            if (Logo != null && Logo.Length > 0)
+            {
+                var fileName4 = Guid.NewGuid().ToString() + Path.GetExtension(Logo.FileName);
+                var filePath4 = Path.Combine(uploadPath, fileName4);
+
+                using (var stream = new FileStream(filePath4, FileMode.Create))
+                {
+                    Logo.CopyTo(stream);
+                }
+
+                user.Logo = "/uploads/" + fileName4;
+            }
             string userType = "Principal";
             string schoolName = user.Name.Replace(" ", "").Replace("/", "").Replace("\\", "");
             user.URL = $"{Request.Scheme}://{Request.Host}/guardians/{schoolName}/{userType}";
@@ -120,7 +132,7 @@ namespace SmartSchool.Controllers
             }
         }
         [HttpPost]
-        public IActionResult UpdateSchool(IFormCollection form, IFormFile ProfilePhoto1, IFormFile ProfilePhoto2, IFormFile ProfilePhoto3)
+        public IActionResult UpdateSchool(IFormCollection form, IFormFile ProfilePhoto1, IFormFile ProfilePhoto2, IFormFile ProfilePhoto3,IFormFile Logo)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
@@ -199,6 +211,18 @@ namespace SmartSchool.Controllers
                 }
 
                 user.ProfilePhoto3 = "/uploads/" + fileName3;
+            }
+            if (Logo != null && Logo.Length > 0)
+            {
+                var fileName4 = Guid.NewGuid().ToString() + Path.GetExtension(Logo.FileName);
+                var filePath4 = Path.Combine(uploadPath, fileName4);
+
+                using (var stream = new FileStream(filePath4, FileMode.Create))
+                {
+                    Logo.CopyTo(stream);
+                }
+
+                user.Logo = "/uploads/" + fileName4;
             }
 
 

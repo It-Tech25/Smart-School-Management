@@ -16,6 +16,7 @@
         public string? ProfilePhoto2 { get; set; }
 
         public string? ProfilePhoto3 { get; set; }
+        public string? Logo { get; set; }
         public DateTime? CreatedDate { get; set; }
         public int? userid { get; set; }
 

@@ -1,19 +1,22 @@
-﻿using SmartSchool.BAL;
-using SmartSchool.Models.Entity;
-using SmartSchool.Utilities;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SmartSchool.BAL;
 using SmartSchool.BAL;
 using SmartSchool.Models.DTO;
-using Microsoft.AspNetCore.Authorization;
+using SmartSchool.Models.Entity;
+using SmartSchool.Utilities;
 
 namespace SmartSchool.Controllers
 {
     public class ClassController : Controller
     {
         private readonly IClassesService _class;
-        public ClassController(IClassesService classes)
+        private readonly MyDbContext _context;
+        public ClassController(IClassesService classes,MyDbContext context)
         {
             _class = classes;
+            _context = context;
         }
         [Authorize(Policy = "School Admin")]
         public IActionResult GetClasses()
@@ -23,6 +26,11 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
+            var school = _context.schools
+           .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
+           .FirstOrDefault();
+            ViewBag.SchoolLogo = school.Logo;
+
             var res = _class.GetClass(loggedInUser.userId);
             return View(res);
         }

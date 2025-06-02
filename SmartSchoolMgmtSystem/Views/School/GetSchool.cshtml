@@ -203,7 +203,17 @@
                             <img id="profilePreview3" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
                         </div>
 
+                        <!-- Logo Upload -->
+                        <div class="col-md-6 mb-3">
+                            <label for="Logo">Upload School Logo</label>
+                            <input type="file" class="form-control" id="Logo" name="Logo" accept="image/*" onchange="previewLogoImage()" />
+                        </div>
 
+                        <!-- Logo Preview -->
+                        <div class="col-md-6 mb-3">
+                            <label>Logo Preview</label><br />
+                            <img id="logoPreview" src="#" alt="No Logo Selected" style="max-height: 100px; display: none;" />
+                        </div>
                         <div class="col-lg-12 mt-3">
                             <p id="photoCount" style="font-weight:bold;">Photos Uploaded: 0/3</p>
                         </div>
@@ -324,6 +334,18 @@
                             <input type="file" class="form-control" id="EditProfilePhoto3" name="ProfilePhoto3" accept="image/*" />
                             <img id="editProfilePreview3" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
                         </div>
+                        <!-- Logo Upload (Edit Modal) -->
+                        <div class="col-md-6 mb-3">
+                            <label for="EditLogo">Upload School Logo</label>
+                            <input type="file" class="form-control" id="EditLogo" name="Logo" accept="image/*" onchange="previewEditLogoImage()" />
+                        </div>
+
+                        <!-- Logo Preview (Edit Modal) -->
+                        <div class="col-md-6 mb-3">
+                            <label>Logo Preview</label><br />
+                            <img id="editLogoPreview" src="#" alt="No Logo Selected" style="max-height: 100px; display: none;" />
+                        </div>
+
 
                         <div class="col-lg-12 mt-3">
                             <p id="editPhotoCount" style="font-weight:bold;">Photos Uploaded: 0/3</p>
@@ -692,5 +714,26 @@
         document.getElementById('photoCount').textContent = `Photos Uploaded: ${count}/3`;
     }
 </script>
+<script>
+    function previewEditLogoImage() {
+        var input = document.getElementById("EditLogo");
+        var preview = document.getElementById("editLogoPreview");
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = "block";
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = "#";
+            preview.style.display = "none";
+        }
+    }
+</script>
+
 
 

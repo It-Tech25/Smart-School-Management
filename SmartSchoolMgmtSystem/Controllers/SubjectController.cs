@@ -3,15 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 using SmartSchool.BAL;
 using SmartSchool.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
+using SmartSchool.Models.Entity;
 
 namespace SmartSchool.Controllers
 {
     public class SubjectController : Controller
     {
         private readonly ISubjectService _subjectService;
-        public SubjectController(ISubjectService subjectService)
+        private readonly MyDbContext _context;
+        public SubjectController(ISubjectService subjectService,MyDbContext context)
         {
             _subjectService = subjectService;
+            _context = context;
         }
         [Authorize(Policy = "School Admin")]
         public IActionResult GetSubject()
@@ -21,6 +24,10 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
+            var school = _context.schools
+    .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
+    .FirstOrDefault();
+            ViewBag.SchoolLogo = school.Logo;
             var res = _subjectService.GetSubject(loggedInUser.userId);
             return View(res);
         }

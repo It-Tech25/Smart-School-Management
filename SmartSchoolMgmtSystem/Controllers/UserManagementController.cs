@@ -100,12 +100,29 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
+
+            List<string> userTypes = new List<string>();
+
+            if (loggedInUser.userTypeName == "Super Admin")
+            {
+                userTypes.Add("School Admin");
+            }
+            else if (loggedInUser.userTypeName == "School Admin")
+            {
+                userTypes.AddRange(new[] { "Teacher", "Student" });
+            }
+            else if (loggedInUser.userTypeName == "Teacher")
+            {
+                userTypes.Add("Student");
+            }
+
+            ViewBag.UserType = userTypes;
+
             var states = _schoolAddressService.GetStates();
             ViewBag.State = states;
             var cities = _schoolAddressService.Getcity(state);
             ViewBag.city = cities;
-            var usertype = _context.userTypeEntites.Where(a => a.IsDeleted == false && a.CreatedBy==loggedInUser.userId).Select(a => a.UserTypeName).ToList();
-            ViewBag.UserType = usertype;
+     
             var res = _user.GetUser(loggedInUser.userId);
             return View(res);
         }

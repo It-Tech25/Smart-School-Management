@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartSchool.BAL;
 using SmartSchool.Models.DTO;
+using SmartSchool.Models.Entity;
 using SmartSchool.Utilities;
 
 namespace SmartSchool.Controllers
@@ -9,9 +10,11 @@ namespace SmartSchool.Controllers
     public class ClassDurationController : Controller
     {
         private readonly IClassDurationService _classService;
-        public ClassDurationController(IClassDurationService classService)
+        private readonly MyDbContext _context;
+        public ClassDurationController(IClassDurationService classService,MyDbContext context)
         {
             _classService = classService;
+            _context = context;
         }
         [Authorize(Policy = "School Admin")]
         public IActionResult Classtiming()
@@ -21,6 +24,10 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
+            var school = _context.schools
+    .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
+    .FirstOrDefault();
+            ViewBag.SchoolLogo = school.Logo;
             var res = _classService.Classtiming(loggedInUser.userId);
             return View(res);
         }

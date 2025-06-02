@@ -7,6 +7,7 @@
         public string? Password { get; set; }
         public string? Emailid { get; set; }
         public string? userTypeName { get; set; }
+        public string? schoolLogo { get; set; }
         public string? profileUrl { get; set; }
         public DateTime? lastLoggedTime { get; set; }
         public string? Message { get; set; }

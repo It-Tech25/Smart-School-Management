@@ -37,7 +37,7 @@ namespace Advocate_Invoceing.Controllers
             }
             ViewBag.Profile = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.ProfilePicture).FirstOrDefault();
             ViewBag.Name = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.FullName).FirstOrDefault();
-
+            ViewBag.SchoolLogo = loggedInUser.schoolLogo;
             ViewBag.TotalSubscriptions = _service.TotalSubscriptions();
 
             return View();
@@ -64,6 +64,7 @@ namespace Advocate_Invoceing.Controllers
             ViewBag.pic1 = school.ProfilePhoto1;
             ViewBag.pic2 = school.ProfilePhoto2;
             ViewBag.pic3 = school.ProfilePhoto3;
+            ViewBag.SchoolLogo = school.Logo;
 
             int sid = _context.userTypeEntites
                 .Where(a => a.UserTypeName == "Student" && a.CreatedBy == loggedInUser.userId && a.IsDeleted==false)
@@ -162,8 +163,8 @@ namespace Advocate_Invoceing.Controllers
             ViewBag.TotalSubscriptions = _service.TotalSubscriptions();
             ViewBag.Name = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.FullName).FirstOrDefault();
             ViewBag.Studentlist = GetStudentpresence();
-
-			ViewBag.Profile = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.ProfilePicture).FirstOrDefault();
+            ViewBag.SchoolLogo = loggedInUser.schoolLogo;
+            ViewBag.Profile = _context.userEntity.Where(a => a.UserId == loggedInUser.userId && a.IsDeleted == false).Select(a => a.ProfilePicture).FirstOrDefault();
 
             return View();
         }

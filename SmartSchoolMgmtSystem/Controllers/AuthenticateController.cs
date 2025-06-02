@@ -32,6 +32,7 @@ namespace Advocate_Invoceing.Controllers
             ViewBag.UserType = TempData["UserType"];
             ViewBag.SchoolName = schoolName;
             ViewBag.Role = role;
+   
 
             return View();
         }
@@ -58,7 +59,9 @@ namespace Advocate_Invoceing.Controllers
                 {
                     new Claim(ClaimTypes.NameIdentifier, result.userId.ToString()),
                     new Claim(ClaimTypes.Name, result.userName),
-                    new Claim("UserType", result.userTypeName)
+                    new Claim("UserType", result.userTypeName),
+                      new Claim("schoollogo", result.schoolLogo),
+
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -69,6 +72,7 @@ namespace Advocate_Invoceing.Controllers
 
                 HttpContext.Session.SetString("UserId", result.userId.ToString());
                 HttpContext.Session.SetString("UserName", result.userName);
+                HttpContext.Session.SetString("SchoolLogo", result.schoolLogo);
                 HttpContext.Session.SetObjectAsJson("loggedUser", result);
 
                 return result.userTypeName switch

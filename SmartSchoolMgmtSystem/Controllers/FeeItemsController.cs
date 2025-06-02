@@ -29,6 +29,10 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
+            var school = _context.schools
+    .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
+    .FirstOrDefault();
+            ViewBag.SchoolLogo = school.Logo;
             var catagories = _feeCategories.GetFeeCategoryName(loggedInUser.userId);
             ViewBag.Categories = catagories;
            var res = _feeItemsService.GetFeeItems(loggedInUser.userId);

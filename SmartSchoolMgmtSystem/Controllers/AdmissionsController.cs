@@ -32,6 +32,10 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
+            var school = _context.schools
+    .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
+    .FirstOrDefault();
+            ViewBag.SchoolLogo = school.Logo;
 
             var states = _AdmissionServices.GetStates();
             ViewBag.State = states;
@@ -40,16 +44,16 @@ namespace SmartSchool.Controllers
             
             if (loggedInUser.userTypeName == "School Admin")
             {
-                var school = _context.schools.FirstOrDefault(s => s.userid == loggedInUser.userId && s.IsDeleted == false);
-                ViewBag.SchoolName = school;
+                var schools = _context.schools.FirstOrDefault(s => s.userid == loggedInUser.userId && s.IsDeleted == false);
+                ViewBag.SchoolName = schools;
                 var Classes = _context.classEntity.Where(c => c.IsDeleted == false && c.CreatedBy == loggedInUser.userId).ToList();
                 ViewBag.Classes = Classes;
             }
             else
             {
                 int? id = _context.userEntity.Where(s => s.UserId == loggedInUser.userId && s.IsDeleted == false).Select(a => a.CreatedBy).FirstOrDefault();
-                var school = _context.schools.Where(s => s.userid == id && s.IsDeleted == false).Select(a => a.Name).FirstOrDefault();
-                ViewBag.SchoolName = school;
+                var schools = _context.schools.Where(s => s.userid == id && s.IsDeleted == false).Select(a => a.Name).FirstOrDefault();
+                ViewBag.SchoolName = schools;
                 var Classes = _context.classEntity.Where(c => c.IsDeleted == false && c.CreatedBy == id).ToList();
                 ViewBag.Classes = Classes;
             }

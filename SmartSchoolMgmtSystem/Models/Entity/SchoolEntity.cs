@@ -33,7 +33,7 @@ namespace SmartSchool.Models.Entity
         public string? ProfilePhoto2 { get; set; }
 
         public string? ProfilePhoto3 { get; set; }
-
+        public string? Logo { get; set; }
 
     }
 }

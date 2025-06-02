@@ -112,7 +112,7 @@
                             <label>User Type <span class="required">*</span></label>
                             <select class="form-control" id="UserType" name="UserType" required>
                                 <option value="" selected>--Select--</option>
-                                @foreach (var item in ViewBag.UserType)
+                                @foreach (var item in ViewBag.UserType as List<string>)
                                 {
                                     <option value="@item">@item</option>
                                 }

@@ -1,10 +1,12 @@
 ﻿ 
-using SmartSchool.Models.DTO;
-using SmartSchool.Utilities;
+using Humanizer.Localisation;
 //using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
+using NuGet.ContentModel;
+using SmartSchool.Models.DTO;
 using SmartSchool.Models.Entity;
+using SmartSchool.Utilities;
+using System.Text.RegularExpressions;
 
 namespace SmartSchool.DAL
 {
@@ -46,6 +48,23 @@ namespace SmartSchool.DAL
                         lr.userName = u.FullName;
                         lr.userId = u.UserId;
                        lr.profileUrl = u.ProfilePicture == null ? "dummy.png" : u.ProfilePicture;
+                        if (lr.userTypeName == "Super Admin")
+                        {
+                            lr.schoolLogo = "/resources/assets/images/SSMSLogo.png";                        }
+                        else if (lr.userTypeName == "School Admin")
+                        {
+                            lr.schoolLogo = _context.schools
+                                .Where(a => a.userid == u.UserId && a.IsDeleted==false)
+                                .Select(a => a.Logo)
+                                .FirstOrDefault();
+                        }
+                        else
+                        {
+                            lr.schoolLogo = _context.schools
+                                .Where(a => a.userid == u.CreatedBy && a.IsDeleted==false)
+                                .Select(a => a.Logo)
+                                .FirstOrDefault();
+                        }
 
                         // entry in lastlogin detials
 
@@ -195,8 +214,9 @@ namespace SmartSchool.DAL
         //UserMaster
         public List<UserDto> GetUser(int id)
         {
+            int pid = _context.userTypeEntites.Where(a => a.UserTypeName == "School Admin").Select(a => a.UserTypeId).FirstOrDefault();
             var result = (from user in _context.userEntity
-                          where user.IsDeleted == false && user.CreatedBy==id
+                          where user.IsDeleted == false && user.CreatedBy==id && user.UserTypeId==pid
                           select new UserDto
                           {
                               UserId = user.UserId,

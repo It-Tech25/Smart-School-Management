@@ -3,15 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using SmartSchool.BAL;
 using SmartSchool.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
+using SmartSchool.Models.Entity;
 
 namespace SmartSchool.Controllers
 {
     public class FeeCategoryController : Controller
     {
         private readonly IFeeCategoriesService _feeCategoriesService;
-        public FeeCategoryController(IFeeCategoriesService feeCategoriesService)
+        private readonly MyDbContext _context;
+
+        public FeeCategoryController(IFeeCategoriesService feeCategoriesService,MyDbContext context)
         {
             _feeCategoriesService = feeCategoriesService;
+            _context = context;
         }
         [Authorize(Policy = "School Admin")]
         public IActionResult GetFeeCategoryName()
@@ -21,6 +25,10 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
+            var school = _context.schools
+    .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
+    .FirstOrDefault();
+            ViewBag.SchoolLogo = school.Logo;
             var res = _feeCategoriesService.GetFeeCategoryName(loggedInUser.userId);
             return View(res);
         }

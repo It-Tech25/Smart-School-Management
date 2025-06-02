@@ -25,6 +25,10 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
+            var school = _context.schools
+    .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
+    .FirstOrDefault();
+            ViewBag.SchoolLogo = school.Logo;
             ViewBag.Students = _context.studentEntity
            .Where(s => s.IsDeleted == false)
            .Select(s => new StudentDTO

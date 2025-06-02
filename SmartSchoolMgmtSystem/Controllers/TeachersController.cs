@@ -30,13 +30,18 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
+            var school = _context.schools
+    .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
+    .FirstOrDefault();
+
+            ViewBag.SchoolLogo = school.Logo;
             int id = _context.userTypeEntites.Where(a => a.CreatedBy == loggedInUser.userId && a.UserTypeName == "Teacher").Select(a => a.UserTypeId).FirstOrDefault();
             ViewBag.Users = _context.userEntity.Where(u => u.IsDeleted == false && u.UserTypeId == id && u.CreatedBy == loggedInUser.userId).ToList();
             ViewBag.Subjects = _context.subjectEntity.Where(s => s.IsDeleted == false && s.CreatedBy == loggedInUser.userId).ToList();
             ViewBag.Classes = _context.classEntity.Where(c => c.IsDeleted == false && c.CreatedBy == loggedInUser.userId).ToList();
-            var school = _context.schools.FirstOrDefault(s => s.userid == loggedInUser.userId && s.IsDeleted == false);
+            var schools = _context.schools.FirstOrDefault(s => s.userid == loggedInUser.userId && s.IsDeleted == false);
 
-            ViewBag.SchoolName = school.Name;
+            ViewBag.SchoolName = schools.Name;
             var teachers = _service.GetAllAsync(loggedInUser.userId);
             return View(teachers);
 

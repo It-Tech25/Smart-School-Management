@@ -64,7 +64,8 @@ namespace SmartSchool.DAL
                         ProfilePhoto1 = obj.ProfilePhoto1,
                         ProfilePhoto2 = obj.ProfilePhoto2,
                         ProfilePhoto3 = obj.ProfilePhoto3,
-                        URL = obj.URL, // <-- Comes from Controller
+                        URL = obj.URL,
+                        Logo=obj.Logo,
                         IsDeleted = false,
                         IsActive = true,
                         CreatedOn = DateTime.Now,
@@ -126,6 +127,7 @@ namespace SmartSchool.DAL
                     school.ProfilePhoto1 = obj.ProfilePhoto1;
                     school.ProfilePhoto2 = obj.ProfilePhoto2;
                     school.ProfilePhoto3 = obj.ProfilePhoto3;
+                    school.Logo = obj.Logo;
                     school.IsDeleted = false;
                     school.IsActive = true;
                     school.UpdatedOn = DateTime.Now;
