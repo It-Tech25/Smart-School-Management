@@ -1,5 +1,4 @@
-﻿ 
-using Humanizer.Localisation;
+﻿using Humanizer.Localisation;
 //using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using NuGet.ContentModel;
@@ -21,14 +20,12 @@ namespace SmartSchool.DAL
             _config = config;
         }
 
-
-//Login check
+        //Login check
         public LoginResponse LoginCheck(LoginRequest request)
         {
             LoginResponse lr = new LoginResponse();
             try
             {
-
                 var u = _context.userEntity.Where(a => a.IsDeleted == false && a.IsActive == true && a.Email == request.Email).FirstOrDefault();
 
                 if (u == null)
@@ -47,26 +44,26 @@ namespace SmartSchool.DAL
                         lr.userTypeName = _context.userTypeEntites.Where(a => a.UserTypeId == u.UserTypeId).Select(b => b.UserTypeName).FirstOrDefault();
                         lr.userName = u.FullName;
                         lr.userId = u.UserId;
-                       lr.profileUrl = u.ProfilePicture == null ? "dummy.png" : u.ProfilePicture;
+                        lr.profileUrl = u.ProfilePicture == null ? "dummy.png" : u.ProfilePicture;
+
                         if (lr.userTypeName == "Super Admin")
                         {
-                            lr.schoolLogo = "/resources/assets/images/SSMSLogo.png";                        }
+                            lr.schoolLogo = "/resources/assets/images/SSMSLogo.png";
+                        }
                         else if (lr.userTypeName == "School Admin")
                         {
                             lr.schoolLogo = _context.schools
-                                .Where(a => a.userid == u.UserId && a.IsDeleted==false)
+                                .Where(a => a.userid == u.UserId && a.IsDeleted == false)
                                 .Select(a => a.Logo)
                                 .FirstOrDefault();
                         }
                         else
                         {
                             lr.schoolLogo = _context.schools
-                                .Where(a => a.userid == u.CreatedBy && a.IsDeleted==false)
+                                .Where(a => a.userid == u.CreatedBy && a.IsDeleted == false)
                                 .Select(a => a.Logo)
                                 .FirstOrDefault();
                         }
-
-                        // entry in lastlogin detials
 
                         lr.statusCode = 1;
                         lr.Message = "Login success";
@@ -79,12 +76,11 @@ namespace SmartSchool.DAL
                         return lr;
                     }
                 }
-
             }
             catch (Exception ex)
             {
-
-
+                lr.statusCode = 0;
+                lr.Message = "An error occurred during login: " + ex.Message;
             }
 
             return lr;
@@ -96,11 +92,12 @@ namespace SmartSchool.DAL
             int count = _context.schools.Where(a => a.IsDeleted == false).Count();
             return count;
         }
+
         //User Type
         public List<UserTypeDTO> GetUserType(int id)
         {
             var result = (from user in _context.userTypeEntites
-                          where user.IsDeleted == false && user.CreatedBy==id
+                          where user.IsDeleted == false && user.CreatedBy == id
                           select new UserTypeDTO
                           {
                               UserTypeId = user.UserTypeId,
@@ -111,15 +108,15 @@ namespace SmartSchool.DAL
             return result;
         }
 
-
-        public GenericResponse AddUserType(UserTypeDTO obj , int id)
+        public GenericResponse AddUserType(UserTypeDTO obj, int id)
         {
             GenericResponse response = new GenericResponse();
-            UserTypeEntites entity = new UserTypeEntites();
-            int count = _context.userTypeEntites.Where(a => a.UserTypeName == obj.UserTypeName && a.CreatedBy==id && a.IsDeleted==false).Count();
             try
             {
-                if (count ==0)
+                UserTypeEntites entity = new UserTypeEntites();
+                int count = _context.userTypeEntites.Where(a => a.UserTypeName == obj.UserTypeName && a.CreatedBy == id && a.IsDeleted == false).Count();
+
+                if (count == 0)
                 {
                     entity.UserTypeName = obj.UserTypeName;
                     entity.Description = obj.Description;
@@ -137,13 +134,13 @@ namespace SmartSchool.DAL
                 else
                 {
                     response.statuCode = 0;
-                    response.message = "User Type Alredy exist";
+                    response.message = "User Type Already exists";
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 response.statuCode = 0;
-                response.message = "failed to add UserType" + ex;
+                response.message = "Failed to add UserType: " + ex.Message;
             }
             return response;
         }
@@ -151,18 +148,23 @@ namespace SmartSchool.DAL
         public GenericResponse UpdateUserType(UserTypeDTO obj, int id)
         {
             GenericResponse response = new GenericResponse();
-            var result = _context.userTypeEntites.Where(a => a.UserTypeId == obj.UserTypeId && a.IsDeleted == false).FirstOrDefault();
-            int count = _context.userTypeEntites.Where(a => a.UserTypeName == obj.UserTypeName).Count();
             try
             {
-                if (count == 1)
+                var result = _context.userTypeEntites.Where(a => a.UserTypeId == obj.UserTypeId && a.IsDeleted == false).FirstOrDefault();
+
+                if (result == null)
                 {
-                    result.UserTypeId = obj.UserTypeId;
+                    response.statuCode = 0;
+                    response.message = "UserType not found";
+                    return response;
+                }
+
+                int count = _context.userTypeEntites.Where(a => a.UserTypeName == obj.UserTypeName && a.UserTypeId != obj.UserTypeId && a.CreatedBy == id && a.IsDeleted == false).Count();
+
+                if (count == 0)
+                {
                     result.UserTypeName = obj.UserTypeName;
                     result.Description = obj.Description;
-                    result.IsDeleted = false;
-                    result.IsActive = true;
-                    result.CreatedOn = result.CreatedOn;
                     result.UpdatedOn = DateTime.Now;
                     result.UpdatedBy = id;
 
@@ -175,14 +177,13 @@ namespace SmartSchool.DAL
                 else
                 {
                     response.statuCode = 0;
-                    response.message = "User Type Alredy exist";
+                    response.message = "User Type Already exists";
                 }
-
             }
             catch (Exception ex)
             {
                 response.statuCode = 0;
-                response.message = "failed to Update UserType" + ex;
+                response.message = "Failed to Update UserType: " + ex.Message;
             }
             return response;
         }
@@ -190,63 +191,86 @@ namespace SmartSchool.DAL
         public GenericResponse DeleteUserType(int id)
         {
             GenericResponse response = new GenericResponse();
-            var result = _context.userTypeEntites.Where(a => a.UserTypeId == id && a.IsDeleted == false).FirstOrDefault();
             try
             {
-                    result.IsDeleted = true;
-                    result.IsActive = false;
-                    _context.userTypeEntites.Update(result);
-                    _context.SaveChanges();
-                    response.statuCode = 1;
-                    response.message = "Success";
-                    response.currentId = result.UserTypeId;
-              
+                var result = _context.userTypeEntites.Where(a => a.UserTypeId == id && a.IsDeleted == false).FirstOrDefault();
+
+                if (result == null)
+                {
+                    response.statuCode = 0;
+                    response.message = "UserType not found";
+                    return response;
+                }
+
+                result.IsDeleted = true;
+                result.IsActive = false;
+                result.UpdatedOn = DateTime.Now;
+
+                _context.userTypeEntites.Update(result);
+                _context.SaveChanges();
+
+                response.statuCode = 1;
+                response.message = "Success";
+                response.currentId = result.UserTypeId;
             }
             catch (Exception ex)
             {
                 response.statuCode = 0;
-                response.message = "Failed to Delete UserType" + ex;
+                response.message = "Failed to Delete UserType: " + ex.Message;
             }
             return response;
         }
 
-
         //UserMaster
         public List<UserDto> GetUser(int id)
         {
-            int pid = _context.userTypeEntites.Where(a => a.UserTypeName == "School Admin").Select(a => a.UserTypeId).FirstOrDefault();
-            var result = (from user in _context.userEntity
-                          where user.IsDeleted == false && user.CreatedBy==id && user.UserTypeId==pid
-                          select new UserDto
-                          {
-                              UserId = user.UserId,
-                              FullName=user.FullName,
-                              Email=user.Email,
-                              ProfilePicture=user.ProfilePicture,
-                              UserType = _context.userTypeEntites.Where(a=>a.UserTypeId== user.UserTypeId && a.IsDeleted==false).Select(a=>a.UserTypeName).FirstOrDefault()
-                              
-                          }).ToList();
+            try
+            {
+                var result = (from user in _context.userEntity
+                              where user.IsDeleted == false && user.CreatedBy == id
+                              select new UserDto
+                              {
+                                  UserId = user.UserId,
+                                  FullName = user.FullName,
+                                  Email = user.Email,
+                                  ProfilePicture = user.ProfilePicture,
+                                  UserType = _context.userTypeEntites.Where(a => a.UserTypeId == user.UserTypeId && a.IsDeleted == false).Select(a => a.UserTypeName).FirstOrDefault()
+                              }).ToList();
 
-            return result;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and return empty list
+                return new List<UserDto>();
+            }
         }
-
 
         public GenericResponse AddUser(UserDto obj, int id)
         {
             GenericResponse response = new GenericResponse();
-            UserEntity entity = new UserEntity();
-            AddressEntity address = new AddressEntity();
-            int AddressId = _context.addressEntity.OrderByDescending(a => a.AddressId).Select(a => a.AddressId).FirstOrDefault();
-            int count = _context.userEntity.Where(a => a.FullName == obj.FullName && a.IsDeleted==false).Count();
-            try
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                if (count < 1)
+                try
                 {
-                  
+                    // Check if user already exists
+                    int count = _context.userEntity.Where(a => a.Email == obj.Email && a.IsDeleted == false).Count();
+
+                    if (count > 0)
+                    {
+                        response.statuCode = 0;
+                        response.message = "User with this email already exists";
+                        return response;
+                    }
+
+                    UserEntity entity = new UserEntity();
                     entity.FullName = obj.FullName;
                     entity.Email = obj.Email;
                     entity.ProfilePicture = obj.ProfilePicture;
-                    entity.UserTypeId = _context.userTypeEntites.Where(a=>a.UserTypeName==obj.UserType && a.CreatedBy==id && a.IsDeleted==false).Select(a=>a.UserTypeId).FirstOrDefault();
+                    entity.UserTypeId = _context.userTypeEntites
+                        .Where(a => a.UserTypeName == obj.UserType && a.CreatedBy == id && a.IsDeleted == false)
+                        .Select(a => a.UserTypeId)
+                        .FirstOrDefault();
                     entity.IsDeleted = false;
                     entity.IsActive = true;
                     entity.PasswordHash = EncryptTool.Encrypt(obj.PasswordHash);
@@ -255,31 +279,35 @@ namespace SmartSchool.DAL
 
                     _context.userEntity.Add(entity);
                     _context.SaveChanges();
-                    address.AddressId = AddressId+1;
-                    address.AddressLine = obj.AddressLine;
-                    address.UserId = entity.UserId;
-                    address.City = obj.City;
-                    address.State = obj.State;
-                    address.PinCode = obj.PinCode;
-                    address.IsDeleted = false;
-                    address.CreatedOn = DateTime.Now;
-                    address.CreatedBy = id;
-                    _context.addressEntity.Add(address);
-                    _context.SaveChanges();
+
+                    // Add address if provided
+                    if (!string.IsNullOrEmpty(obj.AddressLine))
+                    {
+                        AddressEntity address = new AddressEntity();
+                        address.AddressLine = obj.AddressLine;
+                        address.UserId = entity.UserId;
+                        address.City = obj.City;
+                        address.State = obj.State;
+                        address.PinCode = obj.PinCode;
+                        address.IsDeleted = false;
+                        address.CreatedOn = DateTime.Now;
+                        address.CreatedBy = id;
+
+                        _context.addressEntity.Add(address);
+                        _context.SaveChanges();
+                    }
+
+                    transaction.Commit();
                     response.statuCode = 1;
                     response.message = "Success";
                     response.currentId = entity.UserId;
                 }
-                else
+                catch (Exception ex)
                 {
+                    transaction.Rollback();
                     response.statuCode = 0;
-                    response.message = "User Name Alredy exist";
+                    response.message = "Failed to add User: " + ex.Message;
                 }
-            }
-            catch (Exception ex)
-            {
-                response.statuCode = 0;
-                response.message = "failed to add User" + ex;
             }
             return response;
         }
@@ -287,32 +315,40 @@ namespace SmartSchool.DAL
         public GenericResponse UpdateUser(UserDto obj, int id)
         {
             GenericResponse response = new GenericResponse();
-            var result = _context.userEntity.Where(a => a.UserId == obj.UserId && a.IsDeleted == false).FirstOrDefault();
-            int count = _context.userEntity.Where(a => a.FullName == obj.FullName).Count();
             try
             {
-                if (count == 1)
+                var result = _context.userEntity.Where(a => a.UserId == obj.UserId && a.IsDeleted == false).FirstOrDefault();
+
+                if (result == null)
+                {
+                    response.statuCode = 0;
+                    response.message = "User not found";
+                    return response;
+                }
+
+                // Check if another user with the same email exists
+                int count = _context.userEntity.Where(a => a.Email == obj.Email && a.UserId != obj.UserId && a.IsDeleted == false).Count();
+
+                if (count == 0)
                 {
                     result.FullName = obj.FullName;
                     result.Email = obj.Email;
-                    result.UserTypeId = _context.userTypeEntites.Where(a => a.UserTypeName == obj.UserType && a.IsDeleted == false).Select(a => a.UserTypeId).FirstOrDefault();
+                    result.UserTypeId = _context.userTypeEntites
+                        .Where(a => a.UserTypeName == obj.UserType && a.IsDeleted == false)
+                        .Select(a => a.UserTypeId)
+                        .FirstOrDefault();
                     result.PasswordHash = EncryptTool.Encrypt(obj.PasswordHash);
-                    result.IsDeleted = false;
-                    result.IsActive = true;
-                    result.CreatedOn = result.CreatedOn;
-                    result.CreatedBy = result.CreatedBy;
                     result.UpdatedOn = DateTime.Now;
                     result.UpdatedBy = id;
-                    if (obj.ProfilePicture == null)
-                    {
-                        result.ProfilePicture = result.ProfilePicture;
-                    }
-                    else
+
+                    if (!string.IsNullOrEmpty(obj.ProfilePicture))
                     {
                         result.ProfilePicture = obj.ProfilePicture;
                     }
-                        _context.userEntity.Update(result);
+
+                    _context.userEntity.Update(result);
                     _context.SaveChanges();
+
                     response.statuCode = 1;
                     response.message = "Success";
                     response.currentId = result.UserId;
@@ -320,14 +356,13 @@ namespace SmartSchool.DAL
                 else
                 {
                     response.statuCode = 0;
-                    response.message = "User Name Alredy exist";
+                    response.message = "User with this email already exists";
                 }
-
             }
             catch (Exception ex)
             {
                 response.statuCode = 0;
-                response.message = "Failed to Update User" + ex;
+                response.message = "Failed to Update User: " + ex.Message;
             }
             return response;
         }
@@ -335,31 +370,56 @@ namespace SmartSchool.DAL
         public GenericResponse DeleteUser(int id)
         {
             GenericResponse response = new GenericResponse();
-            var result = _context.userEntity.Where(a => a.UserId == id && a.IsDeleted == false).FirstOrDefault();
             try
             {
+                // First, let's check if the user exists without the IsDeleted filter
+                var userExists = _context.userEntity.Any(a => a.UserId == id);
+
+                if (!userExists)
+                {
+                    response.statuCode = 0;
+                    response.message = "User with ID " + id + " does not exist in the system";
+                    return response;
+                }
+
+                // Now check if user is already deleted
+                var result = _context.userEntity.Where(a => a.UserId == id).FirstOrDefault();
+
+                if (result == null)
+                {
+                    response.statuCode = 0;
+                    response.message = "User not found";
+                    return response;
+                }
+
+                if (result.IsDeleted == true)
+                {
+                    response.statuCode = 0;
+                    response.message = "User is already deleted";
+                    return response;
+                }
+
+                // Mark as deleted
                 result.IsDeleted = true;
                 result.IsActive = false;
+                result.UpdatedOn = DateTime.Now;
+
                 _context.userEntity.Update(result);
                 _context.SaveChanges();
-                response.statuCode = 1;
-                response.message = "Success";
-                response.currentId = result.UserId;
 
+                response.statuCode = 1;
+                response.message = "User deleted successfully";
+                response.currentId = result.UserId;
             }
             catch (Exception ex)
             {
                 response.statuCode = 0;
-                response.message = "Failed to Delete User" + ex;
+                response.message = "Failed to Delete User: " + ex.Message;
             }
             return response;
         }
 
-
-
-
         //Duration Entity
-
         public List<DurationDto> GetDuration()
         {
             var result = (from user in _context.duration
@@ -373,14 +433,14 @@ namespace SmartSchool.DAL
             return result;
         }
 
-
         public GenericResponse AddDuration(DurationDto obj, int id)
         {
             GenericResponse response = new GenericResponse();
-            DurationEntity entity = new DurationEntity();
-            int count = _context.duration.Where(a => a.DurationType == obj.DurationType && a.CreatedBy == id && a.IsDeleted == false).Count();
             try
             {
+                DurationEntity entity = new DurationEntity();
+                int count = _context.duration.Where(a => a.DurationType == obj.DurationType && a.CreatedBy == id && a.IsDeleted == false).Count();
+
                 if (count == 0)
                 {
                     entity.DurationType = obj.DurationType;
@@ -398,13 +458,13 @@ namespace SmartSchool.DAL
                 else
                 {
                     response.statuCode = 0;
-                    response.message = "Duration Alredy exist";
+                    response.message = "Duration Already exists";
                 }
             }
             catch (Exception ex)
             {
                 response.statuCode = 0;
-                response.message = "failed to add Duration" + ex;
+                response.message = "Failed to add Duration: " + ex.Message;
             }
             return response;
         }
@@ -412,17 +472,22 @@ namespace SmartSchool.DAL
         public GenericResponse UpdateDuration(DurationDto obj, int id)
         {
             GenericResponse response = new GenericResponse();
-            var result = _context.duration.Where(a => a.Durationid == obj.Durationid && a.IsDeleted == false).FirstOrDefault();
-            int count = _context.duration.Where(a => a.DurationType == obj.DurationType && a.IsDeleted==false).Count();
             try
             {
-                if (count < 1)
+                var result = _context.duration.Where(a => a.Durationid == obj.Durationid && a.IsDeleted == false).FirstOrDefault();
+
+                if (result == null)
                 {
-                    result.Durationid = obj.Durationid;
+                    response.statuCode = 0;
+                    response.message = "Duration not found";
+                    return response;
+                }
+
+                int count = _context.duration.Where(a => a.DurationType == obj.DurationType && a.Durationid != obj.Durationid && a.IsDeleted == false).Count();
+
+                if (count == 0)
+                {
                     result.DurationType = obj.DurationType;
-                    result.IsDeleted = false;
-                    result.IsActive = true;
-                    result.CreatedOn = result.CreatedOn;
                     result.UpdatedOn = DateTime.Now;
                     result.UpdatedBy = id;
 
@@ -435,14 +500,13 @@ namespace SmartSchool.DAL
                 else
                 {
                     response.statuCode = 0;
-                    response.message = "Duration Alredy exist";
+                    response.message = "Duration Already exists";
                 }
-
             }
             catch (Exception ex)
             {
                 response.statuCode = 0;
-                response.message = "failed to Update Duration" + ex;
+                response.message = "Failed to Update Duration: " + ex.Message;
             }
             return response;
         }
@@ -450,26 +514,34 @@ namespace SmartSchool.DAL
         public GenericResponse DeleteDuration(int id)
         {
             GenericResponse response = new GenericResponse();
-            var result = _context.duration.Where(a => a.Durationid == id && a.IsDeleted == false).FirstOrDefault();
             try
             {
+                var result = _context.duration.Where(a => a.Durationid == id && a.IsDeleted == false).FirstOrDefault();
+
+                if (result == null)
+                {
+                    response.statuCode = 0;
+                    response.message = "Duration not found";
+                    return response;
+                }
+
                 result.IsDeleted = true;
                 result.IsActive = false;
+                result.UpdatedOn = DateTime.Now;
+
                 _context.duration.Update(result);
                 _context.SaveChanges();
+
                 response.statuCode = 1;
                 response.message = "Success";
                 response.currentId = result.Durationid;
-
             }
             catch (Exception ex)
             {
                 response.statuCode = 0;
-                response.message = "Failed to Delete Duration" + ex;
+                response.message = "Failed to Delete Duration: " + ex.Message;
             }
             return response;
         }
-
-
     }
 }

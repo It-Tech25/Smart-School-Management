@@ -14,12 +14,14 @@ namespace SmartSchool.Controllers
         private readonly IUserService _user;
         private readonly MyDbContext _context;
         private readonly ISchoolAddressServices _schoolAddressService;
-        public UserManagementController(MyDbContext context,IUserService user,ISchoolAddressServices schoolAddressServices)
+
+        public UserManagementController(MyDbContext context, IUserService user, ISchoolAddressServices schoolAddressServices)
         {
             _user = user;
             _context = context;
             _schoolAddressService = schoolAddressServices;
         }
+
         [Authorize(Policy = "Super Admin,School Admin")]
         public IActionResult GetUserType()
         {
@@ -28,72 +30,94 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
-           
+
             var res = _user.GetUserType(loggedInUser.userId);
             return View(res);
         }
+
         [HttpPost]
         public IActionResult AddUserType(UserTypeDTO obj)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
             {
-                return RedirectToAction("Login", "Authenticate");
+                return Json(new { success = false, message = "Session expired" });
             }
-            GenericResponse response = new GenericResponse();
 
-            response = _user.AddUserType(obj,loggedInUser.userId);
-            if (response.statuCode == 1)
+            try
             {
-                return Json(new { success = true });
+                GenericResponse response = _user.AddUserType(obj, loggedInUser.userId);
+                if (response.statuCode == 1)
+                {
+                    return Json(new { success = true, message = response.message });
+                }
+                else
+                {
+                    return Json(new { success = false, message = response.message });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return RedirectToAction("GetUserType");
+                return Json(new { success = false, message = "An error occurred: " + ex.Message });
             }
         }
+
         [HttpPost]
         public IActionResult UpdateUserType(UserTypeDTO obj)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
             {
-                return RedirectToAction("Login", "Authenticate");
+                return Json(new { success = false, message = "Session expired" });
             }
-            GenericResponse response = new GenericResponse();
 
-            response = _user.UpdateUserType(obj, loggedInUser.userId);
-            if (response.statuCode == 1)
+            try
             {
-                return Json(new { success = true });
+                GenericResponse response = _user.UpdateUserType(obj, loggedInUser.userId);
+                if (response.statuCode == 1)
+                {
+                    return Json(new { success = true, message = response.message });
+                }
+                else
+                {
+                    return Json(new { success = false, message = response.message });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return RedirectToAction("GetUserType");
+                return Json(new { success = false, message = "An error occurred: " + ex.Message });
             }
         }
+
         [HttpPost]
         public IActionResult DeleteUserType(int id)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
             {
-                return RedirectToAction("Login", "Authenticate");
+                return Json(new { success = false, message = "Session expired" });
             }
-            GenericResponse response = new GenericResponse();
-            response = _user.DeleteUserType(id);
-            if (response.statuCode == 1)
+
+            try
             {
-                return Json(new { success = true });
+                GenericResponse response = _user.DeleteUserType(id);
+                if (response.statuCode == 1)
+                {
+                    return Json(new { success = true, message = response.message });
+                }
+                else
+                {
+                    return Json(new { success = false, message = response.message ?? "Failed to delete user type" });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return RedirectToAction("GetUserType");
+                return Json(new { success = false, message = "An error occurred: " + ex.Message });
             }
         }
 
-        //UserMaster
-        public IActionResult GetUser(string? state )
+        // UserMaster
+        public IActionResult GetUser(string? state)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
@@ -122,132 +146,218 @@ namespace SmartSchool.Controllers
             ViewBag.State = states;
             var cities = _schoolAddressService.Getcity(state);
             ViewBag.city = cities;
-     
+
             var res = _user.GetUser(loggedInUser.userId);
             return View(res);
         }
-        public IActionResult AddUser(IFormCollection form, IFormFile ProfilePicture)
+
+        [HttpPost]
+        public async Task<IActionResult> AddUser(IFormCollection form, IFormFile ProfilePicture)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
             {
-                return RedirectToAction("Login", "Authenticate");
+                return Json(new { success = false, message = "Session expired" });
             }
 
-            //string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-            //var email = form["Email"].ToString().Trim();
-
-            //if (!Regex.IsMatch(email, emailPattern, RegexOptions.IgnoreCase))
-            //{
-            //    return Json(new { success = false, message ="Enter a valid Email Id" }); 
-            //}
-
-            var user = new UserDto
+            try
             {
-                FullName = form["FullName"],
-                Email = form["Email"],
-                UserType = form["UserType"],
-                PasswordHash = form["PasswordHash"],
-                  AddressLine = form["AddressLine"],
-                State = form["State"],
-                City = form["City"],
-                PinCode = form["PinCode"]
+                // Email validation
+                string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+                var email = form["Email"].ToString().Trim();
 
-            };
-
-            if (ProfilePicture != null && ProfilePicture.Length > 0)
-            {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ProfilePicture.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                if (!Regex.IsMatch(email, emailPattern, RegexOptions.IgnoreCase))
                 {
-                     ProfilePicture.CopyToAsync(stream);
+                    return Json(new { success = false, message = "Enter a valid Email Id" });
                 }
 
-                user.ProfilePicture = "/uploads/" + fileName;
-            }
+                var user = new UserDto
+                {
+                    FullName = form["FullName"],
+                    Email = email,
+                    UserType = form["UserType"],
+                    PasswordHash = form["PasswordHash"],
+                    AddressLine = form["AddressLine"],
+                    State = form["State"],
+                    City = form["City"],
+                    PinCode = form["PinCode"]
+                };
 
-            var result = _user.AddUser(user,loggedInUser.userId);
-            bool success = result != null;
-            return Json(new { success = success, message = success ? null : "User could not be added" });
+                if (ProfilePicture != null && ProfilePicture.Length > 0)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ProfilePicture.FileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+
+                    // Ensure directory exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await ProfilePicture.CopyToAsync(stream);
+                    }
+
+                    user.ProfilePicture = "/uploads/" + fileName;
+                }
+
+                var result = _user.AddUser(user, loggedInUser.userId);
+                if (result != null && result.statuCode == 1)
+                {
+                    return Json(new { success = true, message = result.message });
+                }
+                else
+                {
+                    return Json(new { success = false, message = result?.message ?? "User could not be added" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred: " + ex.Message });
+            }
         }
 
         [HttpPost]
-        public IActionResult UpdateUser(IFormCollection form, IFormFile ProfilePicture)
+        public async Task<IActionResult> UpdateUser(IFormCollection form, IFormFile ProfilePicture)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
             {
-                return RedirectToAction("Login", "Authenticate");
+                return Json(new { success = false, message = "Session expired" });
             }
 
-            string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-            var email = form["Email"].ToString().Trim();
-
-            if (!Regex.IsMatch(email, emailPattern, RegexOptions.IgnoreCase))
+            try
             {
-                return Json(new { success = false, message = "Enter a valid Email Id" });
-            }
+                string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+                var email = form["Email"].ToString().Trim();
 
-            var user = new UserDto
-            {
-                UserId = Convert.ToInt32(form["UserId"]),
-                FullName = form["FullName"],
-                Email = email,
-                UserType = form["UserType"],
-                PasswordHash = form["PasswordHash"]
-            };
-
-            if (ProfilePicture != null && ProfilePicture.Length > 0)
-            {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ProfilePicture.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                if (!Regex.IsMatch(email, emailPattern, RegexOptions.IgnoreCase))
                 {
-                    ProfilePicture.CopyTo(stream); // Note: Use CopyTo (sync) since you're not awaiting
+                    return Json(new { success = false, message = "Enter a valid Email Id" });
                 }
 
-                user.ProfilePicture = "/uploads/" + fileName;
-            }
+                var user = new UserDto
+                {
+                    UserId = Convert.ToInt32(form["UserId"]),
+                    FullName = form["FullName"],
+                    Email = email,
+                    UserType = form["UserType"],
+                    PasswordHash = form["PasswordHash"],
+                    AddressLine = form["AddressLine"],
+                    State = form["State"],
+                    City = form["City"],
+                    PinCode = form["PinCode"]
+                };
 
-            var result = _user.UpdateUser(user, loggedInUser.userId);
+                if (ProfilePicture != null && ProfilePicture.Length > 0)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ProfilePicture.FileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
 
-            if (result != null && result.statuCode == 1)
-            {
-                return Json(new { success = true });
+                    // Ensure directory exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await ProfilePicture.CopyToAsync(stream);
+                    }
+
+                    user.ProfilePicture = "/uploads/" + fileName;
+                }
+
+                var result = _user.UpdateUser(user, loggedInUser.userId);
+
+                if (result != null && result.statuCode == 1)
+                {
+                    return Json(new { success = true, message = result.message });
+                }
+                else
+                {
+                    return Json(new { success = false, message = result?.message ?? "User could not be updated" });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Json(new { success = false, message = result?.message ?? "User could not be updated" });
+                return Json(new { success = false, message = "An error occurred: " + ex.Message });
             }
         }
-        public IActionResult DeleteUser(int id)
+
+        [HttpPost]
+        public IActionResult DeleteUser(int UserId)
         {
             var loggedInUser = SessionHelper.GetObjectFromJson<LoginResponse>(HttpContext.Session, "loggedUser");
             if (loggedInUser == null)
             {
-                return RedirectToAction("Login", "Authenticate");
+                return Json(new { success = false, message = "Session expired" });
             }
-            GenericResponse response = new GenericResponse();
-            response = _user.DeleteUser(id);
-            if (response.statuCode == 1)
+
+            // Validate UserId parameter
+            if (UserId <= 0)
             {
-                return Json(new { success = true });
+                return Json(new { success = false, message = "Invalid User ID provided" });
             }
-            else
+
+            try
             {
-                return RedirectToAction("GetUser");
+                GenericResponse response = _user.DeleteUser(UserId);
+                if (response.statuCode == 1)
+                {
+                    return Json(new { success = true, message = response.message });
+                }
+                else
+                {
+                    return Json(new { success = false, message = response.message ?? "Failed to delete user" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred: " + ex.Message });
+            }
+        }
+
+        // Alternative delete method that accepts different parameter names
+        [HttpPost]
+        public IActionResult DeleteUserById(int id)
+        {
+            return DeleteUser(id);
+        }
+
+        // GET method for debugging - you can remove this after testing
+        [HttpGet]
+        public IActionResult CheckUser(int id)
+        {
+            try
+            {
+                var user = _context.userEntity.Where(u => u.UserId == id).FirstOrDefault();
+                if (user == null)
+                {
+                    return Json(new { exists = false, message = "User not found" });
+                }
+                return Json(new
+                {
+                    exists = true,
+                    userId = user.UserId,
+                    fullName = user.FullName,
+                    isDeleted = user.IsDeleted,
+                    isActive = user.IsActive
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
             }
         }
 
         [HttpGet]
         public IActionResult GetCitiesByState(string state)
         {
-
-            var cities = _schoolAddressService.Getcity(state);
-            return Json(cities);
+            try
+            {
+                var cities = _schoolAddressService.Getcity(state);
+                return Json(cities);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Failed to get cities: " + ex.Message });
+            }
         }
     }
 }
