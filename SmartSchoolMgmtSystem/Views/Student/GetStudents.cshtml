@@ -47,6 +47,7 @@
                                                 <th>Address</th>
                                                 <th>AdharcardNo</th>
                                                 <th>Photo</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody id="classTableBody">
@@ -116,16 +117,13 @@
             <div class="modal-body">
                 <form id="studentForm" action="@Url.Action("AddStudent", "Student")" method="post" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
-
                     <div class="row">
-                        
-                        <div class="col-lg-6">
-                            <label for="Student">Student Name <span class="required">*</span></label>
+                        <div class="col-lg-6 mb-3">
+                            <label for="StudentName">Student Name <span class="required">*</span></label>
                             <input type="text" class="form-control" id="StudentName" name="StudentName" required placeholder="Enter Student Full Name" />
-
                         </div>
-                        <div class="col-lg-6">
-                            <label for="Class">Class<span class="required">*</span></label>
+                        <div class="col-lg-6 mb-3">
+                            <label for="Class">Class <span class="required">*</span></label>
                             <select class="form-control" id="Class" name="Class" required>
                                 <option value="" selected>--Select--</option>
                                 @foreach (var item in ViewBag.Classes as List<SmartSchool.Models.DTO.ClassesDto>)
@@ -134,67 +132,68 @@
                                 }
                             </select>
                         </div>
-                        <div class="col-lg-6">
-                            <label for="Address">Address<span class="required">*</span></label>
+
+                        <div class="col-lg-6 mb-3">
+                            <label for="Address">Address <span class="required">*</span></label>
                             <input type="text" class="form-control" id="Address" name="Address" />
                         </div>
-
-                        <div class="col-lg-6">
-                            <label for="DOB">Date Of Birth<span class="required">*</span></label>
+                        <div class="col-lg-6 mb-3">
+                            <label for="DOB">Date Of Birth <span class="required">*</span></label>
                             <input type="date" class="form-control" id="DOB" name="DOB" />
                         </div>
-                        <div class="col-lg-6">
-                            <label for="AdharcardNo">AdharcardNo<span class="required">*</span></label>
+
+                        <div class="col-lg-6 mb-3">
+                            <label for="AdharcardNo">Adharcard No <span class="required">*</span></label>
                             <input type="text" class="form-control" id="AdharcardNo" name="AdharcardNo" />
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="Photo">Photo</label>
-                            <input type="file" class="form-control" id="Photo" name="Photo" accept="image/*"  />
+                            <input type="file" class="form-control" id="Photo" name="Photo" accept="image/*" />
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Preview</label><br />
                             <img id="profilePreview" src="#" alt="No Image Selected" style="max-height: 100px; display: none;" />
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mb-3">
                             <label>Gender <span class="required">*</span></label>
                             <div class="d-flex">
                                 <div class="form-check me-3">
-                                    <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="Male" required>
+                                    <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="Male" required />
                                     <label class="form-check-label" for="genderMale">Male</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="Female" required>
+                                    <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="Female" required />
                                     <label class="form-check-label" for="genderFemale">Female</label>
                                 </div>
                             </div>
                         </div>
 
-
-
-                        <div id="familyDetailsSection" class="row mt-3">
-                            <div class="col-lg-12">
-                                <h5 class="mb-3" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Family Details</h5>
-                            </div>
-                            <div class="col-lg-6">
-                                <label for="FamilyName">Name <span class="required">*</span></label>
-                                <input type="text" class="form-control" id="Name" name="Name" required />
-                            </div>
-                            <div class="col-lg-6">
-                                <label for="Relation">Relation <span class="required">*</span></label>
-                                <input type="text" class="form-control" id="Relation" name="Relation" required />
-                            </div>
-                            <div class="col-lg-6">
-                                <label for="ContactNumber">Contact Number <span class="required">*</span></label>
-                                <input type="text" class="form-control" id="ContactNumber" name="ContactNumber" required />
+                        <!-- Family Details Section -->
+                        <div class="col-12">
+                            <h5 class="mb-3 mt-4" style="background-color: whitesmoke; color: black; padding: 10px; text-transform: uppercase;">Family Details</h5>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="Name">Name <span class="required">*</span></label>
+                                    <input type="text" class="form-control" id="Name" name="Name" required />
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="Relation">Relation <span class="required">*</span></label>
+                                    <input type="text" class="form-control" id="Relation" name="Relation" required />
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="ContactNumber">Contact Number <span class="required">*</span></label>
+                                    <input type="text" class="form-control" id="ContactNumber" name="ContactNumber" required />
+                                </div>
                             </div>
                         </div>
-                            
-                        </div>
-                    <!-- In both addModal and editModal footer sections -->
+                    </div>
+
+                    <!-- Modal Footer -->
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Save</button>
                         <button type="button" class="btn btn-danger" onclick="cancelAndRedirect()">Cancel</button>
                     </div>
+
                 </form>
             </div>
         </div>

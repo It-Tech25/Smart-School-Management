@@ -151,7 +151,28 @@ namespace SmartSchool.Controllers
         }
         public JsonResult GetStudentsByClass(int classId)
         {
-            var students = _context.studentEntity.Where(s => s.ClassID == classId).ToList();
+            var students = _context.studentEntity
+    .Where(s => s.ClassID == classId)
+    .Select(s => new StudentDTO
+    {
+        StudentId = s.StudentId,
+        ClassID = s.ClassID,
+        DOB = s.DOB,
+        Gender = s.Gender,
+        StudentName = s.StudentName,
+        UserTypeId = s.UserTypeId,
+        AdharcardNo = s.AdharcardNo,
+        Photo = s.Photo,
+        SchoolId = s.SchoolId,
+        TotalFee = s.TotalFee,
+        IsAdded = s.IsAdded,
+        PaiedFee = s.PaiedFee,
+        Address = s.Address,
+        Class = _context.classEntity.Where(a=>a.ClassId==s.ClassID).Select(a=>a.Grade+"-"+a.Section).FirstOrDefault(),
+      
+    })
+    .ToList();
+
             return Json(new { students });
         }
         public JsonResult GetStudentsForAttendance()

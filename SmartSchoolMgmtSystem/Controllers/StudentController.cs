@@ -25,10 +25,24 @@ namespace SmartSchool.Controllers
             {
                 return RedirectToAction("Login", "Authenticate");
             }
-            var school = _context.schools
-    .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
-    .FirstOrDefault();
-            ViewBag.SchoolLogo = school.Logo;
+            if (loggedInUser.userTypeName == "School Admin")
+            {
+                var school = _context.schools
+        .Where(a => a.userid == loggedInUser.userId && a.IsDeleted == false)
+        .FirstOrDefault();
+                ViewBag.SchoolLogo = school.Logo;
+
+            }
+            else
+            {
+                int? id = _context.userEntity.Where(a => a.UserId == loggedInUser.userId).Select(a => a.CreatedBy).FirstOrDefault();
+
+                var school = _context.schools
+        .Where(a => a.userid == id && a.IsDeleted == false)
+        .FirstOrDefault();
+                ViewBag.SchoolLogo = school.Logo;
+            }
+                
             var classes = _studentService.GetClasses(loggedInUser.userId);
             ViewBag.Classes = classes;
             var res = _studentService.GetStudent(loggedInUser.userId);

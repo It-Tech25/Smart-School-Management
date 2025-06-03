@@ -200,7 +200,7 @@
                         studentRows += `
                             <tr>
                                 <td><input type="hidden" name="attendanceList[${index}].StudentId" value="${student.StudentId}">${student.StudentName}</td>
-                                <td><input type="hidden" name="attendanceList[${index}].ClassId" value="${classId}">${student.ClassName}</td>
+                                <td><input type="hidden" name="attendanceList[${index}].ClassId" value="${classId}">${student.Class}</td>
                                 
                                 <td><input type="date" class="form-control" name="attendanceList[${index}].Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly /></td>
                                 <td>
